@@ -3,7 +3,7 @@
 
 import { HexCoordinates } from './coordinates';
 
-export interface CellDefinition<CustomProps extends Record<string, any> = {}> {
+export interface CellDefinition<CustomProps extends object = {}> {
   q: number;
   r: number;
   s?: number;
@@ -13,12 +13,10 @@ export interface CellDefinition<CustomProps extends Record<string, any> = {}> {
   customProperties?: CustomProps;
 }
 
-export interface Cell<CustomProps extends Record<string, any> = {}> extends HexCoordinates {
+export interface Cell<CustomProps extends object = {}> extends HexCoordinates {
   id: string;
   elevation: number;
   movementCost: number;
   isImpassable: boolean;
   customProperties: CustomProps;
 }
-
-export { HexCoordinates };

@@ -4,8 +4,6 @@
 export { HexBoard } from './hexBoard';
 export { HexGrid } from './core/hexGrid';
 export { BoardRenderer } from './rendering/boardRenderer';
-export { InputHandler } from './rendering/inputHandler';
-export { MapDefinition, MapDefaultSettings } from './map/mapDefinition';
-export { Cell, CellDefinition, HexCoordinates } from './core/cell';
+export { Cell, CellDefinition } from './core/cell';
 export { Entity } from './core/entity';
 export * from './core/coordinates';
