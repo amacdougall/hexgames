@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { HexGrid } from '../core/hexGrid';
 
-export class BoardRenderer<CustomProps extends Record<string, any> = {}> {
+export class BoardRenderer {
   // Implementation will go here
+
 }
