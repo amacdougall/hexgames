@@ -407,7 +407,8 @@ export class HexGrid<CustomProps extends object = {}> {
    * <p>This convenience method generates a standard hex pattern that is commonly used for
    * testing, tutorials, or as a starting point for hex-based games. The pattern consists
    * of seven cells total: one at the origin (0,0,0) and six neighbors positioned at the
-   * standard hexagonal adjacency coordinates.
+   * standard flat-top hexagonal adjacency coordinates (North, Northeast, Southeast, 
+   * South, Southwest, Northwest).
    *
    * <p>All cells in the ring will be created with the same elevation if specified, or
    * will use the grid's default elevation if the parameter is omitted. Other cell
@@ -428,14 +429,14 @@ export class HexGrid<CustomProps extends object = {}> {
       elevation: centerElevation
     }));
 
-    // Add six surrounding cells (hex neighbors)
+    // Add six surrounding cells (flat-top hex neighbors)
     const neighbors = [
-      { q: 1, r: 0 },   // East
-      { q: 1, r: -1 },  // Northeast
-      { q: 0, r: -1 },  // Northwest
-      { q: -1, r: 0 },  // West
-      { q: -1, r: 1 },  // Southwest
-      { q: 0, r: 1 }    // Southeast
+      { q: 1, r: 0 },   // Southeast
+      { q: 0, r: -1 },  // Northeast
+      { q: -1, r: -1 }, // North
+      { q: -1, r: 0 },  // Northwest
+      { q: 0, r: 1 },   // Southwest
+      { q: 1, r: 1 }    // South
     ];
 
     for (const neighbor of neighbors) {
@@ -447,5 +448,46 @@ export class HexGrid<CustomProps extends object = {}> {
     }
 
     return cells;
+  }
+
+  /**
+   * Returns the six neighboring coordinates for a flat-top hexagonal layout.
+   *
+   * <p>In a flat-top layout, each hex has neighbors in these directions:
+   * North, Northeast, Southeast, South, Southwest, and Northwest.
+   *
+   * @param {number} q the q-axis coordinate of the center hex
+   * @param {number} r the r-axis coordinate of the center hex
+   * @returns {HexCoordinates[]} an array of six neighboring coordinates
+   * @since 1.0
+   */
+  getNeighborCoordinates(q: number, r: number): HexCoordinates[] {
+    const neighbors = [
+      { q: q + 1, r: r },     // Southeast
+      { q: q, r: r - 1 },     // Northeast
+      { q: q - 1, r: r - 1 }, // North
+      { q: q - 1, r: r },     // Northwest
+      { q: q, r: r + 1 },     // Southwest
+      { q: q + 1, r: r + 1 }  // South
+    ];
+
+    return neighbors.map(neighbor => ({
+      q: neighbor.q,
+      r: neighbor.r,
+      s: -neighbor.q - neighbor.r
+    }));
+  }
+
+  /**
+   * Returns the six neighboring coordinates for a given HexCoordinates object.
+   * This is a convenience method that delegates to {@link getNeighborCoordinates}.
+   *
+   * @param {HexCoordinates} coords the hexagonal coordinates object
+   * @returns {HexCoordinates[]} an array of six neighboring coordinates
+   * @see getNeighborCoordinates
+   * @since 1.0
+   */
+  getNeighborCoordinatesFromCoords(coords: HexCoordinates): HexCoordinates[] {
+    return this.getNeighborCoordinates(coords.q, coords.r);
   }
 }

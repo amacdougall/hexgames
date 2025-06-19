@@ -21,10 +21,10 @@ export class BoardRenderer {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera();
     this.renderer = new THREE.WebGLRenderer();
-    
+
     // Initialize the 3D scene with default settings
     this.initializeScene();
-    
+
     // Initialize orbit controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.configureControls();
@@ -86,7 +86,7 @@ export class BoardRenderer {
     // Create ground plane geometry and material
     const geometry = new THREE.PlaneGeometry(size, size);
     const material = new THREE.MeshLambertMaterial({ color: color });
-    
+
     // Create mesh and position the ground plane appropriately
     this.groundPlane = new THREE.Mesh(geometry, material);
     this.groundPlane.rotation.x = -Math.PI / 2; // Rotate to be horizontal
@@ -107,7 +107,7 @@ export class BoardRenderer {
     if (cell.isImpassable) {
       return 0x4169E1; // Royal blue for impassable (water)
     }
-    
+
     // Color based on elevation
     if (cell.elevation > 2) {
       return 0x8B4513; // Saddle brown for mountains
@@ -119,33 +119,12 @@ export class BoardRenderer {
       return 0xF4A460; // Sandy brown for low terrain
     }
   }
-  
+
   /**
    * Renders all hexagonal cells from the HexGrid as 3D objects in the scene.
    */
   renderHexGrid(): void {
-    // Iterate through all cells in the hex grid
-    const allCells = this.hexGrid.getAllCells();
-    
-    for (const cell of allCells) {
-      // Create 3D mesh for each cell
-      const geometry = new THREE.CylinderGeometry(0.8, 0.8, cell.elevation, 6);
-      const material = new THREE.MeshLambertMaterial({ 
-        color: this.getCellColor(cell)
-      });
-      const mesh = new THREE.Mesh(geometry, material);
-
-      // Position meshes using hexToWorld coordinate conversion
-      const worldPos = hexToWorld({ q: cell.q, r: cell.r, s: cell.s });
-      mesh.position.set(worldPos.x, cell.elevation / 2, worldPos.z);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-
-      // Add meshes to the scene and track them in hexMeshes map
-      const key = this.createCoordinateKey({ q: cell.q, r: cell.r, s: cell.s });
-      this.hexMeshes.set(key, mesh);
-      this.scene.add(mesh);
-    }
+    this.hexGrid.getAllCells().forEach(cell => this.renderHexCell(cell));
   }
 
   /**
@@ -162,8 +141,8 @@ export class BoardRenderer {
     }
 
     // Create 3D mesh for the cell
-    const geometry = new THREE.CylinderGeometry(0.8, 0.8, cell.elevation, 6);
-    const material = new THREE.MeshLambertMaterial({ 
+    const geometry = new THREE.CylinderGeometry(1.0, 1.0, cell.elevation, 6);
+    const material = new THREE.MeshLambertMaterial({
       color: this.getCellColor(cell)
     });
     const mesh = new THREE.Mesh(geometry, material);
@@ -176,7 +155,7 @@ export class BoardRenderer {
 
     // Add mesh to scene and track in hexMeshes map
     const key = this.createCoordinateKey(coordinates);
-    
+
     // Remove existing mesh if present
     const existingMesh = this.hexMeshes.get(key);
     if (existingMesh) {
@@ -198,15 +177,15 @@ export class BoardRenderer {
     // Get mesh from hexMeshes map using coordinate key
     const key = this.createCoordinateKey(coordinates);
     const mesh = this.hexMeshes.get(key);
-    
+
     if (mesh) {
       // Remove mesh from scene
       this.scene.remove(mesh);
-      
+
       // Clean up mesh geometry and materials
       mesh.geometry.dispose();
       (mesh.material as THREE.Material).dispose();
-      
+
       // Remove from hexMeshes map
       this.hexMeshes.delete(key);
     }
@@ -220,7 +199,7 @@ export class BoardRenderer {
   updateHexCell(coordinates: HexCoordinates): void {
     // Remove existing mesh if it exists
     this.removeHexCell(coordinates);
-    
+
     // Render new mesh with updated cell data
     this.renderHexCell(coordinates);
   }
