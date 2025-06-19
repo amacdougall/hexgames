@@ -1,6 +1,6 @@
 // HexGrid logic class
 import { Cell, CellDefinition } from './cell';
-import { HexCoordinates, axialToCubic, isValidHexCoordinate } from './coordinates';
+import { HexCoordinates, axialToCubic } from './coordinates';
 
 export class HexGrid<CustomProps extends object = {}> {
   private cells: Map<string, Cell<CustomProps>>;
