@@ -1,6 +1,8 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding assistants when working with code in
+this repository. If you are an AI coding assisant, please follow these
+instructions!
 
 ## Development Commands
 
@@ -53,11 +55,13 @@ This is a **TypeScript monorepo** for hexagonal grid-based games using npm works
 
 1. **Logic Layer** (`src/core/`)
    - `HexGrid` class manages game state with no rendering dependencies
+   - pure logic, should not import rendering modules or game logic
    - Uses cubic coordinates (q, r, s) for hexagonal calculations
    - Generic cell system with `<CustomProps extends object>` for type-safe extensibility
    - 20+ utility methods for hex operations
 
 2. **Rendering Layer** (`src/rendering/`)
+   - use `src/core` classes as data source
    - `BoardRenderer` handles Three.js 3D visualization
    - `layout.ts` converts hex coordinates to world coordinates (flat-top hexagons)
    - Supports interactive OrbitControls, shadows, and terrain color coding
