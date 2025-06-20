@@ -4,6 +4,10 @@ import { HexCoordinates } from '../core/coordinates';
 /* NOTE: This file contains utility functions related to conversion from the
  * logical hex grid to a rendered 3D scene.
  *
+ * Cell orientation (flat vs pointy top) is handled here. Rendering logic should
+ * deal in 3D world coordinates, while the hex grid logic deals in logical hex
+ * coordinates.
+ *
  * It should only include functions that bridge between these two domains. For
  * example, a pathfinding algorithm would not belong here. Neither would a method
  * which identifies the neighbors of a cell.
@@ -57,6 +61,6 @@ function roundHexCoordinates({ q, r, s }: HexCoordinates): HexCoordinates {
   } else {
     rs = -rq - rr;
   }
-  
+
   return { q: rq, r: rr, s: rs };
 }
