@@ -1,4 +1,8 @@
-import { HexCoordinates, axialToCubic, isValidHexCoordinate } from '../../src/core/coordinates';
+import {
+  HexCoordinates,
+  axialToCubic,
+  isValidHexCoordinate,
+} from '../../src/core/coordinates';
 
 describe('Coordinate System', () => {
   describe('axialToCubic', () => {
@@ -30,9 +34,14 @@ describe('Coordinate System', () => {
 
     test('maintains coordinate invariant for all conversions', () => {
       const testCases = [
-        [1, 1], [0, 1], [1, 0], [-1, -1], [10, -5], [-7, 3]
+        [1, 1],
+        [0, 1],
+        [1, 0],
+        [-1, -1],
+        [10, -5],
+        [-7, 3],
       ];
-      
+
       testCases.forEach(([q, r]) => {
         const result = axialToCubic(q, r);
         expect(result.q + result.r + result.s).toBe(0);
@@ -47,10 +56,10 @@ describe('Coordinate System', () => {
         { q: 1, r: -1, s: 0 },
         { q: 2, r: -3, s: 1 },
         { q: -5, r: 2, s: 3 },
-        { q: 10, r: -7, s: -3 }
+        { q: 10, r: -7, s: -3 },
       ];
 
-      validCoords.forEach(coord => {
+      validCoords.forEach((coord) => {
         expect(isValidHexCoordinate(coord)).toBe(true);
       });
     });
@@ -61,10 +70,10 @@ describe('Coordinate System', () => {
         { q: 0, r: 1, s: 1 },
         { q: 2, r: 2, s: -3 },
         { q: -1, r: -1, s: -1 },
-        { q: 5, r: 0, s: -4 }
+        { q: 5, r: 0, s: -4 },
       ];
 
-      invalidCoords.forEach(coord => {
+      invalidCoords.forEach((coord) => {
         expect(isValidHexCoordinate(coord)).toBe(false);
       });
     });
@@ -74,20 +83,20 @@ describe('Coordinate System', () => {
       const precisionCoords: HexCoordinates[] = [
         { q: 0.5, r: 0.25, s: -0.75 },
         { q: 1.0, r: 2.0, s: -3.0 },
-        { q: -0.5, r: -0.25, s: 0.75 }
+        { q: -0.5, r: -0.25, s: 0.75 },
       ];
 
-      precisionCoords.forEach(coord => {
+      precisionCoords.forEach((coord) => {
         expect(isValidHexCoordinate(coord)).toBe(true);
       });
 
       // Test coordinates that should fail due to precision
       const invalidPrecisionCoords: HexCoordinates[] = [
         { q: 0.1, r: 0.2, s: -0.30000001 }, // Slightly off due to precision
-        { q: 1/3, r: 1/3, s: -2/3 + 0.000001 } // Manually introduce error
+        { q: 1 / 3, r: 1 / 3, s: -2 / 3 + 0.000001 }, // Manually introduce error
       ];
 
-      invalidPrecisionCoords.forEach(coord => {
+      invalidPrecisionCoords.forEach((coord) => {
         expect(isValidHexCoordinate(coord)).toBe(false);
       });
 
@@ -98,7 +107,11 @@ describe('Coordinate System', () => {
 
     test('validates coordinates from axialToCubic conversion', () => {
       const axialPairs = [
-        [0, 0], [1, 2], [-3, 1], [5, -2], [-1, -1]
+        [0, 0],
+        [1, 2],
+        [-3, 1],
+        [5, -2],
+        [-1, -1],
       ];
 
       axialPairs.forEach(([q, r]) => {
@@ -114,7 +127,7 @@ describe('Coordinate System', () => {
       const largeCoords = [
         [1000000, -500000],
         [-999999, 999999],
-        [Number.MAX_SAFE_INTEGER / 3, -Number.MAX_SAFE_INTEGER / 3]
+        [Number.MAX_SAFE_INTEGER / 3, -Number.MAX_SAFE_INTEGER / 3],
       ];
 
       largeCoords.forEach(([q, r]) => {
@@ -137,10 +150,10 @@ describe('Coordinate System', () => {
         { q: -1, r: 1, s: 0 },
         { q: -1, r: 0, s: 1 },
         { q: 0, r: -1, s: 1 },
-        { q: 1, r: -1, s: 0 }
+        { q: 1, r: -1, s: 0 },
       ];
 
-      boundaryTests.forEach(coords => {
+      boundaryTests.forEach((coords) => {
         expect(isValidHexCoordinate(coords)).toBe(true);
       });
 
@@ -153,11 +166,11 @@ describe('Coordinate System', () => {
     test('maintains type safety with HexCoordinates interface', () => {
       // Ensure converted coordinates conform to the interface
       const result = axialToCubic(3, -1);
-      
+
       expect(typeof result.q).toBe('number');
       expect(typeof result.r).toBe('number');
       expect(typeof result.s).toBe('number');
-      
+
       // Ensure all required properties exist
       expect(result).toHaveProperty('q');
       expect(result).toHaveProperty('r');

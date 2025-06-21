@@ -13,37 +13,43 @@ const ringCells = hexGrid.createBasicHexRing(1);
 console.log('Created hex ring with cells:', ringCells);
 
 // Add some additional test cells with different properties
-hexGrid.addCell({ 
-  q: 2, r: 0, 
-  elevation: 2, 
-  customProperties: { id: 'mountain-cell', type: 'mountain' } 
+hexGrid.addCell({
+  q: 2,
+  r: 0,
+  elevation: 2,
+  customProperties: { id: 'mountain-cell', type: 'mountain' },
 });
 
-hexGrid.addCell({ 
-  q: 0, r: 2, 
-  elevation: 0.5, 
+hexGrid.addCell({
+  q: 0,
+  r: 2,
+  elevation: 0.5,
   isImpassable: true,
-  customProperties: { id: 'water-cell', type: 'water' } 
+  customProperties: { id: 'water-cell', type: 'water' },
 });
 
-hexGrid.addCell({ 
-  q: -2, r: 1, 
-  elevation: 1.5, 
+hexGrid.addCell({
+  q: -2,
+  r: 1,
+  elevation: 1.5,
   movementCost: 2,
-  customProperties: { id: 'forest-cell', type: 'forest' } 
+  customProperties: { id: 'forest-cell', type: 'forest' },
 });
 
 // Add a cluster of cells to demonstrate larger grids
 for (let q = -1; q <= 1; q++) {
   for (let r = -1; r <= 1; r++) {
     if (q === 0 && r === 0) continue; // Skip center (already exists)
-    if (Math.abs(q + r) <= 1) { // Only add cells within distance 1
-      if (!hexGrid.hasCellAtCoords({ q: q + 3, r: r - 2, s: -(q + 3) - (r - 2) })) {
-        hexGrid.addCell({ 
-          q: q + 3, 
-          r: r - 2, 
+    if (Math.abs(q + r) <= 1) {
+      // Only add cells within distance 1
+      if (
+        !hexGrid.hasCellAtCoords({ q: q + 3, r: r - 2, s: -(q + 3) - (r - 2) })
+      ) {
+        hexGrid.addCell({
+          q: q + 3,
+          r: r - 2,
           elevation: Math.random() * 1.5 + 0.5,
-          customProperties: { id: `cluster-${q}-${r}`, type: 'plains' } 
+          customProperties: { id: `cluster-${q}-${r}`, type: 'plains' },
         });
       }
     }
@@ -73,7 +79,7 @@ window.addEventListener('resize', resizeRenderer);
 console.log('Testing BoardRenderer methods:');
 
 // Test ground plane rendering
-renderer.renderGroundPlane(30, 0x228B22); // Forest green ground
+renderer.renderGroundPlane(30, 0x228b22); // Forest green ground
 console.log('- renderGroundPlane() called');
 
 // Test hex grid rendering

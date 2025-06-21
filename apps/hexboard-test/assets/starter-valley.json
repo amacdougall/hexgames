@@ -9,12 +9,30 @@
   "cells": [
     { "q": 0, "r": 0, "s": 0 },
     { "q": 1, "r": 0, "s": -1, "elevation": 1.5 },
-    { "q": 0, "r": 1, "s": -1, "isImpassable": true, "customProperties": { "terrainType": "water" } },
+    {
+      "q": 0,
+      "r": 1,
+      "s": -1,
+      "isImpassable": true,
+      "customProperties": { "terrainType": "water" }
+    },
     { "q": -1, "r": 1, "s": 0 },
     { "q": -1, "r": 0, "s": 1 },
     { "q": 0, "r": -1, "s": 1 },
     { "q": 1, "r": -1, "s": 0 },
-    { "q": 2, "r": -1, "s": -1, "elevation": 2, "customProperties": { "terrainType": "mountain" } },
-    { "q": 1, "r": 1, "s": -2, "elevation": 0.5, "customProperties": { "terrainType": "swamp" } }
+    {
+      "q": 2,
+      "r": -1,
+      "s": -1,
+      "elevation": 2,
+      "customProperties": { "terrainType": "mountain" }
+    },
+    {
+      "q": 1,
+      "r": 1,
+      "s": -2,
+      "elevation": 0.5,
+      "customProperties": { "terrainType": "swamp" }
+    }
   ]
 }

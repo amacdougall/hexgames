@@ -11,7 +11,7 @@ describe('Cell System', () => {
     test('creates basic cell definition', () => {
       const definition: CellDefinition = {
         q: 1,
-        r: 2
+        r: 2,
       };
 
       expect(definition.q).toBe(1);
@@ -30,12 +30,15 @@ describe('Cell System', () => {
         customProperties: {
           type: 'forest',
           resources: ['wood', 'berries'],
-          owner: 'player1'
-        }
+          owner: 'player1',
+        },
       };
 
       expect(definition.customProperties?.type).toBe('forest');
-      expect(definition.customProperties?.resources).toEqual(['wood', 'berries']);
+      expect(definition.customProperties?.resources).toEqual([
+        'wood',
+        'berries',
+      ]);
       expect(definition.customProperties?.owner).toBe('player1');
     });
 
@@ -56,8 +59,8 @@ describe('Cell System', () => {
         customProperties: {
           type: 'mountain',
           resources: ['stone'],
-          owner: 'neutral'
-        }
+          owner: 'neutral',
+        },
       };
 
       expect(fullDef.q).toBe(1);
@@ -81,8 +84,8 @@ describe('Cell System', () => {
         movementCost: 2,
         isImpassable: false,
         customProperties: {
-          type: 'grassland'
-        }
+          type: 'grassland',
+        },
       };
 
       // Test HexCoordinates properties
@@ -103,7 +106,7 @@ describe('Cell System', () => {
         elevation: 1,
         movementCost: 1,
         isImpassable: false,
-        customProperties: {}
+        customProperties: {},
       };
 
       // Test all required Cell properties exist
@@ -138,8 +141,8 @@ describe('Cell System', () => {
         customProperties: {
           terrain: 'mountain',
           buildable: false,
-          resources: ['iron', 'coal']
-        }
+          resources: ['iron', 'coal'],
+        },
       };
 
       expect(cell.customProperties.terrain).toBe('mountain');
@@ -164,7 +167,7 @@ describe('Cell System', () => {
         elevation: 1,
         movementCost: 1,
         isImpassable: false,
-        customProperties: { name: 'test' }
+        customProperties: { name: 'test' },
       };
 
       const cellWithInterface: Cell<TestProps> = {
@@ -175,7 +178,7 @@ describe('Cell System', () => {
         elevation: 1,
         movementCost: 1,
         isImpassable: false,
-        customProperties: { type: 'forest' }
+        customProperties: { type: 'forest' },
       };
 
       expect(cellWithObject.customProperties.name).toBe('test');
@@ -224,43 +227,59 @@ describe('Cell System', () => {
           metadata: {
             discovered: true,
             lastVisited: new Date('2023-01-01'),
-            notes: ['Ancient ruins found here', 'Rich in magical energy']
+            notes: ['Ancient ruins found here', 'Rich in magical energy'],
           },
           gameplay: {
             spawnPoint: true,
             defensiveBonus: 2,
-            specialRules: [{
-              name: 'Magical Sanctuary',
-              description: 'Units heal faster in this location',
-              effects: {
-                healingRate: 1.5,
-                manaRegeneration: 2.0
-              }
-            }]
+            specialRules: [
+              {
+                name: 'Magical Sanctuary',
+                description: 'Units heal faster in this location',
+                effects: {
+                  healingRate: 1.5,
+                  manaRegeneration: 2.0,
+                },
+              },
+            ],
           },
           visuals: {
             texturePath: '/textures/ancient_ruins.png',
             animations: ['glow_pulse', 'mist_swirl'],
-            effects: [{
-              type: 'glow',
-              intensity: 0.7
-            }]
-          }
-        }
+            effects: [
+              {
+                type: 'glow',
+                intensity: 0.7,
+              },
+            ],
+          },
+        },
       };
 
       // Test nested properties
       expect(complexCell.customProperties.metadata.discovered).toBe(true);
       expect(complexCell.customProperties.metadata.notes).toHaveLength(2);
       expect(complexCell.customProperties.gameplay.spawnPoint).toBe(true);
-      expect(complexCell.customProperties.gameplay.specialRules?.[0].name).toBe('Magical Sanctuary');
-      expect(complexCell.customProperties.visuals.texturePath).toBe('/textures/ancient_ruins.png');
-      expect(complexCell.customProperties.visuals.effects?.[0].type).toBe('glow');
+      expect(complexCell.customProperties.gameplay.specialRules?.[0].name).toBe(
+        'Magical Sanctuary'
+      );
+      expect(complexCell.customProperties.visuals.texturePath).toBe(
+        '/textures/ancient_ruins.png'
+      );
+      expect(complexCell.customProperties.visuals.effects?.[0].type).toBe(
+        'glow'
+      );
 
       // Test optional properties
-      expect(complexCell.customProperties.metadata.lastVisited).toBeInstanceOf(Date);
-      expect(complexCell.customProperties.gameplay.specialRules).toHaveLength(1);
-      expect(complexCell.customProperties.visuals.animations).toContain('glow_pulse');
+      expect(complexCell.customProperties.metadata.lastVisited).toBeInstanceOf(
+        Date
+      );
+      expect(complexCell.customProperties.gameplay.specialRules).toHaveLength(
+        1
+      );
+      expect(complexCell.customProperties.visuals.animations).toContain(
+        'glow_pulse'
+      );
     });
   });
 });

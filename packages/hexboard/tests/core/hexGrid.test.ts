@@ -24,7 +24,11 @@ describe('HexGrid', () => {
 
     test('accepts custom default values', () => {
       const customGrid = new HexGrid<TestProps>(2.5, 3, true);
-      const cell = customGrid.addCell({ q: 0, r: 0, customProperties: { type: 'grass' } });
+      const cell = customGrid.addCell({
+        q: 0,
+        r: 0,
+        customProperties: { type: 'grass' },
+      });
       expect(cell.elevation).toBe(2.5);
       expect(cell.movementCost).toBe(3);
       expect(cell.isImpassable).toBe(true);
@@ -34,9 +38,10 @@ describe('HexGrid', () => {
   describe('Cell Management', () => {
     test('adds cells correctly', () => {
       const cell = grid.addCell({
-        q: 1, r: 0,
+        q: 1,
+        r: 0,
         elevation: 2,
-        customProperties: { type: 'mountain' }
+        customProperties: { type: 'mountain' },
       });
 
       expect(cell.q).toBe(1);
@@ -70,16 +75,17 @@ describe('HexGrid', () => {
 
     test('updates existing cells', () => {
       const originalCell = grid.addCell({
-        q: 0, r: 0,
+        q: 0,
+        r: 0,
         elevation: 1,
         isImpassable: false,
-        customProperties: { type: 'grass' }
+        customProperties: { type: 'grass' },
       });
 
       const updatedCell = grid.updateCell(0, 0, {
         elevation: 3,
         isImpassable: true,
-        customProperties: { type: 'mountain' }
+        customProperties: { type: 'mountain' },
       });
 
       expect(updatedCell).not.toBeNull();
@@ -92,7 +98,11 @@ describe('HexGrid', () => {
     });
 
     test('retrieves cells by coordinates', () => {
-      const cell = grid.addCell({ q: 2, r: -1, customProperties: { type: 'grass' } });
+      const cell = grid.addCell({
+        q: 2,
+        r: -1,
+        customProperties: { type: 'grass' },
+      });
 
       const retrieved = grid.getCell(2, -1);
       expect(retrieved).not.toBeNull();
@@ -124,7 +134,12 @@ describe('HexGrid', () => {
       }).not.toThrow();
 
       expect(() => {
-        grid.addCell({ q: 1, r: -1, s: 0, customProperties: { type: 'forest' } });
+        grid.addCell({
+          q: 1,
+          r: -1,
+          s: 0,
+          customProperties: { type: 'forest' },
+        });
       }).not.toThrow();
     });
 
@@ -132,19 +147,36 @@ describe('HexGrid', () => {
       // s coordinate that doesn't satisfy q + r + s = 0
       expect(() => {
         grid.addCell({ q: 0, r: 0, s: 1, customProperties: { type: 'grass' } });
-      }).toThrow('Invalid hex coordinates: q=0, r=0, s=1. Must satisfy q + r + s = 0');
+      }).toThrow(
+        'Invalid hex coordinates: q=0, r=0, s=1. Must satisfy q + r + s = 0'
+      );
 
       expect(() => {
-        grid.addCell({ q: 1, r: 1, s: 1, customProperties: { type: 'forest' } });
-      }).toThrow('Invalid hex coordinates: q=1, r=1, s=1. Must satisfy q + r + s = 0');
+        grid.addCell({
+          q: 1,
+          r: 1,
+          s: 1,
+          customProperties: { type: 'forest' },
+        });
+      }).toThrow(
+        'Invalid hex coordinates: q=1, r=1, s=1. Must satisfy q + r + s = 0'
+      );
     });
 
     test('handles axial coordinate conversion', () => {
       // When s is not provided, it should be calculated automatically
-      const cell = grid.addCell({ q: 2, r: -1, customProperties: { type: 'grass' } });
+      const cell = grid.addCell({
+        q: 2,
+        r: -1,
+        customProperties: { type: 'grass' },
+      });
       expect(cell.s).toBe(-1); // s = -(q + r) = -(2 + (-1)) = -1
 
-      const cell2 = grid.addCell({ q: -1, r: 2, customProperties: { type: 'water' } });
+      const cell2 = grid.addCell({
+        q: -1,
+        r: 2,
+        customProperties: { type: 'water' },
+      });
       expect(cell2.s).toBe(-1); // s = -(-1 + 2) = -1
     });
   });
@@ -153,8 +185,16 @@ describe('HexGrid', () => {
     test('returns all cells', () => {
       expect(grid.getAllCells()).toEqual([]);
 
-      const cell1 = grid.addCell({ q: 0, r: 0, customProperties: { type: 'grass' } });
-      const cell2 = grid.addCell({ q: 1, r: 0, customProperties: { type: 'mountain' } });
+      const cell1 = grid.addCell({
+        q: 0,
+        r: 0,
+        customProperties: { type: 'grass' },
+      });
+      const cell2 = grid.addCell({
+        q: 1,
+        r: 0,
+        customProperties: { type: 'mountain' },
+      });
 
       const allCells = grid.getAllCells();
       expect(allCells).toHaveLength(2);
@@ -176,14 +216,34 @@ describe('HexGrid', () => {
     });
 
     test('finds cells by criteria', () => {
-      grid.addCell({ q: 0, r: 0, elevation: 1, isImpassable: false, customProperties: { type: 'grass' } });
-      grid.addCell({ q: 1, r: 0, elevation: 3, isImpassable: true, customProperties: { type: 'mountain' } });
-      grid.addCell({ q: 0, r: 1, elevation: 2, isImpassable: false, customProperties: { type: 'hill' } });
+      grid.addCell({
+        q: 0,
+        r: 0,
+        elevation: 1,
+        isImpassable: false,
+        customProperties: { type: 'grass' },
+      });
+      grid.addCell({
+        q: 1,
+        r: 0,
+        elevation: 3,
+        isImpassable: true,
+        customProperties: { type: 'mountain' },
+      });
+      grid.addCell({
+        q: 0,
+        r: 1,
+        elevation: 2,
+        isImpassable: false,
+        customProperties: { type: 'hill' },
+      });
 
-      const passableCells = grid.getCellsWhere(cell => !cell.isImpassable);
+      const passableCells = grid.getCellsWhere((cell) => !cell.isImpassable);
       expect(passableCells).toHaveLength(2);
 
-      const highElevationCells = grid.getCellsWhere(cell => cell.elevation > 2);
+      const highElevationCells = grid.getCellsWhere(
+        (cell) => cell.elevation > 2
+      );
       expect(highElevationCells).toHaveLength(1);
       expect(highElevationCells[0].customProperties.type).toBe('mountain');
     });
@@ -195,21 +255,21 @@ describe('HexGrid', () => {
       expect(neighbors).toHaveLength(6);
 
       // Check that all neighbors satisfy the cubic coordinate constraint
-      neighbors.forEach(coord => {
+      neighbors.forEach((coord) => {
         expect(coord.q + coord.r + coord.s).toBe(0);
       });
 
       // Check expected neighbor positions for flat-top layout
       const expectedNeighbors = [
-        { q: 1, r: 0, s: -1 },   // Southeast
-        { q: 0, r: -1, s: 1 },   // Northeast
-        { q: -1, r: -1, s: 2 },  // North
-        { q: -1, r: 0, s: 1 },   // Northwest
-        { q: 0, r: 1, s: -1 },   // Southwest
-        { q: 1, r: 1, s: -2 }    // South
+        { q: 1, r: 0, s: -1 }, // Southeast
+        { q: 0, r: -1, s: 1 }, // Northeast
+        { q: -1, r: -1, s: 2 }, // North
+        { q: -1, r: 0, s: 1 }, // Northwest
+        { q: 0, r: 1, s: -1 }, // Southwest
+        { q: 1, r: 1, s: -2 }, // South
       ];
 
-      expectedNeighbors.forEach(expected => {
+      expectedNeighbors.forEach((expected) => {
         expect(neighbors).toContainEqual(expected);
       });
     });
@@ -226,7 +286,7 @@ describe('HexGrid', () => {
 
       // Check all neighbors exist
       const neighbors = grid.getNeighborCoordinates(0, 0);
-      neighbors.forEach(coord => {
+      neighbors.forEach((coord) => {
         const neighborCell = grid.getCellByCoords(coord);
         expect(neighborCell).not.toBeNull();
         expect(neighborCell!.elevation).toBe(2);
@@ -245,9 +305,21 @@ describe('HexGrid', () => {
 
   describe('Utility Methods', () => {
     test('generates unique cell IDs', () => {
-      const cell1 = grid.addCell({ q: 0, r: 0, customProperties: { type: 'grass' } });
-      const cell2 = grid.addCell({ q: 1, r: 0, customProperties: { type: 'forest' } });
-      const cell3 = grid.addCell({ q: 0, r: 1, customProperties: { type: 'mountain' } });
+      const cell1 = grid.addCell({
+        q: 0,
+        r: 0,
+        customProperties: { type: 'grass' },
+      });
+      const cell2 = grid.addCell({
+        q: 1,
+        r: 0,
+        customProperties: { type: 'forest' },
+      });
+      const cell3 = grid.addCell({
+        q: 0,
+        r: 1,
+        customProperties: { type: 'mountain' },
+      });
 
       expect(cell1.id).not.toBe(cell2.id);
       expect(cell1.id).not.toBe(cell3.id);
@@ -260,7 +332,11 @@ describe('HexGrid', () => {
     });
 
     test('handles coordinate string conversion', () => {
-      const cell = grid.addCell({ q: 2, r: -1, customProperties: { type: 'grass' } });
+      const cell = grid.addCell({
+        q: 2,
+        r: -1,
+        customProperties: { type: 'grass' },
+      });
       expect(cell.id).toBe('2,-1,-1');
 
       const retrievedById = grid.getCellById('2,-1,-1');
@@ -291,7 +367,7 @@ describe('HexGrid', () => {
       const cell = grid.addCell({
         q: largeQ,
         r: largeR,
-        customProperties: { type: 'grass' }
+        customProperties: { type: 'grass' },
       });
 
       expect(cell.q).toBe(largeQ);
@@ -305,14 +381,32 @@ describe('HexGrid', () => {
 
     test('maintains grid state integrity after multiple operations', () => {
       // Add cells
-      grid.addCell({ q: 0, r: 0, elevation: 1, customProperties: { type: 'grass' } });
-      grid.addCell({ q: 1, r: 0, elevation: 2, customProperties: { type: 'water' } });
-      grid.addCell({ q: 0, r: 1, elevation: 3, customProperties: { type: 'mountain' } });
+      grid.addCell({
+        q: 0,
+        r: 0,
+        elevation: 1,
+        customProperties: { type: 'grass' },
+      });
+      grid.addCell({
+        q: 1,
+        r: 0,
+        elevation: 2,
+        customProperties: { type: 'water' },
+      });
+      grid.addCell({
+        q: 0,
+        r: 1,
+        elevation: 3,
+        customProperties: { type: 'mountain' },
+      });
 
       expect(grid.size()).toBe(3);
 
       // Update a cell
-      const updated = grid.updateCell(0, 0, { elevation: 5, customProperties: { type: 'lava' } });
+      const updated = grid.updateCell(0, 0, {
+        elevation: 5,
+        customProperties: { type: 'lava' },
+      });
       expect(updated).not.toBeNull();
       expect(grid.size()).toBe(3); // Size should remain the same
 
@@ -338,8 +432,13 @@ describe('HexGrid', () => {
       // Add many cells
       for (let q = -10; q <= 10; q++) {
         for (let r = -10; r <= 10; r++) {
-          if (Math.abs(q + r) <= 10) { // Stay within reasonable bounds
-            grid.addCell({ q, r, customProperties: { type: 'terrain', discovered: true } });
+          if (Math.abs(q + r) <= 10) {
+            // Stay within reasonable bounds
+            grid.addCell({
+              q,
+              r,
+              customProperties: { type: 'terrain', discovered: true },
+            });
           }
         }
       }
@@ -353,7 +452,11 @@ describe('HexGrid', () => {
       expect(grid.isEmpty()).toBe(true);
 
       // Add cells again to ensure clean state
-      grid.addCell({ q: 0, r: 0, customProperties: { type: 'terrain', discovered: true } });
+      grid.addCell({
+        q: 0,
+        r: 0,
+        customProperties: { type: 'terrain', discovered: true },
+      });
       expect(grid.size()).toBe(1);
     });
 
@@ -384,15 +487,15 @@ describe('HexGrid', () => {
           resources: ['gold', 'iron'],
           metadata: {
             discovered: true,
-            lastVisited: new Date('2023-01-01')
+            lastVisited: new Date('2023-01-01'),
           },
           nestedData: {
             terrain: {
               type: 'forest',
-              subtype: 'deciduous'
-            }
-          }
-        }
+              subtype: 'deciduous',
+            },
+          },
+        },
       });
 
       expect(cell.customProperties.owner).toBe('player1');
@@ -410,8 +513,13 @@ describe('HexGrid', () => {
       for (let i = 0; i < 1000; i++) {
         const q = Math.floor(i / 32) - 15;
         const r = (i % 32) - 15;
-        if (Math.abs(q + r) <= 20) { // Keep within reasonable coordinate bounds
-          grid.addCell({ q, r, customProperties: { type: 'terrain', discovered: i % 2 === 0 } });
+        if (Math.abs(q + r) <= 20) {
+          // Keep within reasonable coordinate bounds
+          grid.addCell({
+            q,
+            r,
+            customProperties: { type: 'terrain', discovered: i % 2 === 0 },
+          });
         }
       }
 
@@ -422,12 +530,16 @@ describe('HexGrid', () => {
 
     test('cell lookup is efficient', () => {
       // Add some cells first
-      const cellCoords: Array<{q: number, r: number}> = [];
+      const cellCoords: Array<{ q: number; r: number }> = [];
       for (let i = 0; i < 100; i++) {
         const q = i % 10;
         const r = Math.floor(i / 10);
-        cellCoords.push({q, r});
-        grid.addCell({ q, r, customProperties: { type: 'terrain', discovered: true } });
+        cellCoords.push({ q, r });
+        grid.addCell({
+          q,
+          r,
+          customProperties: { type: 'terrain', discovered: true },
+        });
       }
 
       const startTime = performance.now();
@@ -448,8 +560,12 @@ describe('HexGrid', () => {
     test('addCells method works correctly', () => {
       const definitions = [
         { q: 0, r: 0, customProperties: { type: 'grass', discovered: true } },
-        { q: 1, r: 0, customProperties: { type: 'mountain', discovered: false } },
-        { q: 0, r: 1, customProperties: { type: 'water', discovered: true } }
+        {
+          q: 1,
+          r: 0,
+          customProperties: { type: 'mountain', discovered: false },
+        },
+        { q: 0, r: 1, customProperties: { type: 'water', discovered: true } },
       ];
 
       const cells = grid.addCells(definitions);
@@ -464,7 +580,11 @@ describe('HexGrid', () => {
 
     test('getCellByCoords and removeCellByCoords work correctly', () => {
       const coords = { q: 2, r: -1, s: -1 };
-      grid.addCell({ q: coords.q, r: coords.r, customProperties: { type: 'grass', discovered: true } });
+      grid.addCell({
+        q: coords.q,
+        r: coords.r,
+        customProperties: { type: 'grass', discovered: true },
+      });
 
       const retrieved = grid.getCellByCoords(coords);
       expect(retrieved).not.toBeNull();
@@ -479,7 +599,11 @@ describe('HexGrid', () => {
       const coords = { q: 1, r: 1, s: -2 };
       expect(grid.hasCellAtCoords(coords)).toBe(false);
 
-      grid.addCell({ q: coords.q, r: coords.r, customProperties: { type: 'terrain', discovered: false } });
+      grid.addCell({
+        q: coords.q,
+        r: coords.r,
+        customProperties: { type: 'terrain', discovered: false },
+      });
       expect(grid.hasCellAtCoords(coords)).toBe(true);
     });
 
@@ -496,9 +620,21 @@ describe('HexGrid', () => {
     test('getBounds works correctly', () => {
       expect(grid.getBounds()).toBeNull(); // Empty grid
 
-      grid.addCell({ q: -5, r: 3, customProperties: { type: 'terrain', biome: 'forest' } });
-      grid.addCell({ q: 2, r: -4, customProperties: { type: 'terrain', biome: 'desert' } });
-      grid.addCell({ q: 1, r: 1, customProperties: { type: 'terrain', biome: 'swamp' } });
+      grid.addCell({
+        q: -5,
+        r: 3,
+        customProperties: { type: 'terrain', biome: 'forest' },
+      });
+      grid.addCell({
+        q: 2,
+        r: -4,
+        customProperties: { type: 'terrain', biome: 'desert' },
+      });
+      grid.addCell({
+        q: 1,
+        r: 1,
+        customProperties: { type: 'terrain', biome: 'swamp' },
+      });
 
       const bounds = grid.getBounds();
       expect(bounds).not.toBeNull();
@@ -516,15 +652,15 @@ describe('HexGrid', () => {
       expect(neighbors).toHaveLength(6);
 
       const expectedNeighbors = [
-        { q: 2, r: 1, s: -3 },   // Southeast
-        { q: 1, r: 0, s: -1 },   // Northeast
-        { q: 0, r: 0, s: -0 },   // North (note: -0 is how JS represents it)
-        { q: 0, r: 1, s: -1 },   // Northwest
-        { q: 1, r: 2, s: -3 },   // Southwest
-        { q: 2, r: 2, s: -4 }    // South
+        { q: 2, r: 1, s: -3 }, // Southeast
+        { q: 1, r: 0, s: -1 }, // Northeast
+        { q: 0, r: 0, s: -0 }, // North (note: -0 is how JS represents it)
+        { q: 0, r: 1, s: -1 }, // Northwest
+        { q: 1, r: 2, s: -3 }, // Southwest
+        { q: 2, r: 2, s: -4 }, // South
       ];
 
-      expectedNeighbors.forEach(expected => {
+      expectedNeighbors.forEach((expected) => {
         expect(neighbors).toContainEqual(expected);
       });
     });

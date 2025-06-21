@@ -6,7 +6,7 @@ module.exports = {
   collectCoverageFrom: [
     'src/core/**/*.ts',
     '!src/rendering/**/*.ts', // Exclude 3D rendering
-    '!**/*.d.ts'
+    '!**/*.d.ts',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
@@ -15,8 +15,8 @@ module.exports = {
       branches: 80,
       functions: 80,
       lines: 80,
-      statements: 80
-    }
+      statements: 80,
+    },
   },
-  verbose: true
+  verbose: true,
 };

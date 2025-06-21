@@ -5,11 +5,13 @@ This document describes how to work with the hexboard monorepo.
 ## Quick Start
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. Build all packages:
+
    ```bash
    npm run build
    ```
@@ -47,6 +49,7 @@ npm run build        # Build for production
 ### Building Everything
 
 From the root directory:
+
 ```bash
 npm run build        # Builds all packages
 npm run clean        # Cleans all build outputs

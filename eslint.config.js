@@ -12,8 +12,8 @@ export default [
       '**/build/**',
       '**/*.d.ts',
       'coverage/**',
-      '**/node_modules/**'
-    ]
+      '**/node_modules/**',
+    ],
   },
   js.configs.recommended,
   {
@@ -22,16 +22,16 @@ export default [
       parser: tsParser,
       parserOptions: {
         ecmaVersion: 'latest',
-        sourceType: 'module'
+        sourceType: 'module',
       },
       globals: {
         console: 'readonly',
-        process: 'readonly'
-      }
+        process: 'readonly',
+      },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
-      prettier
+      prettier,
     },
     rules: {
       // Base ESLint rules
@@ -42,24 +42,30 @@ export default [
       'no-var': 'error',
       'object-shorthand': 'error',
       'prefer-arrow-callback': 'error',
-      
+
       // TypeScript rules
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'error',
-      
+
       // Import organization
-      'sort-imports': ['error', {
-        ignoreCase: false,
-        ignoreDeclarationSort: true,
-        ignoreMemberSort: false,
-        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
-        allowSeparatedGroups: false
-      }],
-      
+      'sort-imports': [
+        'error',
+        {
+          ignoreCase: false,
+          ignoreDeclarationSort: true,
+          ignoreMemberSort: false,
+          memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+          allowSeparatedGroups: false,
+        },
+      ],
+
       // Prettier integration
-      'prettier/prettier': 'error'
-    }
+      'prettier/prettier': 'error',
+    },
   },
   // Test files configuration
   {
@@ -74,9 +80,9 @@ export default [
         afterEach: 'readonly',
         beforeAll: 'readonly',
         afterAll: 'readonly',
-        jest: 'readonly'
-      }
-    }
+        jest: 'readonly',
+      },
+    },
   },
   // Browser environment for apps
   {
@@ -90,8 +96,8 @@ export default [
         MutationObserver: 'readonly',
         HTMLElement: 'readonly',
         Element: 'readonly',
-        Event: 'readonly'
-      }
-    }
-  }
+        Event: 'readonly',
+      },
+    },
+  },
 ];
