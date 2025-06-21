@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Hexboard library and client applications monorepo",
   "private": true,
+  "type": "module",
   "workspaces": [
     "packages/*",
     "apps/*"
@@ -11,12 +12,23 @@
     "build": "npm run build --workspaces",
     "dev": "concurrently \"npm run dev --workspace=packages/hexboard\" \"npm run dev --workspace=apps/hexboard-test\"",
     "test": "npm run test --workspaces",
-    "clean": "npm run clean --workspaces"
+    "clean": "npm run clean --workspaces",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint:format": "npm run lint && npm run format"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
     "@types/node": "^18.0.0",
-    "concurrently": "^8.2.0"
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
+    "concurrently": "^8.2.0",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.0.0"
   },
   "engines": {
     "node": ">=18.0.0",

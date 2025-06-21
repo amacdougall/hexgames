@@ -3,7 +3,9 @@
 
 import { CellDefinition } from '../core/cell';
 
-export interface MapDefaultSettings<CustomProps extends Record<string, any> = {}> {
+export interface MapDefaultSettings<
+  CustomProps extends Record<string, any> = {},
+> {
   elevation: number;
   movementCost: number;
   isImpassable: boolean;

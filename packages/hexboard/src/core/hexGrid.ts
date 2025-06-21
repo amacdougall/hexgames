@@ -38,7 +38,7 @@ export class HexGrid<CustomProps extends object = {}> {
    * @since 1.0
    */
   private createCellId(q: number, r: number, s?: number): string {
-    const actualS = s ?? (-q - r);
+    const actualS = s ?? -q - r;
     return `${q},${r},${actualS}`;
   }
 
@@ -60,12 +60,16 @@ export class HexGrid<CustomProps extends object = {}> {
    * @throws {Error} if the provided s coordinate violates the cubic coordinate constraint
    * @since 1.0
    */
-  private processCellDefinition(definition: CellDefinition<CustomProps>): Cell<CustomProps> {
+  private processCellDefinition(
+    definition: CellDefinition<CustomProps>
+  ): Cell<CustomProps> {
     const coords = axialToCubic(definition.q, definition.r);
 
     // If s is provided, validate it matches the cubic coordinate constraint
     if (definition.s !== undefined && definition.s !== coords.s) {
-      throw new Error(`Invalid hex coordinates: q=${definition.q}, r=${definition.r}, s=${definition.s}. Must satisfy q + r + s = 0`);
+      throw new Error(
+        `Invalid hex coordinates: q=${definition.q}, r=${definition.r}, s=${definition.s}. Must satisfy q + r + s = 0`
+      );
     }
 
     const id = this.createCellId(coords.q, coords.r, coords.s);
@@ -78,7 +82,7 @@ export class HexGrid<CustomProps extends object = {}> {
       elevation: definition.elevation ?? this.defaultElevation,
       movementCost: definition.movementCost ?? this.defaultMovementCost,
       isImpassable: definition.isImpassable ?? this.defaultIsImpassable,
-      customProperties: definition.customProperties ?? ({} as CustomProps)
+      customProperties: definition.customProperties ?? ({} as CustomProps),
     };
   }
 
@@ -104,7 +108,9 @@ export class HexGrid<CustomProps extends object = {}> {
     const cell = this.processCellDefinition(definition);
 
     if (this.cells.has(cell.id)) {
-      throw new Error(`Cell already exists at coordinates q=${cell.q}, r=${cell.r}, s=${cell.s}`);
+      throw new Error(
+        `Cell already exists at coordinates q=${cell.q}, r=${cell.r}, s=${cell.s}`
+      );
     }
 
     this.cells.set(cell.id, cell);
@@ -197,7 +203,12 @@ export class HexGrid<CustomProps extends object = {}> {
    * @returns {Cell<CustomProps> | null} the newly created Cell with updated properties, or null if no cell exists at the specified coordinates
    * @since 1.0
    */
-  updateCell(q: number, r: number, updates: Partial<CellDefinition<CustomProps>>, s?: number): Cell<CustomProps> | null {
+  updateCell(
+    q: number,
+    r: number,
+    updates: Partial<CellDefinition<CustomProps>>,
+    s?: number
+  ): Cell<CustomProps> | null {
     const currentCell = this.getCell(q, r, s);
     if (!currentCell) {
       return null;
@@ -211,7 +222,8 @@ export class HexGrid<CustomProps extends object = {}> {
       elevation: updates.elevation ?? currentCell.elevation,
       movementCost: updates.movementCost ?? currentCell.movementCost,
       isImpassable: updates.isImpassable ?? currentCell.isImpassable,
-      customProperties: updates.customProperties ?? currentCell.customProperties
+      customProperties:
+        updates.customProperties ?? currentCell.customProperties,
     };
 
     // Remove old cell and add updated one
@@ -322,7 +334,9 @@ export class HexGrid<CustomProps extends object = {}> {
    * @returns {Cell<CustomProps>[]} an array containing all cells that satisfy the predicate
    * @since 1.0
    */
-  getCellsWhere(predicate: (cell: Cell<CustomProps>) => boolean): Cell<CustomProps>[] {
+  getCellsWhere(
+    predicate: (cell: Cell<CustomProps>) => boolean
+  ): Cell<CustomProps>[] {
     return this.getAllCells().filter(predicate);
   }
 
@@ -379,15 +393,25 @@ export class HexGrid<CustomProps extends object = {}> {
    * @see isEmpty
    * @since 1.0
    */
-  getBounds(): { minQ: number; maxQ: number; minR: number; maxR: number; minS: number; maxS: number } | null {
+  getBounds(): {
+    minQ: number;
+    maxQ: number;
+    minR: number;
+    maxR: number;
+    minS: number;
+    maxS: number;
+  } | null {
     if (this.isEmpty()) {
       return null;
     }
 
     const cells = this.getAllCells();
-    let minQ = Infinity, maxQ = -Infinity;
-    let minR = Infinity, maxR = -Infinity;
-    let minS = Infinity, maxS = -Infinity;
+    let minQ = Infinity,
+      maxQ = -Infinity;
+    let minR = Infinity,
+      maxR = -Infinity;
+    let minS = Infinity,
+      maxS = -Infinity;
 
     for (const cell of cells) {
       minQ = Math.min(minQ, cell.q);
@@ -407,7 +431,7 @@ export class HexGrid<CustomProps extends object = {}> {
    * <p>This convenience method generates a standard hex pattern that is commonly used for
    * testing, tutorials, or as a starting point for hex-based games. The pattern consists
    * of seven cells total: one at the origin (0,0,0) and six neighbors positioned at the
-   * standard flat-top hexagonal adjacency coordinates (North, Northeast, Southeast, 
+   * standard flat-top hexagonal adjacency coordinates (North, Northeast, Southeast,
    * South, Southwest, Northwest).
    *
    * <p>All cells in the ring will be created with the same elevation if specified, or
@@ -423,28 +447,32 @@ export class HexGrid<CustomProps extends object = {}> {
     const cells: Cell<CustomProps>[] = [];
 
     // Add center cell
-    cells.push(this.addCell({
-      q: 0,
-      r: 0,
-      elevation: centerElevation
-    }));
+    cells.push(
+      this.addCell({
+        q: 0,
+        r: 0,
+        elevation: centerElevation,
+      })
+    );
 
     // Add six surrounding cells (flat-top hex neighbors)
     const neighbors = [
-      { q: 1, r: 0 },   // Southeast
-      { q: 0, r: -1 },  // Northeast
+      { q: 1, r: 0 }, // Southeast
+      { q: 0, r: -1 }, // Northeast
       { q: -1, r: -1 }, // North
-      { q: -1, r: 0 },  // Northwest
-      { q: 0, r: 1 },   // Southwest
-      { q: 1, r: 1 }    // South
+      { q: -1, r: 0 }, // Northwest
+      { q: 0, r: 1 }, // Southwest
+      { q: 1, r: 1 }, // South
     ];
 
     for (const neighbor of neighbors) {
-      cells.push(this.addCell({
-        q: neighbor.q,
-        r: neighbor.r,
-        elevation: centerElevation
-      }));
+      cells.push(
+        this.addCell({
+          q: neighbor.q,
+          r: neighbor.r,
+          elevation: centerElevation,
+        })
+      );
     }
 
     return cells;
@@ -463,18 +491,18 @@ export class HexGrid<CustomProps extends object = {}> {
    */
   getNeighborCoordinates(q: number, r: number): HexCoordinates[] {
     const neighbors = [
-      { q: q + 1, r: r },     // Southeast
-      { q: q, r: r - 1 },     // Northeast
+      { q: q + 1, r }, // Southeast
+      { q, r: r - 1 }, // Northeast
       { q: q - 1, r: r - 1 }, // North
-      { q: q - 1, r: r },     // Northwest
-      { q: q, r: r + 1 },     // Southwest
-      { q: q + 1, r: r + 1 }  // South
+      { q: q - 1, r }, // Northwest
+      { q, r: r + 1 }, // Southwest
+      { q: q + 1, r: r + 1 }, // South
     ];
 
-    return neighbors.map(neighbor => ({
+    return neighbors.map((neighbor) => ({
       q: neighbor.q,
       r: neighbor.r,
-      s: -neighbor.q - neighbor.r
+      s: -neighbor.q - neighbor.r,
     }));
   }
 

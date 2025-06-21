@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three-stdlib';
 import { HexGrid } from '../core/hexGrid';
 import { HexCoordinates } from '../core/coordinates';
-import { hexToWorld, worldToHex } from './layout';
+import { hexToWorld } from './layout';
 
 export class BoardRenderer {
   private hexGrid: HexGrid;
@@ -54,7 +54,7 @@ export class BoardRenderer {
     this.renderer.setSize(800, 600);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.setClearColor(0x87CEEB, 1); // Sky blue background
+    this.renderer.setClearColor(0x87ceeb, 1); // Sky blue background
   }
 
   /**
@@ -71,7 +71,7 @@ export class BoardRenderer {
 
   /**
    * Creates and renders a ground plane for the hex board.
-   * 
+   *
    * @param size - The size of the ground plane (default: 20)
    * @param color - The color of the ground plane (default: 0x808080)
    */
@@ -85,7 +85,7 @@ export class BoardRenderer {
 
     // Create ground plane geometry and material
     const geometry = new THREE.PlaneGeometry(size, size);
-    const material = new THREE.MeshLambertMaterial({ color: color });
+    const material = new THREE.MeshLambertMaterial({ color });
 
     // Create mesh and position the ground plane appropriately
     this.groundPlane = new THREE.Mesh(geometry, material);
@@ -99,24 +99,24 @@ export class BoardRenderer {
 
   /**
    * Gets the color for a hex cell based on its properties.
-   * 
+   *
    * @param cell - The cell to get color for
    * @returns The color as a hexadecimal number
    */
   private getCellColor(cell: any): number {
     if (cell.isImpassable) {
-      return 0x4169E1; // Royal blue for impassable (water)
+      return 0x4169e1; // Royal blue for impassable (water)
     }
 
     // Color based on elevation
     if (cell.elevation > 2) {
-      return 0x8B4513; // Saddle brown for mountains
+      return 0x8b4513; // Saddle brown for mountains
     } else if (cell.elevation > 1.5) {
-      return 0x228B22; // Forest green for hills
+      return 0x228b22; // Forest green for hills
     } else if (cell.elevation > 1) {
-      return 0x9ACD32; // Yellow green for normal terrain
+      return 0x9acd32; // Yellow green for normal terrain
     } else {
-      return 0xF4A460; // Sandy brown for low terrain
+      return 0xf4a460; // Sandy brown for low terrain
     }
   }
 
@@ -124,26 +124,28 @@ export class BoardRenderer {
    * Renders all hexagonal cells from the HexGrid as 3D objects in the scene.
    */
   renderHexGrid(): void {
-    this.hexGrid.getAllCells().forEach(cell => this.renderHexCell(cell));
+    this.hexGrid.getAllCells().forEach((cell) => this.renderHexCell(cell));
   }
 
   /**
    * Renders a specific hexagonal cell at the given coordinates.
-   * 
+   *
    * @param coordinates - The hex coordinates of the cell to render
    */
   renderHexCell(coordinates: HexCoordinates): void {
     // Get cell data from hex grid
     const cell = this.hexGrid.getCellByCoords(coordinates);
     if (!cell) {
-      console.warn(`No cell found at coordinates q=${coordinates.q}, r=${coordinates.r}, s=${coordinates.s}`);
+      console.warn(
+        `No cell found at coordinates q=${coordinates.q}, r=${coordinates.r}, s=${coordinates.s}`
+      );
       return;
     }
 
     // Create 3D mesh for the cell
     const geometry = new THREE.CylinderGeometry(1.0, 1.0, cell.elevation, 6);
     const material = new THREE.MeshLambertMaterial({
-      color: this.getCellColor(cell)
+      color: this.getCellColor(cell),
     });
     const mesh = new THREE.Mesh(geometry, material);
 
@@ -170,7 +172,7 @@ export class BoardRenderer {
 
   /**
    * Removes the rendered mesh for a specific hex cell.
-   * 
+   *
    * @param coordinates - The hex coordinates of the cell to remove
    */
   removeHexCell(coordinates: HexCoordinates): void {
@@ -193,7 +195,7 @@ export class BoardRenderer {
 
   /**
    * Updates the rendered mesh for a specific hex cell.
-   * 
+   *
    * @param coordinates - The hex coordinates of the cell to update
    */
   updateHexCell(coordinates: HexCoordinates): void {
@@ -206,7 +208,7 @@ export class BoardRenderer {
 
   /**
    * Gets the Three.js renderer instance for mounting in DOM.
-   * 
+   *
    * @returns The WebGL renderer instance
    */
   getRenderer(): THREE.WebGLRenderer {
@@ -215,7 +217,7 @@ export class BoardRenderer {
 
   /**
    * Gets the Three.js scene instance.
-   * 
+   *
    * @returns The scene instance
    */
   getScene(): THREE.Scene {
@@ -224,7 +226,7 @@ export class BoardRenderer {
 
   /**
    * Gets the Three.js camera instance.
-   * 
+   *
    * @returns The camera instance
    */
   getCamera(): THREE.PerspectiveCamera {
@@ -233,7 +235,7 @@ export class BoardRenderer {
 
   /**
    * Gets the OrbitControls instance.
-   * 
+   *
    * @returns The controls instance
    */
   getControls(): OrbitControls {
@@ -250,7 +252,7 @@ export class BoardRenderer {
 
   /**
    * Sets the size of the renderer and updates camera aspect ratio.
-   * 
+   *
    * @param width - The width of the renderer
    * @param height - The height of the renderer
    */
@@ -289,7 +291,7 @@ export class BoardRenderer {
 
   /**
    * Creates a coordinate key string for use in the hexMeshes map.
-   * 
+   *
    * @param coordinates - The hex coordinates
    * @returns A string key in format "q,r"
    */
