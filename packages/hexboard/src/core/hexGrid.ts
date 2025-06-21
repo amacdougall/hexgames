@@ -335,7 +335,7 @@ export class HexGrid<CustomProps extends object = {}> {
    * @since 1.0
    */
   getCellsWhere(
-    predicate: (cell: Cell<CustomProps>) => boolean
+    predicate: (_cell: Cell<CustomProps>) => boolean
   ): Cell<CustomProps>[] {
     return this.getAllCells().filter(predicate);
   }

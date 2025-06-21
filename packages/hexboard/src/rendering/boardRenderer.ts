@@ -5,10 +5,11 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three-stdlib';
 import { HexGrid } from '../core/hexGrid';
 import { HexCoordinates } from '../core/coordinates';
+import { Cell } from '../core/cell';
 import { hexToWorld } from './layout';
 
-export class BoardRenderer {
-  private hexGrid: HexGrid;
+export class BoardRenderer<CustomProps extends object = Record<string, never>> {
+  private hexGrid: HexGrid<CustomProps>;
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
@@ -16,7 +17,7 @@ export class BoardRenderer {
   private groundPlane: THREE.Mesh | null = null;
   private hexMeshes: Map<string, THREE.Mesh> = new Map();
 
-  constructor(hexGrid: HexGrid) {
+  constructor(hexGrid: HexGrid<CustomProps>) {
     this.hexGrid = hexGrid;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera();
@@ -103,7 +104,7 @@ export class BoardRenderer {
    * @param cell - The cell to get color for
    * @returns The color as a hexadecimal number
    */
-  private getCellColor(cell: any): number {
+  private getCellColor(cell: Cell<unknown>): number {
     if (cell.isImpassable) {
       return 0x4169e1; // Royal blue for impassable (water)
     }
@@ -267,7 +268,7 @@ export class BoardRenderer {
    */
   dispose(): void {
     // Remove all hex meshes from scene and dispose geometries/materials
-    for (const [key, mesh] of this.hexMeshes) {
+    for (const [, mesh] of this.hexMeshes) {
       this.scene.remove(mesh);
       mesh.geometry.dispose();
       (mesh.material as THREE.Material).dispose();
