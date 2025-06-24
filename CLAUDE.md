@@ -29,6 +29,10 @@ cd packages/hexboard && npm run dev
 
 # Start test application
 cd apps/hexboard-test && npm run dev
+
+# Lint, format
+npm run lint
+npm run format # okay to auto-apply format
 ```
 
 ### Testing
@@ -112,3 +116,11 @@ This is a **TypeScript monorepo** for hexagonal grid-based games using npm works
 2. Build library: `cd packages/hexboard && npm run build`
 3. Test app automatically picks up changes via workspace linking
 4. View live demo: `cd apps/hexboard-test && npm run dev`
+
+### Development practices
+
+After every code change:
+
+* no lint errors
+* no format errors (`npm run format:check`)
+* all tests pass
