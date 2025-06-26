@@ -7,6 +7,10 @@ import { HexGrid } from '../core/hexGrid';
 import { HexCoordinates } from '../core/coordinates';
 import { Cell } from '../core/cell';
 import { hexToWorld } from './layout';
+import {
+  CellColorStrategy,
+  DefaultCellColorStrategy,
+} from './cellColorStrategy';
 
 export class BoardRenderer<CustomProps extends object = Record<string, never>> {
   private hexGrid: HexGrid<CustomProps>;
@@ -16,9 +20,20 @@ export class BoardRenderer<CustomProps extends object = Record<string, never>> {
   private controls: OrbitControls;
   private groundPlane: THREE.Mesh | null = null;
   private hexMeshes: Map<string, THREE.Mesh> = new Map();
+  private colorStrategy: CellColorStrategy<CustomProps>;
 
-  constructor(hexGrid: HexGrid<CustomProps>) {
+  /**
+   * Creates a new BoardRenderer for rendering hex grids in 3D.
+   *
+   * @param hexGrid - The hex grid to render
+   * @param colorStrategy - Optional color strategy for cell coloring. Defaults to DefaultCellColorStrategy
+   */
+  constructor(
+    hexGrid: HexGrid<CustomProps>,
+    colorStrategy?: CellColorStrategy<CustomProps>
+  ) {
     this.hexGrid = hexGrid;
+    this.colorStrategy = colorStrategy || new DefaultCellColorStrategy();
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera();
     this.renderer = new THREE.WebGLRenderer();
@@ -99,26 +114,13 @@ export class BoardRenderer<CustomProps extends object = Record<string, never>> {
   }
 
   /**
-   * Gets the color for a hex cell based on its properties.
+   * Gets the color for a hex cell using the configured color strategy.
    *
    * @param cell - The cell to get color for
    * @returns The color as a hexadecimal number
    */
-  private getCellColor(cell: Cell<unknown>): number {
-    if (cell.isImpassable) {
-      return 0x4169e1; // Royal blue for impassable (water)
-    }
-
-    // Color based on elevation
-    if (cell.elevation > 2) {
-      return 0x8b4513; // Saddle brown for mountains
-    } else if (cell.elevation > 1.5) {
-      return 0x228b22; // Forest green for hills
-    } else if (cell.elevation > 1) {
-      return 0x9acd32; // Yellow green for normal terrain
-    } else {
-      return 0xf4a460; // Sandy brown for low terrain
-    }
+  private getCellColor(cell: Cell<CustomProps>): number {
+    return this.colorStrategy.getCellColor(cell);
   }
 
   /**
@@ -241,6 +243,24 @@ export class BoardRenderer<CustomProps extends object = Record<string, never>> {
    */
   getControls(): OrbitControls {
     return this.controls;
+  }
+
+  /**
+   * Sets the color strategy used for rendering cell colors.
+   *
+   * @param strategy - The new color strategy to use
+   */
+  setColorStrategy(strategy: CellColorStrategy<CustomProps>): void {
+    this.colorStrategy = strategy;
+  }
+
+  /**
+   * Gets the current color strategy being used for cell coloring.
+   *
+   * @returns The current color strategy instance
+   */
+  getColorStrategy(): CellColorStrategy<CustomProps> {
+    return this.colorStrategy;
   }
 
   /**

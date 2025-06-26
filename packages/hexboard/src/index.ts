@@ -7,3 +7,8 @@ export { BoardRenderer } from './rendering/boardRenderer';
 export { Cell, CellDefinition } from './core/cell';
 export { Entity } from './core/entity';
 export * from './core/coordinates';
+export {
+  CellColorStrategy,
+  DefaultCellColorStrategy,
+  ElevationColorStrategy,
+} from './rendering/cellColorStrategy';
