@@ -1,7 +1,8 @@
 // Test application main entry point
 // This will demonstrate hexboard library usage
 
-import { HexGrid, BoardRenderer } from 'hexboard';
+import { HexGrid, BoardRenderer, DefaultCellColorStrategy, ElevationColorStrategy } from 'hexboard';
+import { GameColorStrategy, BiomeColorStrategy } from './gameColorStrategy.js';
 
 console.log('Hexboard test application starting...');
 
@@ -17,7 +18,7 @@ hexGrid.addCell({
   q: 2,
   r: 0,
   elevation: 2,
-  customProperties: { id: 'mountain-cell', type: 'mountain' },
+  customProperties: { id: 'mountain-cell', type: 'mountain', owner: 'player1' },
 });
 
 hexGrid.addCell({
@@ -33,7 +34,23 @@ hexGrid.addCell({
   r: 1,
   elevation: 1.5,
   movementCost: 2,
-  customProperties: { id: 'forest-cell', type: 'forest' },
+  customProperties: { id: 'forest-cell', type: 'forest', owner: 'player2' },
+});
+
+// Add a special cell with game state
+hexGrid.addCell({
+  q: 2,
+  r: 1,
+  elevation: 1.2,
+  customProperties: { id: 'special-cell', type: 'plains', state: 'selected' },
+});
+
+// Add contested territory
+hexGrid.addCell({
+  q: -1,
+  r: 2,
+  elevation: 1.0,
+  customProperties: { id: 'contested-cell', type: 'plains', state: 'contested' },
 });
 
 // Add a cluster of cells to demonstrate larger grids
@@ -58,13 +75,79 @@ for (let q = -1; q <= 1; q++) {
 
 console.log('Total cells in grid:', hexGrid.getAllCells().length);
 
-// Create BoardRenderer with the hex grid
-const renderer = new BoardRenderer(hexGrid);
-console.log('BoardRenderer created successfully');
+// Create different color strategies for demonstration
+const gameStrategy = new GameColorStrategy();
+const biomeStrategy = new BiomeColorStrategy();
+const defaultStrategy = new DefaultCellColorStrategy();
+const elevationStrategy = new ElevationColorStrategy();
+
+// Create BoardRenderer with the game-specific color strategy
+const renderer = new BoardRenderer(hexGrid, gameStrategy);
+console.log('BoardRenderer created with GameColorStrategy');
 
 // Set up the renderer in the DOM
 const gameContainer = document.getElementById('app')!;
 gameContainer.appendChild(renderer.getRenderer().domElement);
+
+// Add strategy switching UI controls
+const controlsDiv = document.createElement('div');
+controlsDiv.style.position = 'absolute';
+controlsDiv.style.top = '10px';
+controlsDiv.style.left = '10px';
+controlsDiv.style.zIndex = '1000';
+controlsDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+controlsDiv.style.color = 'white';
+controlsDiv.style.padding = '10px';
+controlsDiv.style.borderRadius = '5px';
+controlsDiv.style.fontFamily = 'monospace';
+
+const title = document.createElement('div');
+title.textContent = 'Color Strategy:';
+title.style.marginBottom = '10px';
+title.style.fontWeight = 'bold';
+controlsDiv.appendChild(title);
+
+// Strategy buttons
+const strategies = [
+  { name: 'Game Strategy', strategy: gameStrategy, description: 'Owner/terrain/state based' },
+  { name: 'Biome Strategy', strategy: biomeStrategy, description: 'Climate zones' },
+  { name: 'Default Strategy', strategy: defaultStrategy, description: 'Original elevation' },
+  { name: 'Elevation Strategy', strategy: elevationStrategy, description: 'Simple elevation' },
+];
+
+let currentStrategyIndex = 0;
+
+strategies.forEach((strategyInfo, index) => {
+  const button = document.createElement('button');
+  button.textContent = strategyInfo.name;
+  button.title = strategyInfo.description;
+  button.style.display = 'block';
+  button.style.margin = '2px 0';
+  button.style.padding = '5px 10px';
+  button.style.backgroundColor = index === currentStrategyIndex ? '#007acc' : '#333';
+  button.style.color = 'white';
+  button.style.border = 'none';
+  button.style.borderRadius = '3px';
+  button.style.cursor = 'pointer';
+  
+  button.addEventListener('click', () => {
+    // Update button states
+    controlsDiv.querySelectorAll('button').forEach((btn, idx) => {
+      btn.style.backgroundColor = idx === index ? '#007acc' : '#333';
+    });
+    
+    // Switch strategy
+    renderer.setColorStrategy(strategyInfo.strategy);
+    renderer.renderHexGrid(); // Re-render with new colors
+    currentStrategyIndex = index;
+    
+    console.log(`Switched to ${strategyInfo.name}: ${strategyInfo.description}`);
+  });
+  
+  controlsDiv.appendChild(button);
+});
+
+gameContainer.appendChild(controlsDiv);
 
 // Set renderer size to be responsive
 const resizeRenderer = () => {
@@ -85,6 +168,18 @@ console.log('- renderGroundPlane() called');
 // Test hex grid rendering
 renderer.renderHexGrid();
 console.log('- renderHexGrid() called');
+
+// Demonstrate different strategies with sample cells
+console.log('\nColor Strategy Demonstration:');
+const sampleCells = hexGrid.getAllCells().slice(0, 5);
+
+sampleCells.forEach(cell => {
+  console.log(`\nCell at (${cell.q}, ${cell.r}) - elevation: ${cell.elevation}, properties:`, cell.customProperties);
+  console.log(`  Game Strategy: #${gameStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`);
+  console.log(`  Biome Strategy: #${biomeStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`);
+  console.log(`  Default Strategy: #${defaultStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`);
+  console.log(`  Elevation Strategy: #${elevationStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`);
+});
 
 // Test individual cell rendering (add a special cell)
 renderer.renderHexCell({ q: 3, r: 0, s: -3 });
