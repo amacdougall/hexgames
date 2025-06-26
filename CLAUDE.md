@@ -124,3 +124,8 @@ After every code change:
 * no lint errors
 * no format errors (`npm run format:check`)
 * all tests pass
+
+### Development tips
+
+When running `git diff`, add `--no-pager` so you can see the full diff output.
+Remember that the command is `git --no-pager ...`.
