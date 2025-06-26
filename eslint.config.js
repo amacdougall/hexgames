@@ -43,10 +43,19 @@ export default [
       'object-shorthand': 'error',
       'prefer-arrow-callback': 'error',
 
+      // Disable base rule in favor of TypeScript version
+      'no-unused-vars': 'off',
+
       // TypeScript rules
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' },
+        { 
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          ignoreRestSiblings: true
+        },
       ],
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'error',
