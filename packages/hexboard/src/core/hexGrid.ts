@@ -84,7 +84,7 @@ export class HexGrid<
       elevation: definition.elevation ?? this.defaultElevation,
       movementCost: definition.movementCost ?? this.defaultMovementCost,
       isImpassable: definition.isImpassable ?? this.defaultIsImpassable,
-      customProperties: definition.customProperties ?? ({} as CustomProps),
+      customProps: definition.customProps ?? ({} as CustomProps),
     };
   }
 
@@ -224,8 +224,7 @@ export class HexGrid<
       elevation: updates.elevation ?? currentCell.elevation,
       movementCost: updates.movementCost ?? currentCell.movementCost,
       isImpassable: updates.isImpassable ?? currentCell.isImpassable,
-      customProperties:
-        updates.customProperties ?? currentCell.customProperties,
+      customProps: updates.customProps ?? currentCell.customProps,
     };
 
     // Remove old cell and add updated one

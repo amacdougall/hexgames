@@ -19,7 +19,7 @@ describe('Cell Color Strategy System', () => {
         elevation: 1,
         isImpassable: false,
         movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(mockCell)).toBe(0x000000);
@@ -33,7 +33,7 @@ describe('Cell Color Strategy System', () => {
 
       class FactionStrategy implements CellColorStrategy<GameProps> {
         getCellColor(cell: Cell<GameProps>): number {
-          switch (cell.customProperties.faction) {
+          switch (cell.customProps.faction) {
             case 'player': return 0x00ff00; // Green
             case 'enemy': return 0xff0000;  // Red
             default: return 0x808080;       // Gray
@@ -45,17 +45,17 @@ describe('Cell Color Strategy System', () => {
       const playerCell: Cell<GameProps> = {
         q: 0, r: 0, s: 0, id: 'player-cell',
         elevation: 1, isImpassable: false, movementCost: 1,
-        customProperties: { faction: 'player' }
+        customProps: { faction: 'player' }
       };
       const enemyCell: Cell<GameProps> = {
         q: 1, r: 0, s: -1, id: 'enemy-cell',
         elevation: 1, isImpassable: false, movementCost: 1,
-        customProperties: { faction: 'enemy' }
+        customProps: { faction: 'enemy' }
       };
       const neutralCell: Cell<GameProps> = {
         q: 0, r: 1, s: -1, id: 'neutral-cell',
         elevation: 1, isImpassable: false, movementCost: 1,
-        customProperties: { faction: 'neutral' }
+        customProps: { faction: 'neutral' }
       };
 
       expect(strategy.getCellColor(playerCell)).toBe(0x00ff00);
@@ -75,7 +75,7 @@ describe('Cell Color Strategy System', () => {
       const waterCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'water',
         elevation: 0.5, isImpassable: true, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(waterCell)).toBe(0x4169e1); // Royal blue
@@ -85,7 +85,7 @@ describe('Cell Color Strategy System', () => {
       const mountainCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'mountain',
         elevation: 3, isImpassable: false, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(mountainCell)).toBe(0x8b4513); // Saddle brown
@@ -95,7 +95,7 @@ describe('Cell Color Strategy System', () => {
       const hillCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'hill',
         elevation: 2, isImpassable: false, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(hillCell)).toBe(0x228b22); // Forest green
@@ -105,7 +105,7 @@ describe('Cell Color Strategy System', () => {
       const normalCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'normal',
         elevation: 1.2, isImpassable: false, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(normalCell)).toBe(0x9acd32); // Yellow green
@@ -115,7 +115,7 @@ describe('Cell Color Strategy System', () => {
       const lowCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'low',
         elevation: 0.8, isImpassable: false, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(lowCell)).toBe(0xf4a460); // Sandy brown
@@ -125,7 +125,7 @@ describe('Cell Color Strategy System', () => {
       const impassableHighCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'impassable-high',
         elevation: 5, isImpassable: true, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(impassableHighCell)).toBe(0x4169e1); // Royal blue (water)
@@ -148,7 +148,7 @@ describe('Cell Color Strategy System', () => {
         const cell: Cell<Record<string, never>> = {
           q: 0, r: 0, s: 0, id: `elevation-${elevation}`,
           elevation, isImpassable: false, movementCost: 1,
-          customProperties: {}
+          customProps: {}
         };
         expect(strategy.getCellColor(cell)).toBe(expected);
       });
@@ -166,7 +166,7 @@ describe('Cell Color Strategy System', () => {
       const veryHighCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'very-high',
         elevation: 4, isImpassable: false, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(veryHighCell)).toBe(0x654321); // Dark brown
@@ -176,7 +176,7 @@ describe('Cell Color Strategy System', () => {
       const highCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'high',
         elevation: 2.5, isImpassable: false, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(highCell)).toBe(0x8b4513); // Brown
@@ -186,7 +186,7 @@ describe('Cell Color Strategy System', () => {
       const mediumCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'medium',
         elevation: 1.5, isImpassable: false, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(mediumCell)).toBe(0x228b22); // Green
@@ -196,7 +196,7 @@ describe('Cell Color Strategy System', () => {
       const lowCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'low',
         elevation: 0.5, isImpassable: false, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(lowCell)).toBe(0x4169e1); // Blue
@@ -206,7 +206,7 @@ describe('Cell Color Strategy System', () => {
       const impassableCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'impassable',
         elevation: 2.5, isImpassable: true, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       // Should still use elevation-based coloring, not treat as water
@@ -229,7 +229,7 @@ describe('Cell Color Strategy System', () => {
         const cell: Cell<Record<string, never>> = {
           q: 0, r: 0, s: 0, id: `elevation-${elevation}`,
           elevation, isImpassable: false, movementCost: 1,
-          customProperties: {}
+          customProps: {}
         };
         expect(strategy.getCellColor(cell)).toBe(expected);
       });
@@ -239,7 +239,7 @@ describe('Cell Color Strategy System', () => {
       const extremeCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'extreme',
         elevation: 1000, isImpassable: false, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       expect(strategy.getCellColor(extremeCell)).toBe(0x654321); // Dark brown for very high
@@ -255,7 +255,7 @@ describe('Cell Color Strategy System', () => {
 
       class BiomeStrategy implements CellColorStrategy<CustomProps> {
         getCellColor(cell: Cell<CustomProps>): number {
-          const { biome, temperature } = cell.customProperties;
+          const { biome, temperature } = cell.customProps;
           
           if (biome === 'desert') {
             return temperature > 30 ? 0xffd700 : 0xdaa520; // Gold or darker gold
@@ -273,7 +273,7 @@ describe('Cell Color Strategy System', () => {
       const desertCell: Cell<CustomProps> = {
         q: 0, r: 0, s: 0, id: 'desert',
         elevation: 1, isImpassable: false, movementCost: 1,
-        customProperties: { biome: 'desert', temperature: 35 }
+        customProps: { biome: 'desert', temperature: 35 }
       };
 
       expect(strategy.getCellColor(desertCell)).toBe(0xffd700);
@@ -286,7 +286,7 @@ describe('Cell Color Strategy System', () => {
       const testCell: Cell<Record<string, never>> = {
         q: 0, r: 0, s: 0, id: 'test',
         elevation: 2.5, isImpassable: false, movementCost: 1,
-        customProperties: {}
+        customProps: {}
       };
 
       // Different strategies should give different results for the same cell

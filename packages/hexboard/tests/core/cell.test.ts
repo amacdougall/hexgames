@@ -20,26 +20,26 @@ describe('Cell System', () => {
       expect(definition.elevation).toBeUndefined();
       expect(definition.movementCost).toBeUndefined();
       expect(definition.isImpassable).toBeUndefined();
-      expect(definition.customProperties).toBeUndefined();
+      expect(definition.customProps).toBeUndefined();
     });
 
     test('supports custom properties', () => {
       const definition: CellDefinition<TestProps> = {
         q: 0,
         r: 0,
-        customProperties: {
+        customProps: {
           type: 'forest',
           resources: ['wood', 'berries'],
           owner: 'player1',
         },
       };
 
-      expect(definition.customProperties?.type).toBe('forest');
-      expect(definition.customProperties?.resources).toEqual([
+      expect(definition.customProps?.type).toBe('forest');
+      expect(definition.customProps?.resources).toEqual([
         'wood',
         'berries',
       ]);
-      expect(definition.customProperties?.owner).toBe('player1');
+      expect(definition.customProps?.owner).toBe('player1');
     });
 
     test('handles optional properties correctly', () => {
@@ -56,7 +56,7 @@ describe('Cell System', () => {
         elevation: 2.5,
         movementCost: 3,
         isImpassable: true,
-        customProperties: {
+        customProps: {
           type: 'mountain',
           resources: ['stone'],
           owner: 'neutral',
@@ -69,7 +69,7 @@ describe('Cell System', () => {
       expect(fullDef.elevation).toBe(2.5);
       expect(fullDef.movementCost).toBe(3);
       expect(fullDef.isImpassable).toBe(true);
-      expect(fullDef.customProperties?.type).toBe('mountain');
+      expect(fullDef.customProps?.type).toBe('mountain');
     });
   });
 
@@ -83,7 +83,7 @@ describe('Cell System', () => {
         elevation: 1.5,
         movementCost: 2,
         isImpassable: false,
-        customProperties: {
+        customProps: {
           type: 'grassland',
         },
       };
@@ -106,7 +106,7 @@ describe('Cell System', () => {
         elevation: 1,
         movementCost: 1,
         isImpassable: false,
-        customProperties: {},
+        customProps: {},
       };
 
       // Test all required Cell properties exist
@@ -114,7 +114,7 @@ describe('Cell System', () => {
       expect(typeof cell.elevation).toBe('number');
       expect(typeof cell.movementCost).toBe('number');
       expect(typeof cell.isImpassable).toBe('boolean');
-      expect(typeof cell.customProperties).toBe('object');
+      expect(typeof cell.customProps).toBe('object');
 
       // Test specific values
       expect(cell.id).toBe('0,0,0');
@@ -138,18 +138,18 @@ describe('Cell System', () => {
         elevation: 3,
         movementCost: 4,
         isImpassable: true,
-        customProperties: {
+        customProps: {
           terrain: 'mountain',
           buildable: false,
           resources: ['iron', 'coal'],
         },
       };
 
-      expect(cell.customProperties.terrain).toBe('mountain');
-      expect(cell.customProperties.buildable).toBe(false);
-      expect(cell.customProperties.resources).toEqual(['iron', 'coal']);
+      expect(cell.customProps.terrain).toBe('mountain');
+      expect(cell.customProps.buildable).toBe(false);
+      expect(cell.customProps.resources).toEqual(['iron', 'coal']);
 
-      // TypeScript should enforce that customProperties matches GameProps
+      // TypeScript should enforce that customProps matches GameProps
       // This is validated at compile time, not runtime
     });
   });
@@ -167,7 +167,7 @@ describe('Cell System', () => {
         elevation: 1,
         movementCost: 1,
         isImpassable: false,
-        customProperties: { name: 'test' },
+        customProps: { name: 'test' },
       };
 
       const cellWithInterface: Cell<TestProps> = {
@@ -178,11 +178,11 @@ describe('Cell System', () => {
         elevation: 1,
         movementCost: 1,
         isImpassable: false,
-        customProperties: { type: 'forest' },
+        customProps: { type: 'forest' },
       };
 
-      expect(cellWithObject.customProperties.name).toBe('test');
-      expect(cellWithInterface.customProperties.type).toBe('forest');
+      expect(cellWithObject.customProps.name).toBe('test');
+      expect(cellWithInterface.customProps.type).toBe('forest');
 
       // The constraint CustomProps extends object is enforced by TypeScript
       // at compile time. Primitive types like string, number, boolean would
@@ -223,7 +223,7 @@ describe('Cell System', () => {
         elevation: 2,
         movementCost: 3,
         isImpassable: false,
-        customProperties: {
+        customProps: {
           metadata: {
             discovered: true,
             lastVisited: new Date('2023-01-01'),
@@ -257,27 +257,27 @@ describe('Cell System', () => {
       };
 
       // Test nested properties
-      expect(complexCell.customProperties.metadata.discovered).toBe(true);
-      expect(complexCell.customProperties.metadata.notes).toHaveLength(2);
-      expect(complexCell.customProperties.gameplay.spawnPoint).toBe(true);
-      expect(complexCell.customProperties.gameplay.specialRules?.[0].name).toBe(
+      expect(complexCell.customProps.metadata.discovered).toBe(true);
+      expect(complexCell.customProps.metadata.notes).toHaveLength(2);
+      expect(complexCell.customProps.gameplay.spawnPoint).toBe(true);
+      expect(complexCell.customProps.gameplay.specialRules?.[0].name).toBe(
         'Magical Sanctuary'
       );
-      expect(complexCell.customProperties.visuals.texturePath).toBe(
+      expect(complexCell.customProps.visuals.texturePath).toBe(
         '/textures/ancient_ruins.png'
       );
-      expect(complexCell.customProperties.visuals.effects?.[0].type).toBe(
+      expect(complexCell.customProps.visuals.effects?.[0].type).toBe(
         'glow'
       );
 
       // Test optional properties
-      expect(complexCell.customProperties.metadata.lastVisited).toBeInstanceOf(
+      expect(complexCell.customProps.metadata.lastVisited).toBeInstanceOf(
         Date
       );
-      expect(complexCell.customProperties.gameplay.specialRules).toHaveLength(
+      expect(complexCell.customProps.gameplay.specialRules).toHaveLength(
         1
       );
-      expect(complexCell.customProperties.visuals.animations).toContain(
+      expect(complexCell.customProps.visuals.animations).toContain(
         'glow_pulse'
       );
     });

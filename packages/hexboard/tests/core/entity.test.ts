@@ -19,7 +19,7 @@ describe('Entity', () => {
         elevation: 0,
         movementCost: 1,
         isImpassable: false,
-        customProperties: {}
+        customProps: {}
       };
 
       const entityDef: EntityDefinition = {
@@ -32,7 +32,7 @@ describe('Entity', () => {
       expect(entityDef.type).toBe('warrior');
       expect(entityDef.cellPosition).toBe(testCell);
       expect(entityDef.movementSpeed).toBeUndefined();
-      expect(entityDef.customProperties).toBeUndefined();
+      expect(entityDef.customProps).toBeUndefined();
     });
 
     it('should create an entity definition with custom properties', () => {
@@ -44,17 +44,17 @@ describe('Entity', () => {
         elevation: 0,
         movementCost: 1,
         isImpassable: false,
-        customProperties: { health: 100, level: 1, terrain: 'forest' }
+        customProps: { health: 100, level: 1, terrain: 'forest' }
       };
 
       const entityDef: EntityDefinition<TestCustomProps> = {
         id: 'custom-entity',
         type: 'mage',
         cellPosition: testCell,
-        customProperties: { health: 80, level: 5, name: 'Gandalf' }
+        customProps: { health: 80, level: 5, name: 'Gandalf' }
       };
 
-      expect(entityDef.customProperties).toEqual({
+      expect(entityDef.customProps).toEqual({
         health: 80,
         level: 5,
         name: 'Gandalf'
@@ -70,7 +70,7 @@ describe('Entity', () => {
         elevation: 0,
         movementCost: 1,
         isImpassable: false,
-        customProperties: {}
+        customProps: {}
       };
 
       const entityDefWithSpeed: EntityDefinition = {
@@ -101,7 +101,7 @@ describe('Entity', () => {
         elevation: 0,
         movementCost: 1,
         isImpassable: false,
-        customProperties: { health: 100, level: 1, terrain: 'grass' }
+        customProps: { health: 100, level: 1, terrain: 'grass' }
       };
 
       const entity: Entity<TestCustomProps> = {
@@ -126,7 +126,7 @@ describe('Entity', () => {
         elevation: 0,
         movementCost: 1,
         isImpassable: false,
-        customProperties: {}
+        customProps: {}
       };
 
       const entity: Entity = {
@@ -148,7 +148,7 @@ describe('Entity', () => {
         elevation: 0,
         movementCost: 1,
         isImpassable: false,
-        customProperties: { health: 100, level: 1, terrain: 'grass' }
+        customProps: { health: 100, level: 1, terrain: 'grass' }
       };
 
       const customProps = { health: 75, level: 4, name: 'Hero' };
@@ -159,7 +159,7 @@ describe('Entity', () => {
         movementSpeed: 3
       };
 
-      expect(entity.cellPosition.customProperties).toEqual({ health: 100, level: 1, terrain: 'grass' });
+      expect(entity.cellPosition.customProps).toEqual({ health: 100, level: 1, terrain: 'grass' });
     });
   });
 });
@@ -179,7 +179,7 @@ describe('EntityManager', () => {
       elevation: 0,
       movementCost: 1,
       isImpassable: false,
-      customProperties: {}
+      customProps: {}
     };
     testCell2 = {
       q: 1,
@@ -189,7 +189,7 @@ describe('EntityManager', () => {
       elevation: 0,
       movementCost: 1,
       isImpassable: false,
-      customProperties: {}
+      customProps: {}
     };
   });
 
@@ -281,13 +281,13 @@ describe('EntityManager', () => {
         elevation: 0,
         movementCost: 1,
         isImpassable: false,
-        customProperties: { health: 100, level: 1, terrain: 'grass' }
+        customProps: { health: 100, level: 1, terrain: 'grass' }
       };
       const entityDef: EntityDefinition<TestCustomProps> = {
         id: 'custom-entity',
         type: 'hero',
         cellPosition: customTestCell,
-        customProperties: customProps
+        customProps: customProps
       };
 
       const entity = entityManager.addEntity(entityDef);
@@ -494,7 +494,7 @@ describe('EntityManager', () => {
       const movedEntity = entityManager.getEntity('lifecycle-entity');
       expect(movedEntity!.cellPosition).toBe(testCell2);
 
-      const thirdCell: Cell = { q: -1, r: 1, s: 0, id: '-1,1', elevation: 0, movementCost: 1, isImpassable: false, customProperties: {} };
+      const thirdCell: Cell = { q: -1, r: 1, s: 0, id: '-1,1', elevation: 0, movementCost: 1, isImpassable: false, customProps: {} };
       entityManager.moveEntity('lifecycle-entity', thirdCell);
       const finalEntity = entityManager.getEntity('lifecycle-entity');
       expect(finalEntity!.cellPosition).toBe(thirdCell);
@@ -536,19 +536,19 @@ describe('EntityManager', () => {
         elevation: 0,
         movementCost: 1,
         isImpassable: false,
-        customProperties: { health: 100, level: 1, terrain: 'grass' }
+        customProps: { health: 100, level: 1, terrain: 'grass' }
       };
 
       const entityDef: EntityDefinition<TestCustomProps> = {
         id: 'typed-entity',
         type: 'hero',
         cellPosition: testCell,
-        customProperties: { health: 90, level: 5 }
+        customProps: { health: 90, level: 5 }
       };
 
       const entity = entityManager.addEntity(entityDef);
-      expect(entity.cellPosition.customProperties.health).toBe(100);
-      expect(entity.cellPosition.customProperties.level).toBe(1);
+      expect(entity.cellPosition.customProps.health).toBe(100);
+      expect(entity.cellPosition.customProps.level).toBe(1);
     });
 
     it('should enforce custom property types', () => {
@@ -561,20 +561,20 @@ describe('EntityManager', () => {
         elevation: 0,
         movementCost: 1,
         isImpassable: false,
-        customProperties: { health: 100, level: 1, terrain: 'grass' }
+        customProps: { health: 100, level: 1, terrain: 'grass' }
       };
 
       const entityDef: EntityDefinition<TestCustomProps> = {
         id: 'typed-entity-2',
         type: 'warrior',
         cellPosition: testCell,
-        customProperties: { health: 85, level: 3, name: 'TypedWarrior' }
+        customProps: { health: 85, level: 3, name: 'TypedWarrior' }
       };
 
       const entity = entityManager.addEntity(entityDef);
-      expect(typeof entity.cellPosition.customProperties.health).toBe('number');
-      expect(typeof entity.cellPosition.customProperties.level).toBe('number');
-      expect(typeof entity.cellPosition.customProperties.terrain).toBe('string');
+      expect(typeof entity.cellPosition.customProps.health).toBe('number');
+      expect(typeof entity.cellPosition.customProps.level).toBe('number');
+      expect(typeof entity.cellPosition.customProps.terrain).toBe('string');
     });
   });
 });

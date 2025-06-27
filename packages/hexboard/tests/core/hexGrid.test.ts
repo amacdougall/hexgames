@@ -27,7 +27,7 @@ describe('HexGrid', () => {
       const cell = customGrid.addCell({
         q: 0,
         r: 0,
-        customProperties: { type: 'grass' },
+        customProps: { type: 'grass' },
       });
       expect(cell.elevation).toBe(2.5);
       expect(cell.movementCost).toBe(3);
@@ -41,27 +41,27 @@ describe('HexGrid', () => {
         q: 1,
         r: 0,
         elevation: 2,
-        customProperties: { type: 'mountain' },
+        customProps: { type: 'mountain' },
       });
 
       expect(cell.q).toBe(1);
       expect(cell.r).toBe(0);
       expect(cell.s).toBe(-1);
       expect(cell.elevation).toBe(2);
-      expect(cell.customProperties.type).toBe('mountain');
+      expect(cell.customProps.type).toBe('mountain');
       expect(grid.size()).toBe(1);
     });
 
     test('prevents duplicate cells', () => {
-      grid.addCell({ q: 0, r: 0, customProperties: { type: 'grass' } });
+      grid.addCell({ q: 0, r: 0, customProps: { type: 'grass' } });
 
       expect(() => {
-        grid.addCell({ q: 0, r: 0, customProperties: { type: 'mountain' } });
+        grid.addCell({ q: 0, r: 0, customProps: { type: 'mountain' } });
       }).toThrow('Cell already exists at coordinates q=0, r=0, s=0');
     });
 
     test('removes cells correctly', () => {
-      grid.addCell({ q: 1, r: 0, customProperties: { type: 'forest' } });
+      grid.addCell({ q: 1, r: 0, customProps: { type: 'forest' } });
       expect(grid.size()).toBe(1);
 
       const removed = grid.removeCell(1, 0);
@@ -79,19 +79,19 @@ describe('HexGrid', () => {
         r: 0,
         elevation: 1,
         isImpassable: false,
-        customProperties: { type: 'grass' },
+        customProps: { type: 'grass' },
       });
 
       const updatedCell = grid.updateCell(0, 0, {
         elevation: 3,
         isImpassable: true,
-        customProperties: { type: 'mountain' },
+        customProps: { type: 'mountain' },
       });
 
       expect(updatedCell).not.toBeNull();
       expect(updatedCell!.elevation).toBe(3);
       expect(updatedCell!.isImpassable).toBe(true);
-      expect(updatedCell!.customProperties.type).toBe('mountain');
+      expect(updatedCell!.customProps.type).toBe('mountain');
 
       const nullUpdate = grid.updateCell(5, 5, { elevation: 2 });
       expect(nullUpdate).toBeNull();
@@ -101,7 +101,7 @@ describe('HexGrid', () => {
       const cell = grid.addCell({
         q: 2,
         r: -1,
-        customProperties: { type: 'grass' },
+        customProps: { type: 'grass' },
       });
 
       const retrieved = grid.getCell(2, -1);
@@ -119,7 +119,7 @@ describe('HexGrid', () => {
     test('checks cell existence', () => {
       expect(grid.hasCell(0, 0)).toBe(false);
 
-      grid.addCell({ q: 0, r: 0, customProperties: { type: 'grass' } });
+      grid.addCell({ q: 0, r: 0, customProps: { type: 'grass' } });
       expect(grid.hasCell(0, 0)).toBe(true);
       expect(grid.hasCell(0, 0, 0)).toBe(true);
       expect(grid.hasCell(1, 1)).toBe(false);
@@ -130,7 +130,7 @@ describe('HexGrid', () => {
     test('accepts valid hex coordinates', () => {
       // These should not throw
       expect(() => {
-        grid.addCell({ q: 0, r: 0, s: 0, customProperties: { type: 'grass' } });
+        grid.addCell({ q: 0, r: 0, s: 0, customProps: { type: 'grass' } });
       }).not.toThrow();
 
       expect(() => {
@@ -138,7 +138,7 @@ describe('HexGrid', () => {
           q: 1,
           r: -1,
           s: 0,
-          customProperties: { type: 'forest' },
+          customProps: { type: 'forest' },
         });
       }).not.toThrow();
     });
@@ -146,7 +146,7 @@ describe('HexGrid', () => {
     test('rejects invalid coordinates', () => {
       // s coordinate that doesn't satisfy q + r + s = 0
       expect(() => {
-        grid.addCell({ q: 0, r: 0, s: 1, customProperties: { type: 'grass' } });
+        grid.addCell({ q: 0, r: 0, s: 1, customProps: { type: 'grass' } });
       }).toThrow(
         'Invalid hex coordinates: q=0, r=0, s=1. Must satisfy q + r + s = 0'
       );
@@ -156,7 +156,7 @@ describe('HexGrid', () => {
           q: 1,
           r: 1,
           s: 1,
-          customProperties: { type: 'forest' },
+          customProps: { type: 'forest' },
         });
       }).toThrow(
         'Invalid hex coordinates: q=1, r=1, s=1. Must satisfy q + r + s = 0'
@@ -168,14 +168,14 @@ describe('HexGrid', () => {
       const cell = grid.addCell({
         q: 2,
         r: -1,
-        customProperties: { type: 'grass' },
+        customProps: { type: 'grass' },
       });
       expect(cell.s).toBe(-1); // s = -(q + r) = -(2 + (-1)) = -1
 
       const cell2 = grid.addCell({
         q: -1,
         r: 2,
-        customProperties: { type: 'water' },
+        customProps: { type: 'water' },
       });
       expect(cell2.s).toBe(-1); // s = -(-1 + 2) = -1
     });
@@ -188,12 +188,12 @@ describe('HexGrid', () => {
       const cell1 = grid.addCell({
         q: 0,
         r: 0,
-        customProperties: { type: 'grass' },
+        customProps: { type: 'grass' },
       });
       const cell2 = grid.addCell({
         q: 1,
         r: 0,
-        customProperties: { type: 'mountain' },
+        customProps: { type: 'mountain' },
       });
 
       const allCells = grid.getAllCells();
@@ -205,10 +205,10 @@ describe('HexGrid', () => {
     test('returns correct cell count', () => {
       expect(grid.size()).toBe(0);
 
-      grid.addCell({ q: 0, r: 0, customProperties: { type: 'grass' } });
+      grid.addCell({ q: 0, r: 0, customProps: { type: 'grass' } });
       expect(grid.size()).toBe(1);
 
-      grid.addCell({ q: 1, r: 0, customProperties: { type: 'mountain' } });
+      grid.addCell({ q: 1, r: 0, customProps: { type: 'mountain' } });
       expect(grid.size()).toBe(2);
 
       grid.removeCell(0, 0);
@@ -221,21 +221,21 @@ describe('HexGrid', () => {
         r: 0,
         elevation: 1,
         isImpassable: false,
-        customProperties: { type: 'grass' },
+        customProps: { type: 'grass' },
       });
       grid.addCell({
         q: 1,
         r: 0,
         elevation: 3,
         isImpassable: true,
-        customProperties: { type: 'mountain' },
+        customProps: { type: 'mountain' },
       });
       grid.addCell({
         q: 0,
         r: 1,
         elevation: 2,
         isImpassable: false,
-        customProperties: { type: 'hill' },
+        customProps: { type: 'hill' },
       });
 
       const passableCells = grid.getCellsWhere((cell) => !cell.isImpassable);
@@ -245,7 +245,7 @@ describe('HexGrid', () => {
         (cell) => cell.elevation > 2
       );
       expect(highElevationCells).toHaveLength(1);
-      expect(highElevationCells[0].customProperties.type).toBe('mountain');
+      expect(highElevationCells[0].customProps.type).toBe('mountain');
     });
   });
 
@@ -295,7 +295,7 @@ describe('HexGrid', () => {
 
     test('handles custom properties in ring creation', () => {
       // Test that createBasicHexRing fails if cells already exist
-      grid.addCell({ q: 0, r: 0, customProperties: { type: 'existing' } });
+      grid.addCell({ q: 0, r: 0, customProps: { type: 'existing' } });
 
       expect(() => {
         grid.createBasicHexRing(1);
@@ -308,17 +308,17 @@ describe('HexGrid', () => {
       const cell1 = grid.addCell({
         q: 0,
         r: 0,
-        customProperties: { type: 'grass' },
+        customProps: { type: 'grass' },
       });
       const cell2 = grid.addCell({
         q: 1,
         r: 0,
-        customProperties: { type: 'forest' },
+        customProps: { type: 'forest' },
       });
       const cell3 = grid.addCell({
         q: 0,
         r: 1,
-        customProperties: { type: 'mountain' },
+        customProps: { type: 'mountain' },
       });
 
       expect(cell1.id).not.toBe(cell2.id);
@@ -335,7 +335,7 @@ describe('HexGrid', () => {
       const cell = grid.addCell({
         q: 2,
         r: -1,
-        customProperties: { type: 'grass' },
+        customProps: { type: 'grass' },
       });
       expect(cell.id).toBe('2,-1,-1');
 
@@ -347,8 +347,8 @@ describe('HexGrid', () => {
     });
 
     test('clears grid correctly', () => {
-      grid.addCell({ q: 0, r: 0, customProperties: { type: 'grass' } });
-      grid.addCell({ q: 1, r: 0, customProperties: { type: 'forest' } });
+      grid.addCell({ q: 0, r: 0, customProps: { type: 'grass' } });
+      grid.addCell({ q: 1, r: 0, customProps: { type: 'forest' } });
       expect(grid.size()).toBe(2);
 
       grid.clear();
@@ -367,7 +367,7 @@ describe('HexGrid', () => {
       const cell = grid.addCell({
         q: largeQ,
         r: largeR,
-        customProperties: { type: 'grass' },
+        customProps: { type: 'grass' },
       });
 
       expect(cell.q).toBe(largeQ);
@@ -385,19 +385,19 @@ describe('HexGrid', () => {
         q: 0,
         r: 0,
         elevation: 1,
-        customProperties: { type: 'grass' },
+        customProps: { type: 'grass' },
       });
       grid.addCell({
         q: 1,
         r: 0,
         elevation: 2,
-        customProperties: { type: 'water' },
+        customProps: { type: 'water' },
       });
       grid.addCell({
         q: 0,
         r: 1,
         elevation: 3,
-        customProperties: { type: 'mountain' },
+        customProps: { type: 'mountain' },
       });
 
       expect(grid.size()).toBe(3);
@@ -405,7 +405,7 @@ describe('HexGrid', () => {
       // Update a cell
       const updated = grid.updateCell(0, 0, {
         elevation: 5,
-        customProperties: { type: 'lava' },
+        customProps: { type: 'lava' },
       });
       expect(updated).not.toBeNull();
       expect(grid.size()).toBe(3); // Size should remain the same
@@ -418,11 +418,11 @@ describe('HexGrid', () => {
       // Verify remaining cells are intact
       const grassCell = grid.getCell(0, 0);
       expect(grassCell!.elevation).toBe(5);
-      expect(grassCell!.customProperties.type).toBe('lava');
+      expect(grassCell!.customProps.type).toBe('lava');
 
       const mountainCell = grid.getCell(0, 1);
       expect(mountainCell!.elevation).toBe(3);
-      expect(mountainCell!.customProperties.type).toBe('mountain');
+      expect(mountainCell!.customProps.type).toBe('mountain');
 
       const waterCell = grid.getCell(1, 0);
       expect(waterCell).toBeNull();
@@ -437,7 +437,7 @@ describe('HexGrid', () => {
             grid.addCell({
               q,
               r,
-              customProperties: { type: 'terrain', discovered: true },
+              customProps: { type: 'terrain', discovered: true },
             });
           }
         }
@@ -455,7 +455,7 @@ describe('HexGrid', () => {
       grid.addCell({
         q: 0,
         r: 0,
-        customProperties: { type: 'terrain', discovered: true },
+        customProps: { type: 'terrain', discovered: true },
       });
       expect(grid.size()).toBe(1);
     });
@@ -481,7 +481,7 @@ describe('HexGrid', () => {
       const cell = complexGrid.addCell({
         q: 0,
         r: 0,
-        customProperties: {
+        customProps: {
           terrain: 'forest',
           owner: 'player1',
           resources: ['gold', 'iron'],
@@ -498,10 +498,10 @@ describe('HexGrid', () => {
         },
       });
 
-      expect(cell.customProperties.owner).toBe('player1');
-      expect(cell.customProperties.resources).toEqual(['gold', 'iron']);
-      expect(cell.customProperties.metadata?.discovered).toBe(true);
-      expect(cell.customProperties.nestedData?.terrain.type).toBe('forest');
+      expect(cell.customProps.owner).toBe('player1');
+      expect(cell.customProps.resources).toEqual(['gold', 'iron']);
+      expect(cell.customProps.metadata?.discovered).toBe(true);
+      expect(cell.customProps.nestedData?.terrain.type).toBe('forest');
     });
   });
 
@@ -518,7 +518,7 @@ describe('HexGrid', () => {
           grid.addCell({
             q,
             r,
-            customProperties: { type: 'terrain', discovered: i % 2 === 0 },
+            customProps: { type: 'terrain', discovered: i % 2 === 0 },
           });
         }
       }
@@ -538,7 +538,7 @@ describe('HexGrid', () => {
         grid.addCell({
           q,
           r,
-          customProperties: { type: 'terrain', discovered: true },
+          customProps: { type: 'terrain', discovered: true },
         });
       }
 
@@ -559,13 +559,13 @@ describe('HexGrid', () => {
   describe('Additional Coverage Tests', () => {
     test('addCells method works correctly', () => {
       const definitions = [
-        { q: 0, r: 0, customProperties: { type: 'grass', discovered: true } },
+        { q: 0, r: 0, customProps: { type: 'grass', discovered: true } },
         {
           q: 1,
           r: 0,
-          customProperties: { type: 'mountain', discovered: false },
+          customProps: { type: 'mountain', discovered: false },
         },
-        { q: 0, r: 1, customProperties: { type: 'water', discovered: true } },
+        { q: 0, r: 1, customProps: { type: 'water', discovered: true } },
       ];
 
       const cells = grid.addCells(definitions);
@@ -583,7 +583,7 @@ describe('HexGrid', () => {
       grid.addCell({
         q: coords.q,
         r: coords.r,
-        customProperties: { type: 'grass', discovered: true },
+        customProps: { type: 'grass', discovered: true },
       });
 
       const retrieved = grid.getCellByCoords(coords);
@@ -602,14 +602,14 @@ describe('HexGrid', () => {
       grid.addCell({
         q: coords.q,
         r: coords.r,
-        customProperties: { type: 'terrain', discovered: false },
+        customProps: { type: 'terrain', discovered: false },
       });
       expect(grid.hasCellAtCoords(coords)).toBe(true);
     });
 
     test('getAllCellIds works correctly', () => {
-      grid.addCell({ q: 0, r: 0, customProperties: { type: 'grass' } });
-      grid.addCell({ q: 1, r: 0, customProperties: { type: 'mountain' } });
+      grid.addCell({ q: 0, r: 0, customProps: { type: 'grass' } });
+      grid.addCell({ q: 1, r: 0, customProps: { type: 'mountain' } });
 
       const ids = grid.getAllCellIds();
       expect(ids).toHaveLength(2);
@@ -623,17 +623,17 @@ describe('HexGrid', () => {
       grid.addCell({
         q: -5,
         r: 3,
-        customProperties: { type: 'terrain', biome: 'forest' },
+        customProps: { type: 'terrain', biome: 'forest' },
       });
       grid.addCell({
         q: 2,
         r: -4,
-        customProperties: { type: 'terrain', biome: 'desert' },
+        customProps: { type: 'terrain', biome: 'desert' },
       });
       grid.addCell({
         q: 1,
         r: 1,
-        customProperties: { type: 'terrain', biome: 'swamp' },
+        customProps: { type: 'terrain', biome: 'swamp' },
       });
 
       const bounds = grid.getBounds();

@@ -14,7 +14,7 @@ import { Cell } from '../core/cell';
  * ```typescript
  * class FactionColorStrategy implements CellColorStrategy<GameProps> {
  *   getCellColor(cell: Cell<GameProps>): number {
- *     switch (cell.customProperties.faction) {
+ *     switch (cell.customProps.faction) {
  *       case 'player': return 0x00ff00;  // Green
  *       case 'enemy': return 0xff0000;   // Red
  *       default: return 0x808080;        // Gray

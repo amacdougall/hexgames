@@ -9,7 +9,7 @@ export interface MapDefaultSettings<
   elevation: number;
   movementCost: number;
   isImpassable: boolean;
-  customProperties: CustomProps;
+  customProps: CustomProps;
 }
 
 export interface MapDefinition<

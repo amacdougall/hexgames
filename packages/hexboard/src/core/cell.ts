@@ -12,7 +12,7 @@ export interface CellDefinition<
   elevation?: number;
   movementCost?: number;
   isImpassable?: boolean;
-  customProperties?: CustomProps;
+  customProps?: CustomProps;
 }
 
 export interface Cell<
@@ -22,5 +22,5 @@ export interface Cell<
   elevation: number;
   movementCost: number;
   isImpassable: boolean;
-  customProperties: CustomProps;
+  customProps: CustomProps;
 }

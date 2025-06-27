@@ -14,7 +14,7 @@ export interface EntityDefinition<
   type: string;
   cellPosition: Cell<CustomProps>;
   movementSpeed?: number;
-  customProperties?: CustomProps;
+  customProps?: CustomProps;
 }
 
 /**
