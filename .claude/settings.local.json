@@ -5,7 +5,10 @@
       "Bash(npm run test:coverage:*)",
       "Bash(npm run lint:*)",
       "Bash(npm run build:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run format:*)"
     ],
     "deny": []
   }
