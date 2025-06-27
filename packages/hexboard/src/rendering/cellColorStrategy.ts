@@ -26,7 +26,7 @@ import { Cell } from '../core/cell';
  * @template CustomProps - The type of custom properties stored in cells
  */
 export interface CellColorStrategy<
-  CustomProps extends object = Record<string, never>,
+  CustomProps extends Record<string, unknown> = Record<string, never>,
 > {
   /**
    * Determines the color for a given cell.
@@ -52,7 +52,7 @@ export interface CellColorStrategy<
  * - Low elevation (<=1): Sandy brown (low terrain)
  */
 export class DefaultCellColorStrategy<
-  CustomProps extends object = Record<string, never>,
+  CustomProps extends Record<string, unknown> = Record<string, never>,
 > implements CellColorStrategy<CustomProps>
 {
   getCellColor(cell: Cell<CustomProps>): number {
@@ -92,7 +92,7 @@ export class DefaultCellColorStrategy<
  * ```
  */
 export class ElevationColorStrategy<
-  CustomProps extends object = Record<string, never>,
+  CustomProps extends Record<string, unknown> = Record<string, never>,
 > implements CellColorStrategy<CustomProps>
 {
   getCellColor(cell: Cell<CustomProps>): number {

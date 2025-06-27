@@ -1,6 +1,6 @@
 import { HexGrid } from '../../src/core/hexGrid';
 
-interface TestProps {
+interface TestProps extends Record<string, unknown> {
   type?: string;
   owner?: string;
   resources?: string[];
@@ -461,7 +461,7 @@ describe('HexGrid', () => {
     });
 
     test('supports custom property types', () => {
-      interface ComplexProps {
+      interface ComplexProps extends Record<string, unknown> {
         terrain: string;
         resources?: string[];
         owner?: string;

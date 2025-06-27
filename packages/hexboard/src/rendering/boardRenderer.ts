@@ -12,7 +12,9 @@ import {
   DefaultCellColorStrategy,
 } from './cellColorStrategy';
 
-export class BoardRenderer<CustomProps extends object = Record<string, never>> {
+export class BoardRenderer<
+  CustomProps extends Record<string, unknown> = Record<string, never>,
+> {
   private hexGrid: HexGrid<CustomProps>;
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;

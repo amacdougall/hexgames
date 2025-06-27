@@ -273,10 +273,20 @@ describe('EntityManager', () => {
     it('should handle entities with custom properties', () => {
       const customProps = { health: 100, level: 5, name: 'CustomHero' };
       const entityManager = new EntityManager<TestCustomProps>();
+      const customTestCell: Cell<TestCustomProps> = {
+        q: 0,
+        r: 0,
+        s: 0,
+        id: '0,0',
+        elevation: 0,
+        movementCost: 1,
+        isImpassable: false,
+        customProperties: { health: 100, level: 1, terrain: 'grass' }
+      };
       const entityDef: EntityDefinition<TestCustomProps> = {
         id: 'custom-entity',
         type: 'hero',
-        cellPosition: testCell as Cell<TestCustomProps>,
+        cellPosition: customTestCell,
         customProperties: customProps
       };
 

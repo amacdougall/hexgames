@@ -26,7 +26,7 @@ describe('Cell Color Strategy System', () => {
     });
 
     it('should support custom properties in strategy implementations', () => {
-      interface GameProps {
+      interface GameProps extends Record<string, unknown> {
         faction: 'player' | 'enemy' | 'neutral';
         resource?: string;
       }
@@ -248,7 +248,7 @@ describe('Cell Color Strategy System', () => {
 
   describe('Strategy Integration', () => {
     it('should work with BoardRenderer type system', () => {
-      interface CustomProps {
+      interface CustomProps extends Record<string, unknown> {
         biome: string;
         temperature: number;
       }

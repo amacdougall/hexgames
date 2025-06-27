@@ -2,7 +2,9 @@
 import { Cell, CellDefinition } from './cell';
 import { HexCoordinates, axialToCubic } from './coordinates';
 
-export class HexGrid<CustomProps extends object = {}> {
+export class HexGrid<
+  CustomProps extends Record<string, unknown> = Record<string, never>,
+> {
   private cells: Map<string, Cell<CustomProps>>;
   private defaultElevation: number;
   private defaultMovementCost: number;

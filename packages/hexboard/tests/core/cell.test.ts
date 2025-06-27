@@ -1,6 +1,6 @@
 import { Cell, CellDefinition } from '../../src/core/cell';
 
-interface TestProps {
+interface TestProps extends Record<string, unknown> {
   type?: string;
   resources?: string[];
   owner?: string;
@@ -124,7 +124,7 @@ describe('Cell System', () => {
     });
 
     test('maintains type safety with custom properties', () => {
-      interface GameProps {
+      interface GameProps extends Record<string, unknown> {
         terrain: string;
         buildable: boolean;
         resources?: string[];
@@ -190,7 +190,7 @@ describe('Cell System', () => {
     });
 
     test('allows complex custom property types', () => {
-      interface ComplexProps {
+      interface ComplexProps extends Record<string, unknown> {
         metadata: {
           discovered: boolean;
           lastVisited?: Date;
