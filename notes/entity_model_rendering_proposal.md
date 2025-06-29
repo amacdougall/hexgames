@@ -6,9 +6,9 @@ The objective is to add the capability to render 3D models for `Entity` objects 
 
 ## 2. Current State Analysis
 
--   **`Entity` (`src/core/entity.ts`):** The `Entity` interface currently includes a `model: THREE.Object3D;` property. While this directly associates a 3D object with an entity, it creates a hard dependency from the core logic to the Three.js rendering library. This is undesirable as it breaks the separation of concerns, making the core logic harder to test in isolation and preventing it from being used in non-rendering contexts (e.g., a server).
--   **`EntityManager` (`src/core/entity.ts`):** This class manages the lifecycle of entities. When it creates an `Entity`, it currently populates the `model` property with a placeholder object. It has no knowledge of how to load or create actual 3D models.
--   **`BoardRenderer` (`src/rendering/boardRenderer.ts`):** This class is responsible for rendering the `HexGrid` and its cells. It currently has no knowledge of the `EntityManager` or the entities themselves, so it cannot render them.
+- **`Entity` (`src/core/entity.ts`):** The `Entity` interface currently includes a `model: THREE.Object3D;` property. While this directly associates a 3D object with an entity, it creates a hard dependency from the core logic to the Three.js rendering library. This is undesirable as it breaks the separation of concerns, making the core logic harder to test in isolation and preventing it from being used in non-rendering contexts (e.g., a server).
+- **`EntityManager` (`src/core/entity.ts`):** This class manages the lifecycle of entities. When it creates an `Entity`, it currently populates the `model` property with a placeholder object. It has no knowledge of how to load or create actual 3D models.
+- **`BoardRenderer` (`src/rendering/boardRenderer.ts`):** This class is responsible for rendering the `HexGrid` and its cells. It currently has no knowledge of the `EntityManager` or the entities themselves, so it cannot render them.
 
 ## 3. Proposed Architecture
 
@@ -122,15 +122,25 @@ export class EntityRenderer {
         // Entity already exists, update its position
         const model = this.entityModels.get(entity.id)!;
         const worldPos = hexToWorld(entity.cellPosition);
-        model.position.set(worldPos.x, entity.cellPosition.elevation, worldPos.z);
+        model.position.set(
+          worldPos.x,
+          entity.cellPosition.elevation,
+          worldPos.z
+        );
       } else if (entity.modelKey) {
         // New entity, create and add its model
-        const model = await this.modelRegistry.createModelInstance(entity.modelKey);
+        const model = await this.modelRegistry.createModelInstance(
+          entity.modelKey
+        );
         this.entityModels.set(entity.id, model);
         this.scene.add(model);
         // Position it
         const worldPos = hexToWorld(entity.cellPosition);
-        model.position.set(worldPos.x, entity.cellPosition.elevation, worldPos.z);
+        model.position.set(
+          worldPos.x,
+          entity.cellPosition.elevation,
+          worldPos.z
+        );
       }
       renderedEntityIds.delete(entity.id);
     });
@@ -164,12 +174,16 @@ export class BoardRenderer {
   constructor(
     hexGrid: HexGrid,
     entityManager: EntityManager,
-    modelRegistry: ModelRegistry,
+    modelRegistry: ModelRegistry
     // ... other params
   ) {
     // ...
     this.scene = new THREE.Scene();
-    this.entityRenderer = new EntityRenderer(entityManager, this.scene, modelRegistry);
+    this.entityRenderer = new EntityRenderer(
+      entityManager,
+      this.scene,
+      modelRegistry
+    );
     // ...
   }
 
@@ -185,32 +199,34 @@ export class BoardRenderer {
 
 This architecture is flexible enough to handle a variety of use cases.
 
--   **Board Games (Simple Pieces):** For a simple board game, the user can register basic geometric shapes as models.
-    ```typescript
-    const registry = new ModelRegistry();
-    const pawnMaterial = new THREE.MeshStandardMaterial({ color: 'red' });
-    const pawnGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.8, 16);
-    registry.registerModel('pawn', new THREE.Mesh(pawnGeometry, pawnMaterial));
-    ```
-    The system will work without any changes, rendering static, non-animated pieces.
+- **Board Games (Simple Pieces):** For a simple board game, the user can register basic geometric shapes as models.
 
--   **Strategy/RPG Games (Animated Models):** For more complex games, the user can register animated models loaded from files (e.g., `.gltf`). The `EntityRenderer` can be extended to manage animations.
-    -   The `ModelRegistry` would load the full `gltf` scene, including animations.
-    -   The `EntityRenderer` would store the `AnimationMixer` for each model instance.
-    -   Its `update(deltaTime)` method would be responsible for updating the mixers each frame.
-    -   It could expose methods like `playAnimation(entityId: string, animationName: string)` that could be called in response to game events.
+  ```typescript
+  const registry = new ModelRegistry();
+  const pawnMaterial = new THREE.MeshStandardMaterial({ color: 'red' });
+  const pawnGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.8, 16);
+  registry.registerModel('pawn', new THREE.Mesh(pawnGeometry, pawnMaterial));
+  ```
+
+  The system will work without any changes, rendering static, non-animated pieces.
+
+- **Strategy/RPG Games (Animated Models):** For more complex games, the user can register animated models loaded from files (e.g., `.gltf`). The `EntityRenderer` can be extended to manage animations.
+  - The `ModelRegistry` would load the full `gltf` scene, including animations.
+  - The `EntityRenderer` would store the `AnimationMixer` for each model instance.
+  - Its `update(deltaTime)` method would be responsible for updating the mixers each frame.
+  - It could expose methods like `playAnimation(entityId: string, animationName: string)` that could be called in response to game events.
 
 ## 5. Advanced Feature: Level of Detail (LOD)
 
 The proposed design can be easily extended to support Level of Detail (LOD) for performance optimization, which is crucial for games with many entities.
 
--   **`ModelRegistry`:** Can be adapted to store `THREE.LOD` objects. The user would register different levels of detail for a single `modelKey`.
--   **`EntityRenderer`:** When creating a model instance, it would receive a `THREE.LOD` object from the registry and add it to the scene. Three.js automatically handles switching the visible mesh based on the camera's distance. The `EntityRenderer`'s `update` loop would need to be slightly modified to correctly handle the `LOD` object's position.
+- **`ModelRegistry`:** Can be adapted to store `THREE.LOD` objects. The user would register different levels of detail for a single `modelKey`.
+- **`EntityRenderer`:** When creating a model instance, it would receive a `THREE.LOD` object from the registry and add it to the scene. Three.js automatically handles switching the visible mesh based on the camera's distance. The `EntityRenderer`'s `update` loop would need to be slightly modified to correctly handle the `LOD` object's position.
 
 ## 6. Conclusion
 
 This proposal provides a robust and scalable solution for rendering entities in the `hexboard` library. By decoupling the core logic from rendering concerns and introducing an `EntityRenderer` and `ModelRegistry`, we achieve:
 
--   **Strong Separation of Concerns:** Core game logic remains pure and independent of the rendering engine.
--   **Flexibility:** The library user has full control over defining, loading, and managing 3D assets.
--   **Scalability:** The architecture supports simple static models, complex animated characters, and performance optimizations like LOD.
+- **Strong Separation of Concerns:** Core game logic remains pure and independent of the rendering engine.
+- **Flexibility:** The library user has full control over defining, loading, and managing 3D assets.
+- **Scalability:** The architecture supports simple static models, complex animated characters, and performance optimizations like LOD.

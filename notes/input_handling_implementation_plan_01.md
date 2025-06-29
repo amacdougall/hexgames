@@ -17,6 +17,7 @@ The goal of this phase is to implement the core functionality of detecting a cli
 **Task:** Modify the `renderHexCell` method to attach the cell's `HexCoordinates` to the `userData` property of the `THREE.Mesh` object it creates. This will allow us to easily identify a cell when its mesh is intersected by a raycaster.
 
 **Instructions:**
+
 1.  Locate the `renderHexCell` method.
 2.  After the `THREE.Mesh` (often named `mesh`) is created, add the following line:
     ```typescript
@@ -31,14 +32,15 @@ The goal of this phase is to implement the core functionality of detecting a cli
 **Task:** Flesh out the `InputHandler` class to manage mouse events, perform raycasting, and trigger callbacks.
 
 **Instructions:**
+
 1.  Define the class structure with the private properties outlined in the proposal (`renderer`, `camera`, `scene`, `raycaster`, `mouse`, and the event callbacks).
 2.  Implement the constructor to initialize these properties. It should accept the `WebGLRenderer`, `PerspectiveCamera`, and `Scene` as arguments.
 3.  Add a public method, let's call it `initialize()`, that sets up the DOM event listeners for mouse movements and clicks on the renderer's canvas.
 4.  Implement a private method for the click handler. This method should:
-    *   Update the `this.mouse` vector with the corrected coordinates of the mouse click.
-    *   Configure and use `this.raycaster` to find intersected objects in the scene.
-    *   Check if the first intersected object has `userData.coordinates`.
-    *   If coordinates are present, invoke the `onCellClick` callback with them.
+    - Update the `this.mouse` vector with the corrected coordinates of the mouse click.
+    - Configure and use `this.raycaster` to find intersected objects in the scene.
+    - Check if the first intersected object has `userData.coordinates`.
+    - If coordinates are present, invoke the `onCellClick` callback with them.
 5.  Add a `dispose()` method to clean up the event listeners when the handler is no longer needed.
 
 ### 1.3. Integrate `InputHandler` with `HexBoard`
@@ -48,6 +50,7 @@ The goal of this phase is to implement the core functionality of detecting a cli
 **Task:** Create an instance of the `InputHandler` within the `HexBoard` and connect its events to the board's logic.
 
 **Instructions:**
+
 1.  Add a private `inputHandler` property to the `HexBoard` class.
 2.  In the `HexBoard`'s `init` method (or wherever the renderer and scene are available), instantiate the `InputHandler`, passing the required `renderer`, `camera`, and `scene` objects.
 3.  Call the `inputHandler.initialize()` method you created in the previous step.
@@ -64,4 +67,3 @@ The goal of this phase is to implement the core functionality of detecting a cli
 2.  Open the browser's developer console.
 3.  Click on various hex cells on the board.
 4.  Verify that the hex coordinates for the clicked cells are being logged to the console.
-

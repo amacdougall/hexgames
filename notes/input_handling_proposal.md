@@ -38,7 +38,7 @@ export class InputHandler<T extends object> {
   private scene: THREE.Scene;
   private raycaster: THREE.Raycaster;
   private mouse: THREE.Vector2;
-  
+
   // Event callbacks that emit hex coordinates
   private onCellClick?: (coords: HexCoordinates) => void;
   private onCellHover?: (coords: HexCoordinates | null) => void;
@@ -84,20 +84,20 @@ mesh.userData.coordinates = coordinates;
 ```typescript
 export class HexBoard<T> {
   private inputHandler: InputHandler<T>;
-  
+
   constructor() {
     this.inputHandler = new InputHandler(
       this.renderer.getRenderer(),
       this.renderer.getCamera(),
       this.renderer.getScene()
     );
-    
+
     // Connect input events to game logic
     this.inputHandler.onCellClick = (coords) => {
       this.handleCellClick(coords);
     };
   }
-  
+
   private handleCellClick(coords: HexCoordinates): void {
     // Game logic using pure hex coordinates
     const cell = this.hexGrid.getCellByCoords(coords);

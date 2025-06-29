@@ -43,22 +43,22 @@ export class HexBoard<CustomProps extends object = {}> {
   private renderer: BoardRenderer<CustomProps>;
   private inputHandler: InputHandler;
   private entityManager: EntityManager;
-  
+
   constructor(container: HTMLElement) {
     // Initialize all systems
   }
-  
+
   on(event: string, callback: Function): void;
   off(event: string, callback: Function): void;
-  
+
   // Entity management
   addEntity(entity: Entity): void;
   removeEntity(entityId: string): void;
   moveEntity(entityId: string, to: HexCoordinate): void;
-  
+
   // Board management
   expandBoard(center: HexCoordinate, radius: number): void;
-  
+
   // Rendering
   render(): void;
   dispose(): void;
@@ -80,7 +80,7 @@ export interface Entity {
 export class EntityManager {
   private entities: Map<string, Entity>;
   private cellEntities: Map<string, Set<string>>; // coordinate -> entity IDs
-  
+
   addEntity(entity: Entity): void;
   removeEntity(id: string): void;
   moveEntity(id: string, to: HexCoordinate): void;
@@ -99,11 +99,11 @@ export class InputHandler extends EventEmitter {
   ) {
     this.setupRaycasting();
   }
-  
+
   onCellClick(coord: HexCoordinate): void;
   onCellHover(coord: HexCoordinate): void;
   onEntityClick(entity: Entity): void;
-  
+
   private setupRaycasting(): void;
   private screenToHex(x: number, y: number): HexCoordinate | null;
 }
@@ -133,14 +133,14 @@ class GameManager {
   private hexBoard: HexBoard<GameCellProps>;
   private players: [Player, Player];
   private gameState: GameState;
-  
+
   startGame(): void {
     this.gameState = 'placing-first-piece';
     this.turnManager.startTurn(this.players[0]);
   }
-  
+
   handleAction(action: GameAction): void {
-    switch(action.type) {
+    switch (action.type) {
       case 'place-piece':
         this.handlePlacement(action);
         break;
@@ -148,7 +148,7 @@ class GameManager {
         this.handleMovement(action);
         break;
     }
-    
+
     if (this.checkVictory()) {
       this.endGame();
     } else {
@@ -165,31 +165,31 @@ class PlacementManager {
   private palette: PiecePalette;
   private placementMode: boolean = false;
   private selectedPieceType: string | null = null;
-  
+
   enterPlacementMode(pieceType: string): void {
     this.placementMode = true;
     this.selectedPieceType = pieceType;
     this.highlightValidPlacements();
   }
-  
+
   private getValidPlacements(): HexCoordinate[] {
     if (this.gameState === 'placing-first-piece') {
       return [{ q: 0, r: 0, s: 0 }]; // Center only
     }
-    
+
     // Get all friendly pieces and their neighbors
     const friendly = this.entityManager.getEntitiesByPlayer(currentPlayer);
     const validCells = new Set<string>();
-    
-    friendly.forEach(entity => {
+
+    friendly.forEach((entity) => {
       const neighbors = this.hexGrid.getNeighbors(entity.position);
-      neighbors.forEach(coord => {
+      neighbors.forEach((coord) => {
         if (this.isValidPlacement(coord)) {
           validCells.add(coordinateToKey(coord));
         }
       });
     });
-    
+
     return Array.from(validCells).map(keyToCoordinate);
   }
 }
@@ -201,25 +201,25 @@ class PlacementManager {
 class MovementManager {
   private movementMode: boolean = false;
   private selectedEntity: Entity | null = null;
-  
+
   enterMovementMode(entity: Entity): void {
     this.movementMode = true;
     this.selectedEntity = entity;
     this.highlightValidMoves(entity);
   }
-  
+
   private getValidMoves(entity: Entity): HexCoordinate[] {
     const piece = this.pieceRegistry.get(entity.type);
     const baseRules = piece.movementRules;
-    
+
     // Apply global movement rules
     let validMoves = this.applyGlobalRules(entity.position, baseRules);
-    
+
     // Apply piece-specific modifiers
     if (piece.specialRules) {
       validMoves = piece.specialRules(validMoves, entity, this.gameState);
     }
-    
+
     return validMoves;
   }
 }
@@ -232,12 +232,12 @@ class PiecePalette {
   private container: THREE.Group;
   private pieces: Map<string, THREE.Object3D>;
   private remainingCounts: Map<string, number>;
-  
+
   constructor(player: Player) {
     this.setupPalette(player.availablePieces);
     this.positionAboveBoard();
   }
-  
+
   private setupPalette(pieces: PieceDefinition[]): void {
     pieces.forEach((piece, index) => {
       const model = this.loadPieceModel(piece.type);
@@ -245,7 +245,7 @@ class PiecePalette {
       this.container.add(model);
     });
   }
-  
+
   onPieceClick(pieceType: string): void {
     this.emit('piece-selected', pieceType);
   }

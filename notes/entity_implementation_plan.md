@@ -38,7 +38,9 @@ The new `entity.ts` will look like this:
 
 import { Cell } from './cell';
 
-export interface EntityDefinition<CustomProps extends Record<string, any> = {}> {
+export interface EntityDefinition<
+  CustomProps extends Record<string, any> = {},
+> {
   id: string;
   type: string;
   cellPosition: Cell<CustomProps>;
@@ -140,7 +142,10 @@ export class HexBoard<CustomProps extends Record<string, any> = {}> {
   // --- Entity Methods ---
 
   addEntity(entityDef: EntityDefinition<CustomProps>): Entity<CustomProps> {
-    const cell = this.grid.getCell(entityDef.cellPosition.q, entityDef.cellPosition.r);
+    const cell = this.grid.getCell(
+      entityDef.cellPosition.q,
+      entityDef.cellPosition.r
+    );
     if (!cell) {
       throw new Error('Entity must be placed on a valid cell.');
     }
