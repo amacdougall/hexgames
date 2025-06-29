@@ -26,6 +26,11 @@ export default [
       globals: {
         console: 'readonly',
         process: 'readonly',
+        document: 'readonly',
+        HTMLElement: 'readonly',
+        requestAnimationFrame: 'readonly',
+        MouseEvent: 'readonly',
+        window: 'readonly',
       },
     },
     plugins: {
