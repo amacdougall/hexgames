@@ -96,6 +96,7 @@ export default [
         HTMLElement: 'readonly',
         Element: 'readonly',
         Event: 'readonly',
+        MouseEvent: 'readonly',
         performance: 'readonly',
         requestAnimationFrame: 'readonly',
         cancelAnimationFrame: 'readonly',
@@ -108,6 +109,11 @@ export default [
         FrameRequestCallback: 'readonly',
         Document: 'readonly',
       },
+    },
+    rules: {
+      // Relax some rules for test files
+      '@typescript-eslint/no-explicit-any': 'off', // Allow any in test mocks
+      '@typescript-eslint/explicit-function-return-type': 'off', // Allow implicit return types in tests
     },
   },
   // Browser environment for apps

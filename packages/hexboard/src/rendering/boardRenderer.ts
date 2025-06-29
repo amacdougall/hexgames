@@ -154,6 +154,9 @@ export class BoardRenderer<
     });
     const mesh = new THREE.Mesh(geometry, material);
 
+    // Store coordinates in mesh for input handling
+    mesh.userData.coordinates = coordinates;
+
     // Position mesh using hexToWorld coordinate conversion
     const worldPos = hexToWorld(coordinates);
     mesh.position.set(worldPos.x, cell.elevation / 2, worldPos.z);
