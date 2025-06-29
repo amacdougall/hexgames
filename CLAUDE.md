@@ -121,9 +121,9 @@ This is a **TypeScript monorepo** for hexagonal grid-based games using npm works
 
 After every code change:
 
-* no lint errors
-* no format errors (`npm run format:check`)
-* all tests pass
+- no lint errors
+- no format errors (`npm run format:check`)
+- all tests pass
 
 ### Development tips
 

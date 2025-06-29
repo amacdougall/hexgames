@@ -12,7 +12,10 @@
       "Bash(npx eslint tests:*)",
       "Bash(npx prettier:*)",
       "Bash(rm:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(eslint:*)",
+      "Bash(npx eslint:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
