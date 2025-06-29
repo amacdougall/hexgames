@@ -8,3 +8,5 @@ export {
   ElevationColorStrategy,
 } from './cellColorStrategy';
 export { hexToWorld } from './layout';
+export { ModelRegistry } from './modelRegistry';
+export { EntityRenderer } from './entityRenderer';

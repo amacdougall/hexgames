@@ -3,8 +3,7 @@ import { Cell } from './cell';
 
 /**
  * Definition for creating an entity.
- *
- *
+ * This represents the data needed to create an entity in the game world.
  */
 export interface EntityDefinition<
   CustomProps extends Record<string, unknown> = Record<string, never>,
@@ -14,20 +13,22 @@ export interface EntityDefinition<
   cellPosition: Cell<CustomProps>;
   movementSpeed?: number;
   customProps?: CustomProps;
+  modelKey?: string; // Optional reference to a 3D model in the ModelRegistry
 }
 
 /**
  * An Entity represents a game object that occupies a cell on the hexagonal grid.
  * It can be a player character, an NPC, or any other object that interacts with the grid.
- * Each entity has a unique ID, a position on the grid, and a 3D model representation.
+ * Each entity has a unique ID, a position on the grid, and optional model key for 3D rendering.
  */
 export interface Entity<
   CustomProps extends Record<string, unknown> = Record<string, never>,
 > {
   id: string;
   cellPosition: Cell<CustomProps>;
-  model: THREE.Object3D;
+  model: THREE.Object3D; // TODO: This will be removed in a future update in favor of modelKey
   movementSpeed?: number;
+  modelKey?: string; // Optional reference to a 3D model in the ModelRegistry
 }
 
 /**
@@ -51,8 +52,9 @@ export class EntityManager<
     const entity: Entity<CustomProps> = {
       id: entityDef.id,
       cellPosition: entityDef.cellPosition,
-      model: {} as THREE.Object3D, // Placeholder for 3D model
+      model: {} as THREE.Object3D, // Placeholder for 3D model (deprecated)
       movementSpeed: entityDef.movementSpeed ?? 1, // Default movement speed is 1
+      modelKey: entityDef.modelKey, // Copy model key for rendering layer
     };
 
     // Store entity in map
@@ -80,6 +82,10 @@ export class EntityManager<
 
   getEntity(entityId: string): Entity<CustomProps> | undefined {
     return this.entities.get(entityId);
+  }
+
+  getAllEntities(): Entity<CustomProps>[] {
+    return Array.from(this.entities.values());
   }
 
   getEntitiesAt(cellId: string): Entity<CustomProps>[] {
