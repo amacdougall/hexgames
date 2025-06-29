@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { HexCoordinates } from '../core/coordinates';
 
-export class InputHandler<T extends object> {
+export class InputHandler<_T extends object> {
   private renderer: THREE.WebGLRenderer;
   private camera: THREE.PerspectiveCamera;
   private scene: THREE.Scene;
@@ -148,13 +148,17 @@ export class InputHandler<T extends object> {
     return null;
   }
 
-  private isValidHexCoordinates(coords: any): coords is HexCoordinates {
-    return (
+  private isValidHexCoordinates(coords: unknown): coords is HexCoordinates {
+    return Boolean(
       coords &&
-      typeof coords === 'object' &&
-      typeof coords.q === 'number' &&
-      typeof coords.r === 'number' &&
-      typeof coords.s === 'number'
+        typeof coords === 'object' &&
+        coords !== null &&
+        'q' in coords &&
+        'r' in coords &&
+        's' in coords &&
+        typeof (coords as HexCoordinates).q === 'number' &&
+        typeof (coords as HexCoordinates).r === 'number' &&
+        typeof (coords as HexCoordinates).s === 'number'
     );
   }
 

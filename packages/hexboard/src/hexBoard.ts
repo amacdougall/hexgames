@@ -3,7 +3,10 @@ import { Cell, CellDefinition } from './core/cell';
 import { HexCoordinates } from './core/coordinates';
 import { BoardRenderer } from './rendering/boardRenderer';
 import { InputHandler } from './rendering/inputHandler';
-import { DefaultCellColorStrategy } from './rendering/cellColorStrategy';
+import {
+  CellColorStrategy,
+  DefaultCellColorStrategy,
+} from './rendering/cellColorStrategy';
 
 export class HexBoard<
   CustomProps extends Record<string, unknown> = Record<string, never>,
@@ -13,9 +16,11 @@ export class HexBoard<
   private inputHandler?: InputHandler<CustomProps>;
   private container?: HTMLElement;
   private isInitialized = false;
+  private colorStrategy?: CellColorStrategy<CustomProps>;
 
-  constructor() {
+  constructor(colorStrategy?: CellColorStrategy<CustomProps>) {
     this.hexGrid = new HexGrid<CustomProps>();
+    this.colorStrategy = colorStrategy;
   }
 
   public async init(containerId: string): Promise<void> {
@@ -27,8 +32,9 @@ export class HexBoard<
 
     this.container = container;
 
-    // Create renderer with default color strategy
-    const colorStrategy = new DefaultCellColorStrategy<CustomProps>();
+    // Create renderer with provided color strategy or default
+    const colorStrategy =
+      this.colorStrategy || new DefaultCellColorStrategy<CustomProps>();
     this.renderer = new BoardRenderer(this.hexGrid, colorStrategy);
 
     // Set up renderer size
@@ -127,6 +133,8 @@ export class HexBoard<
   public renderAll(): void {
     if (this.renderer) {
       this.renderer.renderHexGrid();
+    } else {
+      console.log("HexBoard.renderAll(): no renderer!")
     }
   }
 

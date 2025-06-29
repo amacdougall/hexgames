@@ -1,6 +1,5 @@
 import { HexBoard } from '../../src/hexBoard';
 import { HexCoordinates } from '../../src/core/coordinates';
-import { Cell, CellDefinition } from '../../src/core/cell';
 import * as THREE from 'three';
 
 // Mock Three.js and DOM
