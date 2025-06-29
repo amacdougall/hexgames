@@ -1,3 +1,5 @@
+/// <reference lib="dom" />
+
 import { HexGrid } from '../../src/core/hexGrid';
 
 interface TestProps extends Record<string, unknown> {
@@ -74,7 +76,7 @@ describe('HexGrid', () => {
     });
 
     test('updates existing cells', () => {
-      const originalCell = grid.addCell({
+      const _originalCell = grid.addCell({
         q: 0,
         r: 0,
         elevation: 1,

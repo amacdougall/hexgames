@@ -1,11 +1,10 @@
-// Entity definitions and interfaces
-// Implementation will go here
-
 import * as THREE from 'three';
 import { Cell } from './cell';
 
 /**
- * Definition for creating an entity
+ * Definition for creating an entity.
+ *
+ *
  */
 export interface EntityDefinition<
   CustomProps extends Record<string, unknown> = Record<string, never>,

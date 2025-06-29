@@ -35,10 +35,7 @@ describe('Cell System', () => {
       };
 
       expect(definition.customProps?.type).toBe('forest');
-      expect(definition.customProps?.resources).toEqual([
-        'wood',
-        'berries',
-      ]);
+      expect(definition.customProps?.resources).toEqual(['wood', 'berries']);
       expect(definition.customProps?.owner).toBe('player1');
     });
 
@@ -202,7 +199,7 @@ describe('Cell System', () => {
           specialRules?: {
             name: string;
             description: string;
-            effects: Record<string, any>;
+            effects: Record<string, unknown>;
           }[];
         };
         visuals: {
@@ -266,17 +263,11 @@ describe('Cell System', () => {
       expect(complexCell.customProps.visuals.texturePath).toBe(
         '/textures/ancient_ruins.png'
       );
-      expect(complexCell.customProps.visuals.effects?.[0].type).toBe(
-        'glow'
-      );
+      expect(complexCell.customProps.visuals.effects?.[0].type).toBe('glow');
 
       // Test optional properties
-      expect(complexCell.customProps.metadata.lastVisited).toBeInstanceOf(
-        Date
-      );
-      expect(complexCell.customProps.gameplay.specialRules).toHaveLength(
-        1
-      );
+      expect(complexCell.customProps.metadata.lastVisited).toBeInstanceOf(Date);
+      expect(complexCell.customProps.gameplay.specialRules).toHaveLength(1);
       expect(complexCell.customProps.visuals.animations).toContain(
         'glow_pulse'
       );

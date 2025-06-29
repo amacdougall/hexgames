@@ -2,7 +2,6 @@ import js from '@eslint/js';
 import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import prettier from 'eslint-plugin-prettier';
-import prettierConfig from 'eslint-config-prettier';
 
 export default [
   {
@@ -49,12 +48,12 @@ export default [
       // TypeScript rules
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { 
+        {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
           caughtErrorsIgnorePattern: '^_',
           destructuredArrayIgnorePattern: '^_',
-          ignoreRestSiblings: true
+          ignoreRestSiblings: true,
         },
       ],
       '@typescript-eslint/explicit-function-return-type': 'warn',
@@ -90,6 +89,24 @@ export default [
         beforeAll: 'readonly',
         afterAll: 'readonly',
         jest: 'readonly',
+        // Browser globals for game testing with jsdom
+        window: 'readonly',
+        document: 'readonly',
+        HTMLCanvasElement: 'readonly',
+        HTMLElement: 'readonly',
+        Element: 'readonly',
+        Event: 'readonly',
+        performance: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        // Performance and DOM types
+        Performance: 'readonly',
+        PerformanceEntry: 'readonly',
+        PerformanceEntryList: 'readonly',
+        FrameRequestCallback: 'readonly',
+        Document: 'readonly',
       },
     },
   },
@@ -106,6 +123,19 @@ export default [
         HTMLElement: 'readonly',
         Element: 'readonly',
         Event: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+      },
+    },
+  },
+  // Jest configuration files
+  {
+    files: ['**/jest.config.js'],
+    languageOptions: {
+      globals: {
+        module: 'readonly',
+        exports: 'readonly',
+        require: 'readonly',
       },
     },
   },

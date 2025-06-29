@@ -22,7 +22,7 @@ describe('Coordinate System', () => {
       const result = axialToCubic(0, 0);
       expect(result.q).toBe(0);
       expect(result.r).toBe(0);
-      expect(result.s === 0 || result.s === -0).toBe(true); // Handle -0 vs 0
+      expect(result.s === 0 || Object.is(result.s, 0)).toBe(true); // Handle -0 vs 0
       expect(result.q + result.r + result.s).toBe(0);
     });
 
