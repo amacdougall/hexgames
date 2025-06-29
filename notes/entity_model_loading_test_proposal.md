@@ -11,10 +11,10 @@ This document proposes an enhancement to the `ModelRegistry` to improve performa
 
 The `packages/hexboard/src/rendering/modelRegistry.ts` file currently contains a `ModelRegistry` class with the following capabilities:
 
--   **Model Registration**: A `registerModel(key: string, asset: ModelAsset)` method allows registering either a pre-created `THREE.Object3D` or a URL `string` pointing to a model file.
--   **Instance Creation**: An `async createModelInstance(key: string)` method is responsible for providing a `THREE.Object3D`.
--   **URL Loading**: If the registered asset is a URL, `createModelInstance` uses `GLTFLoader` to load the model from the network *on every call*.
--   **Object Cloning**: If the registered asset is a `THREE.Object3D`, `createModelInstance` returns a clone of the object.
+- **Model Registration**: A `registerModel(key: string, asset: ModelAsset)` method allows registering either a pre-created `THREE.Object3D` or a URL `string` pointing to a model file.
+- **Instance Creation**: An `async createModelInstance(key: string)` method is responsible for providing a `THREE.Object3D`.
+- **URL Loading**: If the registered asset is a URL, `createModelInstance` uses `GLTFLoader` to load the model from the network _on every call_.
+- **Object Cloning**: If the registered asset is a `THREE.Object3D`, `createModelInstance` returns a clone of the object.
 
 ## 3. Problem Statement
 
@@ -50,7 +50,7 @@ The `createModelInstance` method will be updated with the following logic:
 2.  **If the asset is a URL string**:
     a. Check the `loadedGltfCache` for an existing loading promise associated with the `key`.
     b. If a promise exists, `await` it to get the cached `THREE.Group`.
-    c. If no promise exists, initiate a new load using `GLTFLoader`. Store the returned promise in the `loadedGltfCache` *immediately*. Then, `await` the promise to get the loaded `THREE.Group`.
+    c. If no promise exists, initiate a new load using `GLTFLoader`. Store the returned promise in the `loadedGltfCache` _immediately_. Then, `await` the promise to get the loaded `THREE.Group`.
     d. Once the `THREE.Group` is obtained (either from cache or a new load), return a `clone()` of it. This ensures each entity gets a unique object instance that can be manipulated independently.
 3.  **If the asset is a `THREE.Object3D`**:
     a. The behavior remains the same: return a `clone()` of the object.
@@ -59,7 +59,7 @@ This change ensures that for any given model URL, the network request and parsin
 
 ## 5. Benefits
 
--   **Efficiency**: Models are fetched from the network and parsed only once per URL.
--   **Performance**: Drastically reduces latency when creating many instances of the same entity type.
--   **Robustness**: The promise-based caching mechanism correctly handles concurrent requests without race conditions.
--   **No Breaking Changes**: The public API of `ModelRegistry` is unchanged, so no refactoring of consuming code is required.
+- **Efficiency**: Models are fetched from the network and parsed only once per URL.
+- **Performance**: Drastically reduces latency when creating many instances of the same entity type.
+- **Robustness**: The promise-based caching mechanism correctly handles concurrent requests without race conditions.
+- **No Breaking Changes**: The public API of `ModelRegistry` is unchanged, so no refactoring of consuming code is required.
