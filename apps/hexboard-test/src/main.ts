@@ -1,8 +1,13 @@
 // Test application main entry point
 // This will demonstrate hexboard library usage
 
-import { HexGrid, BoardRenderer, DefaultCellColorStrategy, ElevationColorStrategy } from 'hexboard';
-import { GameColorStrategy, BiomeColorStrategy } from './gameColorStrategy.js';
+import {
+  BoardRenderer,
+  DefaultCellColorStrategy,
+  ElevationColorStrategy,
+  HexGrid,
+} from 'hexboard';
+import { BiomeColorStrategy, GameColorStrategy } from './gameColorStrategy.js';
 
 console.log('Hexboard test application starting...');
 
@@ -50,7 +55,11 @@ hexGrid.addCell({
   q: -1,
   r: 2,
   elevation: 1.0,
-  customProperties: { id: 'contested-cell', type: 'plains', state: 'contested' },
+  customProperties: {
+    id: 'contested-cell',
+    type: 'plains',
+    state: 'contested',
+  },
 });
 
 // Add a cluster of cells to demonstrate larger grids
@@ -109,10 +118,26 @@ controlsDiv.appendChild(title);
 
 // Strategy buttons
 const strategies = [
-  { name: 'Game Strategy', strategy: gameStrategy, description: 'Owner/terrain/state based' },
-  { name: 'Biome Strategy', strategy: biomeStrategy, description: 'Climate zones' },
-  { name: 'Default Strategy', strategy: defaultStrategy, description: 'Original elevation' },
-  { name: 'Elevation Strategy', strategy: elevationStrategy, description: 'Simple elevation' },
+  {
+    name: 'Game Strategy',
+    strategy: gameStrategy,
+    description: 'Owner/terrain/state based',
+  },
+  {
+    name: 'Biome Strategy',
+    strategy: biomeStrategy,
+    description: 'Climate zones',
+  },
+  {
+    name: 'Default Strategy',
+    strategy: defaultStrategy,
+    description: 'Original elevation',
+  },
+  {
+    name: 'Elevation Strategy',
+    strategy: elevationStrategy,
+    description: 'Simple elevation',
+  },
 ];
 
 let currentStrategyIndex = 0;
@@ -124,26 +149,29 @@ strategies.forEach((strategyInfo, index) => {
   button.style.display = 'block';
   button.style.margin = '2px 0';
   button.style.padding = '5px 10px';
-  button.style.backgroundColor = index === currentStrategyIndex ? '#007acc' : '#333';
+  button.style.backgroundColor =
+    index === currentStrategyIndex ? '#007acc' : '#333';
   button.style.color = 'white';
   button.style.border = 'none';
   button.style.borderRadius = '3px';
   button.style.cursor = 'pointer';
-  
+
   button.addEventListener('click', () => {
     // Update button states
     controlsDiv.querySelectorAll('button').forEach((btn, idx) => {
       btn.style.backgroundColor = idx === index ? '#007acc' : '#333';
     });
-    
+
     // Switch strategy
     renderer.setColorStrategy(strategyInfo.strategy);
     renderer.renderHexGrid(); // Re-render with new colors
     currentStrategyIndex = index;
-    
-    console.log(`Switched to ${strategyInfo.name}: ${strategyInfo.description}`);
+
+    console.log(
+      `Switched to ${strategyInfo.name}: ${strategyInfo.description}`
+    );
   });
-  
+
   controlsDiv.appendChild(button);
 });
 
@@ -173,12 +201,23 @@ console.log('- renderHexGrid() called');
 console.log('\nColor Strategy Demonstration:');
 const sampleCells = hexGrid.getAllCells().slice(0, 5);
 
-sampleCells.forEach(cell => {
-  console.log(`\nCell at (${cell.q}, ${cell.r}) - elevation: ${cell.elevation}, properties:`, cell.customProperties);
-  console.log(`  Game Strategy: #${gameStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`);
-  console.log(`  Biome Strategy: #${biomeStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`);
-  console.log(`  Default Strategy: #${defaultStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`);
-  console.log(`  Elevation Strategy: #${elevationStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`);
+sampleCells.forEach((cell) => {
+  console.log(
+    `\nCell at (${cell.q}, ${cell.r}) - elevation: ${cell.elevation}, properties:`,
+    cell.customProperties
+  );
+  console.log(
+    `  Game Strategy: #${gameStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`
+  );
+  console.log(
+    `  Biome Strategy: #${biomeStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`
+  );
+  console.log(
+    `  Default Strategy: #${defaultStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`
+  );
+  console.log(
+    `  Elevation Strategy: #${elevationStrategy.getCellColor(cell).toString(16).padStart(6, '0')}`
+  );
 });
 
 // Test individual cell rendering (add a special cell)
