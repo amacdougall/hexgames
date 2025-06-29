@@ -1,4 +1,5 @@
 import { Cell, CellColorStrategy } from 'hexboard';
+import { GameCellProps } from './types.js';
 
 /**
  * Game-specific color strategy that demonstrates advanced coloring logic
@@ -10,7 +11,7 @@ import { Cell, CellColorStrategy } from 'hexboard';
  * - Special state highlighting (selected, contested, etc.)
  * - Fallback to elevation-based coloring
  */
-export class GameColorStrategy implements CellColorStrategy<any> {
+export class GameColorStrategy implements CellColorStrategy<GameCellProps> {
   // Terrain type colors
   private static readonly TERRAIN_COLORS = {
     mountain: 0x8b4513, // Saddle brown
@@ -50,21 +51,24 @@ export class GameColorStrategy implements CellColorStrategy<any> {
   /**
    * Get the color for a cell based on game-specific logic
    */
-  getCellColor(cell: Cell<any>): number {
+  getCellColor(cell: Cell<GameCellProps>): number {
     // Priority 1: Special states (highest priority)
-    if (cell.customProperties?.state) {
-      const stateColor = this.getStateColor(cell.customProperties.state);
+    if (cell.customProps?.state) {
+      const stateColor = this.getStateColor(cell.customProps.state);
       if (stateColor !== null) {
         return stateColor;
       }
     }
 
     // Priority 2: Owner-based coloring for controlled territories
-    if (cell.customProperties?.owner) {
-      const ownerColor = this.getOwnerColor(cell.customProperties.owner);
+    if (cell.customProps?.owner) {
+      const ownerColor = this.getOwnerColor(cell.customProps.owner);
       if (ownerColor !== null) {
         // Blend with terrain for subtle owner indication
-        const terrainColor = this.getTerrainColor(cell.customProperties?.type);
+        const terrainType = cell.customProps?.type;
+        const terrainColor = terrainType
+          ? this.getTerrainColor(terrainType)
+          : null;
         return terrainColor !== null
           ? this.blendColors(ownerColor, terrainColor, 0.3)
           : ownerColor;
@@ -72,8 +76,8 @@ export class GameColorStrategy implements CellColorStrategy<any> {
     }
 
     // Priority 3: Terrain type from custom properties
-    if (cell.customProperties?.type) {
-      const terrainColor = this.getTerrainColor(cell.customProperties.type);
+    if (cell.customProps?.type) {
+      const terrainColor = this.getTerrainColor(cell.customProps.type);
       if (terrainColor !== null) {
         return terrainColor;
       }
@@ -154,7 +158,7 @@ export class GameColorStrategy implements CellColorStrategy<any> {
 /**
  * Alternative simple biome-based strategy that focuses on terrain variety
  */
-export class BiomeColorStrategy implements CellColorStrategy<any> {
+export class BiomeColorStrategy implements CellColorStrategy<GameCellProps> {
   private static readonly BIOME_COLORS = {
     arctic: 0xf0f8ff, // Alice blue
     taiga: 0x2f4f4f, // Dark slate gray
@@ -164,11 +168,10 @@ export class BiomeColorStrategy implements CellColorStrategy<any> {
     ocean: 0x006994, // Deep blue
   } as const;
 
-  getCellColor(cell: Cell<any>): number {
+  getCellColor(cell: Cell<GameCellProps>): number {
     // Determine biome based on elevation and custom properties
     const elevation = cell.elevation;
-    const isWater =
-      cell.isImpassable || cell.customProperties?.type === 'water';
+    const isWater = cell.isImpassable || cell.customProps?.type === 'water';
 
     if (isWater) {
       return BiomeColorStrategy.BIOME_COLORS.ocean;
