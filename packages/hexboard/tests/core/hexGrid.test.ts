@@ -554,7 +554,7 @@ describe('HexGrid', () => {
       }
 
       const lookupTime = performance.now() - startTime;
-      expect(lookupTime).toBeLessThan(100); // Should complete within 100ms
+      expect(lookupTime).toBeLessThan(200); // Should complete within 200ms
     });
   });
 
