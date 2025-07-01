@@ -17,6 +17,7 @@ export class HexBoard<
   private container?: HTMLElement;
   private isInitialized = false;
   private colorStrategy?: CellColorStrategy<CustomProps>;
+  private isRunning = false;
 
   constructor(colorStrategy?: CellColorStrategy<CustomProps>) {
     this.hexGrid = new HexGrid<CustomProps>();
@@ -59,9 +60,6 @@ export class HexBoard<
     // Initialize input handling
     this.inputHandler.initialize();
 
-    // Start render loop
-    this.startRenderLoop();
-
     this.isInitialized = true;
   }
 
@@ -69,6 +67,9 @@ export class HexBoard<
     if (!this.isInitialized) {
       return;
     }
+
+    // Stop render loop
+    this.stop();
 
     // Clean up input handler
     if (this.inputHandler) {
@@ -134,7 +135,7 @@ export class HexBoard<
     if (this.renderer) {
       this.renderer.renderHexGrid();
     } else {
-      console.log("HexBoard.renderAll(): no renderer!")
+      console.log('HexBoard.renderAll(): no renderer!');
     }
   }
 
@@ -164,6 +165,29 @@ export class HexBoard<
     } else {
       console.log('Hover exited');
     }
+  }
+
+  // Render control methods
+  public start(): void {
+    if (!this.isInitialized) {
+      console.warn('HexBoard must be initialized before starting');
+      return;
+    }
+    this.isRunning = true;
+    this.animate();
+  }
+
+  public stop(): void {
+    this.isRunning = false;
+  }
+
+  private animate(): void {
+    if (!this.isRunning || !this.renderer) {
+      return;
+    }
+
+    this.renderer.render();
+    requestAnimationFrame(() => this.animate());
   }
 
   // Render loop
