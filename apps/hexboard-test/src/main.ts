@@ -25,9 +25,9 @@ async function initializeApp(): Promise<void> {
         q: number;
         r: number;
         s: number;
-        customProperties?: { terrainType?: string };
+        customProps?: { terrainType?: string };
       }>;
-      defaults: { customProperties?: { terrainType?: string } };
+      defaults: { customProps?: { terrainType?: string } };
     } = await response.json();
     console.log('Loaded map:', mapData);
 
@@ -36,15 +36,15 @@ async function initializeApp(): Promise<void> {
       const coords = { q: cellData.q, r: cellData.r, s: cellData.s };
       const cellProps: GameCellProps = {
         type:
-          cellData.customProperties?.terrainType ||
-          mapData.defaults.customProperties?.terrainType,
+          cellData.customProps?.terrainType ||
+          mapData.defaults.customProps?.terrainType,
       };
 
       hexBoard.setCellAtCoords(coords, cellProps);
     });
 
     // Render all cells after adding them
-    hexBoard.renderAll();
+    hexBoard.start();
     console.log('Map loaded and rendered successfully');
   } catch (error) {
     console.error('Failed to load map data:', error);
