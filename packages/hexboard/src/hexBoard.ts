@@ -94,12 +94,18 @@ export class HexBoard<
   }
 
   // Core hex grid methods
-  public setCellAtCoords(coords: HexCoordinates, cellProps: CustomProps): void {
+  public setCellAtCoords(
+    coords: HexCoordinates,
+    cellData: Partial<CellDefinition<CustomProps>>
+  ): void {
     const cellDefinition: CellDefinition<CustomProps> = {
       q: coords.q,
       r: coords.r,
       s: coords.s,
-      customProps: cellProps,
+      elevation: cellData.elevation,
+      movementCost: cellData.movementCost,
+      isImpassable: cellData.isImpassable,
+      customProps: cellData.customProps,
     };
 
     // Remove existing cell if present

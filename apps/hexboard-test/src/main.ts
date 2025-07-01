@@ -25,22 +25,35 @@ async function initializeApp(): Promise<void> {
         q: number;
         r: number;
         s: number;
+        elevation?: number;
+        movementCost?: number;
+        isImpassable?: boolean;
         customProps?: { terrainType?: string };
       }>;
-      defaults: { customProps?: { terrainType?: string } };
+      defaults: {
+        elevation?: number;
+        movementCost?: number;
+        isImpassable?: boolean;
+        customProps?: { terrainType?: string };
+      };
     } = await response.json();
     console.log('Loaded map:', mapData);
 
     // Add cells from the map data
     mapData.cells.forEach((cellData) => {
       const coords = { q: cellData.q, r: cellData.r, s: cellData.s };
-      const cellProps: GameCellProps = {
-        type:
-          cellData.customProps?.terrainType ||
-          mapData.defaults.customProps?.terrainType,
+      const cellDefinition = {
+        elevation: cellData.elevation,
+        movementCost: cellData.movementCost,
+        isImpassable: cellData.isImpassable,
+        customProps: {
+          type:
+            cellData.customProps?.terrainType ||
+            mapData.defaults.customProps?.terrainType,
+        } as GameCellProps,
       };
 
-      hexBoard.setCellAtCoords(coords, cellProps);
+      hexBoard.setCellAtCoords(coords, cellDefinition);
     });
 
     // Render all cells after adding them
