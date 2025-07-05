@@ -38,13 +38,47 @@ const createMockCanvas = () => {
     configurable: true,
   });
 
-  canvas.addEventListener = jest.fn();
-  canvas.removeEventListener = jest.fn();
+  // Store event listeners so they can be called when events are dispatched
+  const eventListeners = new Map<string, EventListenerOrEventListenerObject[]>();
+
+  canvas.addEventListener = jest.fn((eventType: string, listener: EventListenerOrEventListenerObject) => {
+    if (!eventListeners.has(eventType)) {
+      eventListeners.set(eventType, []);
+    }
+    eventListeners.get(eventType)!.push(listener);
+  });
+
+  canvas.removeEventListener = jest.fn((eventType: string, listener: EventListenerOrEventListenerObject) => {
+    if (eventListeners.has(eventType)) {
+      const listeners = eventListeners.get(eventType)!;
+      const index = listeners.indexOf(listener);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
+    }
+  });
+
   canvas.getBoundingClientRect = jest.fn().mockReturnValue({
     left: 0,
     top: 0,
     width: 800,
     height: 600,
+  });
+
+  // Override dispatchEvent to call the registered listeners
+  const originalDispatchEvent = canvas.dispatchEvent.bind(canvas);
+  canvas.dispatchEvent = jest.fn((event: Event) => {
+    const listeners = eventListeners.get(event.type);
+    if (listeners) {
+      listeners.forEach(listener => {
+        if (typeof listener === 'function') {
+          listener(event);
+        } else if (listener && typeof listener.handleEvent === 'function') {
+          listener.handleEvent(event);
+        }
+      });
+    }
+    return originalDispatchEvent(event);
   });
 
   return canvas;
@@ -382,7 +416,12 @@ describe('HexBoard Input Integration', () => {
   });
 
   describe('cell click integration', () => {
+    let handleCellClickSpy: jest.SpyInstance;
+
     beforeEach(async () => {
+      // Set up spy before initialization so it captures the bound method
+      handleCellClickSpy = jest.spyOn(hexBoard as any, 'handleCellClick');
+      
       await hexBoard.init('test-container');
 
       // Add some test cells to the grid
@@ -400,8 +439,13 @@ describe('HexBoard Input Integration', () => {
       );
     });
 
+    afterEach(() => {
+      if (handleCellClickSpy) {
+        handleCellClickSpy.mockRestore();
+      }
+    });
+
     it('DEBUG: should handle cell clicks and trigger game logic', () => {
-      const handleCellClickSpy = jest.spyOn(hexBoard as any, 'handleCellClick');
       const clickCoords: HexCoordinates = { q: 1, r: 0, s: -1 };
 
       // Mock raycaster to return intersection with our test cell
