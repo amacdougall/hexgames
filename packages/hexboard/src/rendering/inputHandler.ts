@@ -70,7 +70,7 @@ export class InputHandler<_T extends object> {
   }
 
   private handleClick(event: MouseEvent): void {
-    console.log("InputHandler.handleCellClick()");
+    console.log('InputHandler.handleCellClick()');
     try {
       this.updateMousePosition(event);
       const coordinates = this.getIntersectedHexCoordinates();
@@ -152,14 +152,14 @@ export class InputHandler<_T extends object> {
   private isValidHexCoordinates(coords: unknown): coords is HexCoordinates {
     return Boolean(
       coords &&
-      typeof coords === 'object' &&
-      coords !== null &&
-      'q' in coords &&
-      'r' in coords &&
-      's' in coords &&
-      typeof (coords as HexCoordinates).q === 'number' &&
-      typeof (coords as HexCoordinates).r === 'number' &&
-      typeof (coords as HexCoordinates).s === 'number'
+        typeof coords === 'object' &&
+        coords !== null &&
+        'q' in coords &&
+        'r' in coords &&
+        's' in coords &&
+        typeof (coords as HexCoordinates).q === 'number' &&
+        typeof (coords as HexCoordinates).r === 'number' &&
+        typeof (coords as HexCoordinates).s === 'number'
     );
   }
 
