@@ -15,7 +15,8 @@
       "Bash(npm install:*)",
       "Bash(eslint:*)",
       "Bash(npx eslint:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm test:*)"
     ],
     "deny": []
   }
