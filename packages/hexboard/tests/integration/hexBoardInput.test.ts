@@ -386,12 +386,21 @@ describe('HexBoard Input Integration', () => {
       await hexBoard.init('test-container');
 
       // Add some test cells to the grid
-      hexBoard.setCellAtCoords({ q: 0, r: 0, s: 0 }, { customProps: { terrain: 'grass' } });
-      hexBoard.setCellAtCoords({ q: 1, r: 0, s: -1 }, { customProps: { terrain: 'water' } });
-      hexBoard.setCellAtCoords({ q: 0, r: 1, s: -1 }, { customProps: { terrain: 'mountain' } });
+      hexBoard.setCellAtCoords(
+        { q: 0, r: 0, s: 0 },
+        { customProps: { terrain: 'grass' } }
+      );
+      hexBoard.setCellAtCoords(
+        { q: 1, r: 0, s: -1 },
+        { customProps: { terrain: 'water' } }
+      );
+      hexBoard.setCellAtCoords(
+        { q: 0, r: 1, s: -1 },
+        { customProps: { terrain: 'mountain' } }
+      );
     });
 
-    it('should handle cell clicks and trigger game logic', () => {
+    it('DEBUG: should handle cell clicks and trigger game logic', () => {
       const handleCellClickSpy = jest.spyOn(hexBoard as any, 'handleCellClick');
       const clickCoords: HexCoordinates = { q: 1, r: 0, s: -1 };
 
@@ -494,8 +503,14 @@ describe('HexBoard Input Integration', () => {
       await hexBoard.init('test-container');
 
       // Add test cells
-      hexBoard.setCellAtCoords({ q: 0, r: 0, s: 0 }, { customProps: { terrain: 'grass' } });
-      hexBoard.setCellAtCoords({ q: 1, r: 0, s: -1 }, { customProps: { terrain: 'water' } });
+      hexBoard.setCellAtCoords(
+        { q: 0, r: 0, s: 0 },
+        { customProps: { terrain: 'grass' } }
+      );
+      hexBoard.setCellAtCoords(
+        { q: 1, r: 0, s: -1 },
+        { customProps: { terrain: 'water' } }
+      );
     });
 
     it('should handle cell hover events', () => {
