@@ -778,19 +778,8 @@ describe('HexBoard Input Integration', () => {
 
       // Use spy to add behavior without replacing the method
       handleCellClickSpy.mockImplementation((clickCoords: HexCoordinates) => {
-        // Call the original behavior (logging)
-        console.log('Cell clicked:', clickCoords);
+        // Simulate the original behavior without logging
         const cell = hexBoard.getCellAtCoords(clickCoords);
-        if (cell) {
-          console.log('Cell data:', {
-            elevation: cell.elevation,
-            movementCost: cell.movementCost,
-            isImpassable: cell.isImpassable,
-            customProps: cell.customProps,
-          });
-        } else {
-          console.log('No cell found at coordinates');
-        }
 
         // Add the test-specific behavior
         hexBoard.setCellAtCoords(clickCoords, modifiedCell);

@@ -27,6 +27,7 @@ export class HexBoard<
   public async init(containerId: string): Promise<void> {
     const container = document.getElementById(containerId);
     if (!container) {
+      // TODO: Implement proper error handling/reporting system
       console.warn(`Container with id '${containerId}' not found`);
       return;
     }
@@ -141,41 +142,40 @@ export class HexBoard<
     if (this.renderer) {
       this.renderer.renderHexGrid();
     } else {
-      console.log('HexBoard.renderAll(): no renderer!');
+      // TODO: Implement proper error handling/reporting system
+      console.warn('HexBoard.renderAll(): no renderer available');
     }
   }
 
   // Input event handlers
   private handleCellClick(coords: HexCoordinates): void {
-    // Basic click handling - log for now, can be extended
-    console.log('Cell clicked:', coords);
+    // TODO: Implement game-specific click logic here
+    // Basic click handling - can be extended for game mechanics
 
     // Get the cell data for potential game logic
     const cell = this.getCellAtCoords(coords);
     if (cell) {
-      console.log('Cell data:', {
-        elevation: cell.elevation,
-        movementCost: cell.movementCost,
-        isImpassable: cell.isImpassable,
-        customProps: cell.customProps,
-      });
+      // TODO: Implement game-specific cell interaction logic
+      // Example: select unit, move piece, show cell info, etc.
     } else {
-      console.log('No cell found at coordinates');
+      // TODO: Handle clicks on empty cells (e.g., move unit, place building)
     }
   }
 
   private handleCellHover(coords: HexCoordinates | null): void {
-    // Basic hover handling - log for now, can be extended for visual feedback
+    // TODO: Implement visual feedback for hover events
+    // Example: highlight cell, show tooltip, preview movement range, etc.
     if (coords) {
-      console.log('Cell hovered:', coords);
+      // TODO: Show hover feedback for occupied cell
     } else {
-      console.log('Hover exited');
+      // TODO: Clear hover feedback
     }
   }
 
   // Render control methods
   public start(): void {
     if (!this.isInitialized) {
+      // TODO: Implement proper error handling/reporting system
       console.warn('HexBoard must be initialized before starting');
       return;
     }

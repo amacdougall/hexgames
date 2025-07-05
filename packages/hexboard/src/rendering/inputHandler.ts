@@ -70,7 +70,6 @@ export class InputHandler<_T extends object> {
   }
 
   private handleClick(event: MouseEvent): void {
-    console.log('InputHandler.handleCellClick()');
     try {
       this.updateMousePosition(event);
       const coordinates = this.getIntersectedHexCoordinates();
@@ -79,7 +78,7 @@ export class InputHandler<_T extends object> {
         this.onCellClick(coordinates);
       }
     } catch (error) {
-      // Silently handle raycasting errors to prevent crashes
+      // TODO: Implement proper error reporting/logging system
       console.warn('InputHandler: Error during click handling:', error);
     }
   }
@@ -98,7 +97,7 @@ export class InputHandler<_T extends object> {
         }
       }
     } catch (error) {
-      // Silently handle raycasting errors to prevent crashes
+      // TODO: Implement proper error reporting/logging system
       console.warn('InputHandler: Error during mouse move handling:', error);
     }
   }
