@@ -369,7 +369,7 @@ describe('HexBoard Input Integration', () => {
       // Suppress console warnings for this test
       const consoleSpy = jest
         .spyOn(console, 'warn')
-        .mockImplementation(() => {});
+        .mockImplementation(() => { });
 
       try {
         await expect(
@@ -386,9 +386,9 @@ describe('HexBoard Input Integration', () => {
       await hexBoard.init('test-container');
 
       // Add some test cells to the grid
-      hexBoard.setCellAtCoords({ q: 0, r: 0, s: 0 }, { terrain: 'grass' });
-      hexBoard.setCellAtCoords({ q: 1, r: 0, s: -1 }, { terrain: 'water' });
-      hexBoard.setCellAtCoords({ q: 0, r: 1, s: -1 }, { terrain: 'mountain' });
+      hexBoard.setCellAtCoords({ q: 0, r: 0, s: 0 }, { customProps: { terrain: 'grass' } });
+      hexBoard.setCellAtCoords({ q: 1, r: 0, s: -1 }, { customProps: { terrain: 'water' } });
+      hexBoard.setCellAtCoords({ q: 0, r: 1, s: -1 }, { customProps: { terrain: 'mountain' } });
     });
 
     it('should handle cell clicks and trigger game logic', () => {
@@ -424,7 +424,7 @@ describe('HexBoard Input Integration', () => {
 
     it('should retrieve correct cell data when clicking on a cell', () => {
       const testCoords: HexCoordinates = { q: 0, r: 0, s: 0 };
-      const testCellProps = { terrain: 'grass' };
+      const testCellProps = { customProps: { terrain: 'grass' } };
       hexBoard.setCellAtCoords(testCoords, testCellProps);
 
       // Mock the input handler to simulate a click
@@ -494,8 +494,8 @@ describe('HexBoard Input Integration', () => {
       await hexBoard.init('test-container');
 
       // Add test cells
-      hexBoard.setCellAtCoords({ q: 0, r: 0, s: 0 }, { terrain: 'grass' });
-      hexBoard.setCellAtCoords({ q: 1, r: 0, s: -1 }, { terrain: 'water' });
+      hexBoard.setCellAtCoords({ q: 0, r: 0, s: 0 }, { customProps: { terrain: 'grass' } });
+      hexBoard.setCellAtCoords({ q: 1, r: 0, s: -1 }, { customProps: { terrain: 'water' } });
     });
 
     it('should handle cell hover events', () => {
@@ -633,7 +633,7 @@ describe('HexBoard Input Integration', () => {
 
     it('should ensure BoardRenderer stores coordinates in mesh userData', () => {
       const testCoords: HexCoordinates = { q: 2, r: -1, s: -1 };
-      const testCell = { terrain: 'desert' };
+      const testCell = { customProps: { terrain: 'desert' } };
 
       hexBoard.setCellAtCoords(testCoords, testCell);
 
@@ -668,8 +668,8 @@ describe('HexBoard Input Integration', () => {
 
     it('should handle rendering updates when cells are modified via input', () => {
       const coords: HexCoordinates = { q: 0, r: 1, s: -1 };
-      const originalCell = { terrain: 'grass' };
-      const modifiedCell = { terrain: 'water' };
+      const originalCell = { customProps: { terrain: 'grass' } };
+      const modifiedCell = { customProps: { terrain: 'water' } };
 
       // Set initial cell
       hexBoard.setCellAtCoords(coords, originalCell);
@@ -772,7 +772,7 @@ describe('HexBoard Input Integration', () => {
       ];
 
       testCoordinates.forEach((coords, index) => {
-        const cell = { terrain: `terrain_${index}` };
+        const cell = { customProps: { terrain: `terrain_${index}` } };
         hexBoard.setCellAtCoords(coords, cell);
 
         // Verify the cell can be retrieved with the same coordinates
@@ -856,7 +856,7 @@ describe('HexBoard Input Integration', () => {
         for (let r = -gridSize; r <= gridSize; r++) {
           const s = -q - r;
           if (Math.abs(s) <= gridSize) {
-            const cell = { terrain: 'grass' };
+            const cell = { customProps: { terrain: 'grass' } };
             hexBoard.setCellAtCoords({ q, r, s }, cell);
           }
         }
