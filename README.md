@@ -1,6 +1,7 @@
 # Hexgames Monorepo
 
-A monorepo containing the `hexboard` library and client applications for hexagonal grid-based games.
+A monorepo containing the `hexboard` library and client applications for
+hexagonal grid-based games.
 
 ## Project Structure
 

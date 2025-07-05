@@ -82,7 +82,8 @@
 ### **Separation of Concerns**
 
 - **Logic Layer**: HexGrid manages game logic, no rendering dependencies
-- **Rendering Layer**: BoardRenderer handles 3D visualization, depends on HexGrid
+- **Rendering Layer**: BoardRenderer handles 3D visualization, depends on
+  HexGrid
 - **Layout Layer**: Coordinate conversion utilities bridge logic and rendering
 
 ### **Type Safety**

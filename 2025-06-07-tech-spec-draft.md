@@ -17,8 +17,9 @@ use in the web browser.
   local version of `hexboard`. Changes in the `hexboard` source will be
   immediately available to the client application during development without
   needing to publish and reinstall.
-  - Example: In the client application's `package.json`: `"dependencies": {
-"hexboard": "workspace:*" }` (syntax varies slightly by package manager).
+  - Example: In the client application's `package.json`:
+    `"dependencies": { "hexboard": "workspace:*" }` (syntax varies slightly by
+    package manager).
 - **Directory Structure (Conceptual)**:
   ```
   /your-monorepo-workspace
@@ -41,8 +42,8 @@ use in the web browser.
 
 Provide placeholders for 3D model loading. These should be stubs at most.
 
-Client applications will not scale beyond 200 hex cells and 50 entities.
-This is a maximum, for safety; expected applications will be smaller.
+Client applications will not scale beyond 200 hex cells and 50 entities. This is
+a maximum, for safety; expected applications will be smaller.
 
 ## Coding Guidelines
 
@@ -55,8 +56,10 @@ when providing additional behavior or data.
 
 1. **Coordinates**:
 
-   - We'll use **Cubic coordinates** for the hexagonal grid, as they are well-suited for algorithms.
-   - A helper module will provide functions for coordinate manipulation, distance calculation, etc.
+   - We'll use **Cubic coordinates** for the hexagonal grid, as they are
+     well-suited for algorithms.
+   - A helper module will provide functions for coordinate manipulation,
+     distance calculation, etc.
 
    ```typescript
    // filepath: packages/hexboard/src/core/coordinates.ts
@@ -80,7 +83,8 @@ https://www.redblobgames.com/grids/hexagons/#spacing.
 
 - Hex cells will use the "flat top" orientation. Define spacing calculations
   accordingly.
-- It will be generic, to allow client applications to define custom properties with type safety.
+- It will be generic, to allow client applications to define custom properties
+  with type safety.
 
 ```typescript
 // filepath: packages/hexboard/src/core/cell.ts
@@ -116,7 +120,8 @@ export interface Cell<CustomProps extends Record<string, any> = {}>
 
 3. **Tile**: The 3D visual representation of a `Cell`.
 
-   - A `THREE.Mesh` (e.g., `THREE.CylinderGeometry` with 6 sides or `THREE.ExtrudeGeometry` from a hexagonal shape).
+   - A `THREE.Mesh` (e.g., `THREE.CylinderGeometry` with 6 sides or
+     `THREE.ExtrudeGeometry` from a hexagonal shape).
    - Its vertical height will be determined by the `Cell`'s `elevation`.
    - Horizontal dimensions will be uniform.
 
@@ -136,13 +141,15 @@ export interface Cell<CustomProps extends Record<string, any> = {}>
    }
    ```
 
-   - Clients will provide the `THREE.Object3D` for the `model`, allowing arbitrary 3D models.
+   - Clients will provide the `THREE.Object3D` for the `model`, allowing
+     arbitrary 3D models.
 
 ### Separation of Concerns: Logic vs. Rendering
 
 - **Logic Module (`HexGrid`)**:
 
-  - Manages `Cell` data, grid structure, pathfinding, movement range calculations.
+  - Manages `Cell` data, grid structure, pathfinding, movement range
+    calculations.
   - No direct three.js dependencies.
 
   ```typescript
@@ -272,7 +279,8 @@ export interface Cell<CustomProps extends Record<string, any> = {}>
 
 1. **Map Definition**:
 
-   - **JSON** will be used for defining custom maps. It's human-readable and easily parsable.
+   - **JSON** will be used for defining custom maps. It's human-readable and
+     easily parsable.
 
    ```typescript
    // filepath: packages/hexboard/src/map/mapDefinition.ts
@@ -455,7 +463,9 @@ export interface Cell<CustomProps extends Record<string, any> = {}>
 
 - **Rendering**: Done by `BoardRenderer` as described.
 - **Navigation API**: Methods like `zoom`, `pan`, `rotate` on `BoardRenderer`.
-- **Default Event Handlers**: An `InputHandler` class will listen for mouse/keyboard events on the renderer's DOM element and call the `BoardRenderer`'s navigation API.
+- **Default Event Handlers**: An `InputHandler` class will listen for
+  mouse/keyboard events on the renderer's DOM element and call the
+  `BoardRenderer`'s navigation API.
 
   ```typescript
   // filepath: packages/hexboard/src/rendering/inputHandler.ts

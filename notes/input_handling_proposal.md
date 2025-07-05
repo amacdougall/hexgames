@@ -10,9 +10,12 @@ between game logic (core) and rendering (3D visualization).
 
 The codebase uses a clean layered architecture:
 
-- **Core Layer** (`src/core/`): Pure game logic with HexGrid, coordinates, and cells
-- **Rendering Layer** (`src/rendering/`): Three.js 3D visualization with BoardRenderer
-- **Conversion Layer** (`src/rendering/layout.ts`): Bridges hex coordinates ↔ world coordinates
+- **Core Layer** (`src/core/`): Pure game logic with HexGrid, coordinates, and
+  cells
+- **Rendering Layer** (`src/rendering/`): Three.js 3D visualization with
+  BoardRenderer
+- **Conversion Layer** (`src/rendering/layout.ts`): Bridges hex coordinates ↔
+  world coordinates
 
 Key existing components:
 
@@ -55,7 +58,8 @@ Use Three.js Raycaster to:
 
 #### C. Coordinate Extraction
 
-- Store hex coordinates in `mesh.userData.coordinates` when creating meshes in `BoardRenderer.renderHexCell()`
+- Store hex coordinates in `mesh.userData.coordinates` when creating meshes in
+  `BoardRenderer.renderHexCell()`
 - Direct lookup from intersected mesh
 
 #### D. Event Interface Design
@@ -108,10 +112,13 @@ export class HexBoard<T> {
 
 ### 4. Architectural Benefits
 
-1. **Separation of Concerns**: Game logic receives clean hex coordinates, no 3D dependencies
-2. **Reusable Pattern**: InputHandler can be used by any game using the hex grid system
+1. **Separation of Concerns**: Game logic receives clean hex coordinates, no 3D
+   dependencies
+2. **Reusable Pattern**: InputHandler can be used by any game using the hex grid
+   system
 3. **Type Safety**: Full TypeScript support with proper coordinate interfaces
-4. **Performance**: Direct mesh lookup via userData avoids coordinate conversion overhead
+4. **Performance**: Direct mesh lookup via userData avoids coordinate conversion
+   overhead
 5. **Extensible**: Easy to add new input events (drag, multi-select, etc.)
 
 ### 5. Implementation Priority

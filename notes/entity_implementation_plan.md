@@ -1,6 +1,7 @@
 # Entity Implementation Plan
 
-This document outlines the plan for implementing entities in the `hexboard` package.
+This document outlines the plan for implementing entities in the `hexboard`
+package.
 
 ## 1. Core Implementation (`packages/hexboard/src/core`)
 
@@ -278,8 +279,10 @@ export class BoardRenderer<CustomProps extends object = Record<string, never>> {
     2.  Implement the `EntityManager` class.
     3.  Update `packages/hexboard/src/hexBoard.ts` to use the `EntityManager`.
 2.  **Rendering:**
-    1.  Implement the `EntityRenderer` class in a new file `packages/hexboard/src/rendering/entityRenderer.ts`.
-    2.  Update `packages/hexboard/src/rendering/boardRenderer.ts` to use the `EntityRenderer`.
+    1.  Implement the `EntityRenderer` class in a new file
+        `packages/hexboard/src/rendering/entityRenderer.ts`.
+    2.  Update `packages/hexboard/src/rendering/boardRenderer.ts` to use the
+        `EntityRenderer`.
 3.  **Testing:**
     1.  Create new tests for the `EntityManager`.
     2.  Update existing tests to reflect the changes.

@@ -50,11 +50,14 @@ cd packages/hexboard && npm run test:coverage
 
 ## Architecture Overview
 
-This is a **TypeScript monorepo** for hexagonal grid-based games using npm workspaces. The project separates game logic from 3D rendering through a clean layered architecture.
+This is a **TypeScript monorepo** for hexagonal grid-based games using npm
+workspaces. The project separates game logic from 3D rendering through a clean
+layered architecture.
 
 ### Project Structure
 
-- **`packages/hexboard/`** - Core library with hex grid logic and Three.js rendering
+- **`packages/hexboard/`** - Core library with hex grid logic and Three.js
+  rendering
 - **`apps/hexboard-test/`** - Test application demonstrating library features
 - **Workspace linking** - Test app automatically uses local hexboard library
 
@@ -65,14 +68,16 @@ This is a **TypeScript monorepo** for hexagonal grid-based games using npm works
    - `HexGrid` class manages game state with no rendering dependencies
    - pure logic, should not import rendering modules or game logic
    - Uses cubic coordinates (q, r, s) for hexagonal calculations
-   - Generic cell system with `<CustomProps extends object>` for type-safe extensibility
+   - Generic cell system with `<CustomProps extends object>` for type-safe
+     extensibility
    - 20+ utility methods for hex operations
 
 2. **Rendering Layer** (`src/rendering/`)
 
    - use `src/core` classes as data source
    - `BoardRenderer` handles Three.js 3D visualization
-   - `layout.ts` converts hex coordinates to world coordinates (flat-top hexagons)
+   - `layout.ts` converts hex coordinates to world coordinates (flat-top
+     hexagons)
    - Supports interactive OrbitControls, shadows, and terrain color coding
 
 3. **API Layer**

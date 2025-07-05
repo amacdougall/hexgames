@@ -2,7 +2,8 @@
 
 ## Overview
 
-The hexboard library now includes a comprehensive Jest-based testing framework for the core functionality (excluding 3D rendering).
+The hexboard library now includes a comprehensive Jest-based testing framework
+for the core functionality (excluding 3D rendering).
 
 ## Test Structure
 
@@ -71,8 +72,9 @@ The framework includes test stubs for:
 
 ## Test Implementation Status
 
-**Current Status**: All test stubs created and passing ✅
-**Next Step**: Implement actual test logic by replacing `expect(true).toBe(true)` with real assertions
+**Current Status**: All test stubs created and passing ✅ **Next Step**:
+Implement actual test logic by replacing `expect(true).toBe(true)` with real
+assertions
 
 ## Configuration
 
@@ -83,14 +85,17 @@ The framework includes test stubs for:
 
 ## Benefits
 
-1. **Bug Prevention**: Catches coordinate system bugs, duplicate cells, invalid operations
+1. **Bug Prevention**: Catches coordinate system bugs, duplicate cells, invalid
+   operations
 2. **Regression Testing**: Ensures changes don't break existing functionality
-3. **Future-Proofing**: Tests are designed to catch issues when adding pathfinding, units, etc.
+3. **Future-Proofing**: Tests are designed to catch issues when adding
+   pathfinding, units, etc.
 4. **Type Safety**: Validates generic constraints and custom property handling
 5. **Performance Monitoring**: Includes stress tests for large grids
 
 ## Development Workflow
 
 1. **TDD Ready**: Use `npm run test:watch` for test-driven development
-2. **Coverage Tracking**: Use `npm run test:coverage` to ensure comprehensive testing
+2. **Coverage Tracking**: Use `npm run test:coverage` to ensure comprehensive
+   testing
 3. **CI/CD Ready**: Framework is ready for continuous integration pipelines

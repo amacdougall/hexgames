@@ -57,11 +57,14 @@ npm run clean        # Cleans all build outputs
 
 ## Package Dependencies
 
-The test application automatically uses the local version of hexboard through workspace linking. Changes to the hexboard library are immediately available to the test app after rebuilding.
+The test application automatically uses the local version of hexboard through
+workspace linking. Changes to the hexboard library are immediately available to
+the test app after rebuilding.
 
 ## Next Steps
 
-The project structure is ready for implementing the hexboard library according to the technical specification. The main implementation areas are:
+The project structure is ready for implementing the hexboard library according
+to the technical specification. The main implementation areas are:
 
 1. Core coordinate system (`packages/hexboard/src/core/coordinates.ts`)
 2. Cell and grid logic (`packages/hexboard/src/core/`)
