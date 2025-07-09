@@ -202,11 +202,11 @@ turn-based games (such as board games and RPGs) on a 3D grid. The target device
 is the browser, and we are willing to assume a web browser context at all times
 for now. It contains:
 
-* classes dedicated to maintaining the logical game state, such as HexGrid
-* classes dedicated to rendering the 3D scene based on the game state, such as
+- classes dedicated to maintaining the logical game state, such as HexGrid
+- classes dedicated to rendering the 3D scene based on the game state, such as
   BoardRenderer
-* classes which can be used to integrate the two systems, such as InputHandler
-* the HexBoard class is the "foundation" class which ties these two separate
+- classes which can be used to integrate the two systems, such as InputHandler
+- the HexBoard class is the "foundation" class which ties these two separate
   concerns together
 
 With a few carefully chosen exceptions such as HexBoard, the game-logic and
@@ -227,4 +227,3 @@ Describe the current state of the system, without making plans for further
 expansion.
 
 Write this description to `./notes/2025-07-06-hexboard-system-brief.md`.
-
