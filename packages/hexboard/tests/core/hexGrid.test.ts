@@ -667,4 +667,122 @@ describe('HexGrid', () => {
       });
     });
   });
+
+  describe('getReachableHexes', () => {
+    test('should return only the start cell for range 0', () => {
+      grid.addCell({ q: 0, r: 0, customProps: { type: 'grass' } });
+
+      const reachable = grid.getReachableHexes({ q: 0, r: 0, s: 0 }, 0);
+
+      expect(reachable).toHaveLength(1);
+      expect(reachable[0]).toEqual({ q: 0, r: 0, s: 0 });
+    });
+
+    test('should return the center cell and its 6 neighbors for range 1', () => {
+      // Create a hex ring with center and neighbors
+      grid.createBasicHexRing(1);
+
+      const reachable = grid.getReachableHexes({ q: 0, r: 0, s: 0 }, 1);
+
+      expect(reachable).toHaveLength(7);
+      expect(reachable).toContainEqual({ q: 0, r: 0, s: 0 });
+
+      // Check that all 6 neighbors are included
+      const neighbors = grid.getNeighborCoordinates(0, 0);
+      neighbors.forEach((neighbor) => {
+        expect(reachable).toContainEqual(neighbor);
+      });
+    });
+
+    test('should return 19 cells for range 2', () => {
+      // Create a comprehensive hex grid with all cells within a larger area
+      // This ensures complete connectivity for BFS pathfinding
+      for (let q = -4; q <= 4; q++) {
+        for (let r = -4; r <= 4; r++) {
+          const s = -q - r;
+          // Create a large connected hex grid
+          if (Math.max(Math.abs(q), Math.abs(r), Math.abs(s)) <= 4) {
+            grid.addCell({ q, r, customProps: { type: 'terrain' } });
+          }
+        }
+      }
+
+      const reachable = grid.getReachableHexes({ q: 0, r: 0, s: 0 }, 2);
+
+      // A complete hex grid at range 2 should have 1 + 6 + 12 = 19 cells
+      expect(reachable).toHaveLength(19);
+      expect(reachable).toContainEqual({ q: 0, r: 0, s: 0 });
+    });
+
+    test('should not include impassable cells in the results when respectImpassable is true', () => {
+      // Create a grid with some impassable cells
+      grid.addCell({ q: 0, r: 0, customProps: { type: 'grass' } });
+      grid.addCell({
+        q: 1,
+        r: 0,
+        isImpassable: true,
+        customProps: { type: 'mountain' },
+      });
+      grid.addCell({ q: 0, r: 1, customProps: { type: 'grass' } });
+      grid.addCell({ q: -1, r: 0, customProps: { type: 'grass' } });
+
+      const reachable = grid.getReachableHexes({ q: 0, r: 0, s: 0 }, 1, {
+        respectImpassable: true,
+      });
+
+      expect(reachable).toHaveLength(3);
+      expect(reachable).toContainEqual({ q: 0, r: 0, s: 0 });
+      expect(reachable).toContainEqual({ q: 0, r: 1, s: -1 });
+      expect(reachable).toContainEqual({ q: -1, r: 0, s: 1 });
+      expect(reachable).not.toContainEqual({ q: 1, r: 0, s: -1 });
+    });
+
+    test('should include impassable cells in the results when respectImpassable is false', () => {
+      // Create a grid with some impassable cells
+      grid.addCell({ q: 0, r: 0, customProps: { type: 'grass' } });
+      grid.addCell({
+        q: 1,
+        r: 0,
+        isImpassable: true,
+        customProps: { type: 'mountain' },
+      });
+      grid.addCell({ q: 0, r: 1, customProps: { type: 'grass' } });
+      grid.addCell({ q: -1, r: 0, customProps: { type: 'grass' } });
+
+      const reachable = grid.getReachableHexes({ q: 0, r: 0, s: 0 }, 1, {
+        respectImpassable: false,
+      });
+
+      expect(reachable).toHaveLength(4);
+      expect(reachable).toContainEqual({ q: 0, r: 0, s: 0 });
+      expect(reachable).toContainEqual({ q: 1, r: 0, s: -1 });
+      expect(reachable).toContainEqual({ q: 0, r: 1, s: -1 });
+      expect(reachable).toContainEqual({ q: -1, r: 0, s: 1 });
+    });
+
+    test('should return an empty array if the start coordinate does not exist on the grid', () => {
+      // Create a grid with some cells but not at the start coordinate
+      grid.addCell({ q: 1, r: 0, customProps: { type: 'grass' } });
+      grid.addCell({ q: 0, r: 1, customProps: { type: 'grass' } });
+
+      const reachable = grid.getReachableHexes({ q: 0, r: 0, s: 0 }, 1);
+
+      expect(reachable).toHaveLength(0);
+    });
+
+    test('should handle pathfinding correctly from an edge or corner of the grid', () => {
+      // Create a small grid with only a few cells
+      grid.addCell({ q: 0, r: 0, customProps: { type: 'grass' } });
+      grid.addCell({ q: 1, r: 0, customProps: { type: 'grass' } });
+      grid.addCell({ q: 0, r: 1, customProps: { type: 'grass' } });
+      // Note: Not adding the full ring of neighbors
+
+      const reachable = grid.getReachableHexes({ q: 0, r: 0, s: 0 }, 1);
+
+      expect(reachable).toHaveLength(3);
+      expect(reachable).toContainEqual({ q: 0, r: 0, s: 0 });
+      expect(reachable).toContainEqual({ q: 1, r: 0, s: -1 });
+      expect(reachable).toContainEqual({ q: 0, r: 1, s: -1 });
+    });
+  });
 });

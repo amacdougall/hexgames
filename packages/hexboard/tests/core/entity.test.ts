@@ -141,6 +141,7 @@ describe('Entity', () => {
         cellPosition: testCell,
         model: {} as THREE.Object3D,
         movementSpeed: 2,
+        isInMovementMode: false,
       };
 
       // This test verifies that the current Entity interface still has model property
@@ -199,6 +200,7 @@ describe('Entity', () => {
         cellPosition: testCell,
         model: {} as THREE.Object3D,
         movementSpeed: 1,
+        isInMovementMode: false,
       };
 
       expect(entity.movementSpeed).toBe(1);
@@ -222,6 +224,7 @@ describe('Entity', () => {
         cellPosition: testCell,
         model: {} as THREE.Object3D,
         movementSpeed: 3,
+        isInMovementMode: false,
       };
 
       expect(entity.cellPosition.customProps).toEqual({
@@ -561,6 +564,7 @@ describe('EntityManager', () => {
       };
 
       entityManager.addEntity(entityDef);
+      entityManager.startMovement('movable-entity', [testCell2]);
       entityManager.moveEntity('movable-entity', testCell2);
 
       const entity = entityManager.getEntity('movable-entity');
@@ -578,6 +582,7 @@ describe('EntityManager', () => {
       expect(entityManager.getEntitiesAt('0,0')).toHaveLength(1);
       expect(entityManager.getEntitiesAt('1,-1')).toHaveLength(0);
 
+      entityManager.startMovement('tracked-move-entity', [testCell2]);
       entityManager.moveEntity('tracked-move-entity', testCell2);
       expect(entityManager.getEntitiesAt('0,0')).toHaveLength(0);
       expect(entityManager.getEntitiesAt('1,-1')).toHaveLength(1);
@@ -597,6 +602,7 @@ describe('EntityManager', () => {
       };
 
       entityManager.addEntity(entityDef);
+      entityManager.startMovement('same-cell-entity', [testCell]);
 
       expect(() => {
         entityManager.moveEntity('same-cell-entity', testCell);
@@ -621,6 +627,7 @@ describe('EntityManager', () => {
 
       entityManager.addEntity(entity1);
       entityManager.addEntity(entity2);
+      entityManager.startMovement('moving-entity', [testCell2]);
       entityManager.moveEntity('moving-entity', testCell2);
 
       const entitiesAtDestination = entityManager.getEntitiesAt('1,-1');
@@ -640,6 +647,7 @@ describe('EntityManager', () => {
       const entity = entityManager.addEntity(entityDef);
       expect(entity.cellPosition).toBe(testCell);
 
+      entityManager.startMovement('lifecycle-entity', [testCell2]);
       entityManager.moveEntity('lifecycle-entity', testCell2);
       const movedEntity = entityManager.getEntity('lifecycle-entity');
       expect(movedEntity!.cellPosition).toBe(testCell2);
@@ -654,6 +662,7 @@ describe('EntityManager', () => {
         isImpassable: false,
         customProps: {},
       };
+      entityManager.startMovement('lifecycle-entity', [thirdCell]);
       entityManager.moveEntity('lifecycle-entity', thirdCell);
       const finalEntity = entityManager.getEntity('lifecycle-entity');
       expect(finalEntity!.cellPosition).toBe(thirdCell);
@@ -674,6 +683,7 @@ describe('EntityManager', () => {
       expect(entityManager.getEntitiesAt('0,0')).toHaveLength(2);
       expect(entityManager.getEntitiesAt('1,-1')).toHaveLength(1);
 
+      entityManager.startMovement('e1', [testCell2]);
       entityManager.moveEntity('e1', testCell2);
       expect(entityManager.getEntitiesAt('0,0')).toHaveLength(1);
       expect(entityManager.getEntitiesAt('1,-1')).toHaveLength(2);
@@ -734,6 +744,244 @@ describe('EntityManager', () => {
       expect(typeof entity.cellPosition.customProps.health).toBe('number');
       expect(typeof entity.cellPosition.customProps.level).toBe('number');
       expect(typeof entity.cellPosition.customProps.terrain).toBe('string');
+    });
+  });
+
+  describe('Movement System', () => {
+    describe('isInMovementMode property', () => {
+      it('should add an isInMovementMode=false property to a new entity', () => {
+        // TODO: Add test for isInMovementMode property being false by default
+        const entityDef: EntityDefinition = {
+          id: 'test-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        const entity = entityManager.addEntity(entityDef);
+
+        // This will pass once isInMovementMode is added to Entity interface
+        expect(entity.isInMovementMode).toBe(false);
+      });
+    });
+
+    describe('startMovement method', () => {
+      it("should set the specified entity's isInMovementMode property to true", () => {
+        // TODO: Add test for startMovement setting isInMovementMode to true
+        const entityDef: EntityDefinition = {
+          id: 'movement-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        const entity = entityManager.addEntity(entityDef);
+        const destinations = [
+          { q: 1, r: 0, s: -1 },
+          { q: 0, r: 1, s: -1 },
+        ];
+
+        entityManager.startMovement('movement-entity', destinations);
+
+        expect(entity.isInMovementMode).toBe(true);
+      });
+
+      it('should throw an error if an invalid entity ID is provided', () => {
+        // TODO: Add test for startMovement with invalid entity ID
+        const destinations = [{ q: 1, r: 0, s: -1 }];
+
+        expect(() => {
+          entityManager.startMovement('non-existent-entity', destinations);
+        }).toThrow('Entity with ID non-existent-entity not found');
+      });
+
+      it('should store the provided destination coordinates for the movement session', () => {
+        // TODO: Add test for startMovement storing destination coordinates
+        const entityDef: EntityDefinition = {
+          id: 'destination-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        entityManager.addEntity(entityDef);
+        const destinations = [
+          { q: 1, r: 0, s: -1 },
+          { q: 0, r: 1, s: -1 },
+          { q: -1, r: 0, s: 1 },
+        ];
+
+        entityManager.startMovement('destination-entity', destinations);
+
+        // This will be verified through the moveEntity method's validation
+        expect(() => {
+          entityManager.moveEntity('destination-entity', testCell2);
+        }).toThrow(); // Should throw because testCell2 is not in destinations
+      });
+    });
+
+    describe('cancelMovement method', () => {
+      it("should set the specified entity's isInMovementMode property to false", () => {
+        // TODO: Add test for cancelMovement setting isInMovementMode to false
+        const entityDef: EntityDefinition = {
+          id: 'cancel-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        const entity = entityManager.addEntity(entityDef);
+        const destinations = [{ q: 1, r: 0, s: -1 }];
+
+        entityManager.startMovement('cancel-entity', destinations);
+        expect(entity.isInMovementMode).toBe(true);
+
+        entityManager.cancelMovement('cancel-entity');
+        expect(entity.isInMovementMode).toBe(false);
+      });
+
+      it('should clear any stored destination coordinates for the session', () => {
+        // TODO: Add test for cancelMovement clearing destination coordinates
+        const entityDef: EntityDefinition = {
+          id: 'clear-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        entityManager.addEntity(entityDef);
+        const destinations = [{ q: 1, r: 0, s: -1 }];
+
+        entityManager.startMovement('clear-entity', destinations);
+        entityManager.cancelMovement('clear-entity');
+
+        // After canceling, the entity should no longer be in movement mode
+        // and moveEntity should throw an error requiring movement mode
+        expect(() => {
+          entityManager.moveEntity('clear-entity', testCell2);
+        }).toThrow('Entity clear-entity is not in movement mode');
+      });
+
+      it('should not throw an error if the entity was not in movement mode', () => {
+        // TODO: Add test for cancelMovement on entity not in movement mode
+        const entityDef: EntityDefinition = {
+          id: 'not-moving-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        entityManager.addEntity(entityDef);
+
+        expect(() => {
+          entityManager.cancelMovement('not-moving-entity');
+        }).not.toThrow();
+      });
+    });
+
+    describe('moveEntity method', () => {
+      it('should throw an error if the entity is not in movement mode', () => {
+        // TODO: Add test for moveEntity throwing error when not in movement mode
+        const entityDef: EntityDefinition = {
+          id: 'not-in-movement-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        entityManager.addEntity(entityDef);
+
+        expect(() => {
+          entityManager.moveEntity('not-in-movement-entity', testCell2);
+        }).toThrow('Entity not-in-movement-entity is not in movement mode');
+      });
+
+      it('should throw an error if the destination cell is not in the list of available destinations', () => {
+        // TODO: Add test for moveEntity throwing error with invalid destination
+        const entityDef: EntityDefinition = {
+          id: 'invalid-destination-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        entityManager.addEntity(entityDef);
+        const destinations = [{ q: 1, r: 0, s: -1 }];
+
+        entityManager.startMovement('invalid-destination-entity', destinations);
+
+        expect(() => {
+          entityManager.moveEntity('invalid-destination-entity', testCell2);
+        }).toThrow(
+          'Destination cell is not in the list of available destinations'
+        );
+      });
+
+      it("should update the entity's cell property to the new cell upon a valid move", () => {
+        // TODO: Add test for moveEntity updating cell property
+        const entityDef: EntityDefinition = {
+          id: 'valid-move-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        const entity = entityManager.addEntity(entityDef);
+        const destinations = [testCell2];
+
+        entityManager.startMovement('valid-move-entity', destinations);
+        entityManager.moveEntity('valid-move-entity', testCell2);
+
+        expect(entity.cellPosition).toBe(testCell2);
+      });
+
+      it('should update the internal entityPositions map correctly upon a valid move', () => {
+        // TODO: Add test for moveEntity updating internal position tracking
+        const entityDef: EntityDefinition = {
+          id: 'position-tracking-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        entityManager.addEntity(entityDef);
+        const destinations = [testCell2];
+
+        entityManager.startMovement('position-tracking-entity', destinations);
+        entityManager.moveEntity('position-tracking-entity', testCell2);
+
+        expect(entityManager.getEntitiesAt('0,0')).toHaveLength(0);
+        expect(entityManager.getEntitiesAt('1,-1')).toHaveLength(1);
+      });
+
+      it("should set the entity's isInMovementMode property to false after a valid move", () => {
+        // TODO: Add test for moveEntity setting isInMovementMode to false after move
+        const entityDef: EntityDefinition = {
+          id: 'mode-reset-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        const entity = entityManager.addEntity(entityDef);
+        const destinations = [testCell2];
+
+        entityManager.startMovement('mode-reset-entity', destinations);
+        expect(entity.isInMovementMode).toBe(true);
+
+        entityManager.moveEntity('mode-reset-entity', testCell2);
+        expect(entity.isInMovementMode).toBe(false);
+      });
+
+      it('should clear the stored destination coordinates after a valid move', () => {
+        // TODO: Add test for moveEntity clearing destination coordinates after move
+        const entityDef: EntityDefinition = {
+          id: 'clear-destinations-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        entityManager.addEntity(entityDef);
+        const destinations = [testCell2];
+
+        entityManager.startMovement('clear-destinations-entity', destinations);
+        entityManager.moveEntity('clear-destinations-entity', testCell2);
+
+        // After the move, the entity should no longer be in movement mode
+        // and subsequent moves should work normally
+        expect(() => {
+          entityManager.moveEntity('clear-destinations-entity', testCell);
+        }).toThrow('Entity clear-destinations-entity is not in movement mode');
+      });
     });
   });
 });

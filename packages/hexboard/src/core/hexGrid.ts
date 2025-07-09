@@ -519,4 +519,94 @@ export class HexGrid<
   getNeighborCoordinatesFromCoords(coords: HexCoordinates): HexCoordinates[] {
     return this.getNeighborCoordinates(coords.q, coords.r);
   }
+
+  /**
+   * Returns all hex coordinates that are reachable within the specified range from a starting coordinate.
+   *
+   * <p>This method uses a breadth-first search algorithm to find all cells within the specified
+   * movement range from the starting coordinate. The search respects the actual cells that exist
+   * in the grid - coordinates that do not have corresponding cells will not be included in the results.
+   *
+   * <p>The {@code respectImpassable} option controls whether impassable cells should be treated
+   * as obstacles. When set to {@code true}, impassable cells will not be included in the results
+   * and will block further pathfinding beyond them. When set to {@code false}, impassable cells
+   * are included in the results and do not block pathfinding.
+   *
+   * @param {HexCoordinates} start the starting coordinate for the pathfinding search
+   * @param {number} range the maximum movement range (0 returns only the start cell)
+   * @param {Object} [options] optional configuration for the pathfinding behavior
+   * @param {boolean} [options.respectImpassable=true] whether to exclude impassable cells from results
+   * @returns {HexCoordinates[]} an array of coordinates that are reachable within the specified range
+   * @since 1.0
+   */
+  getReachableHexes(
+    start: HexCoordinates,
+    range: number,
+    options: { respectImpassable?: boolean } = {}
+  ): HexCoordinates[] {
+    const { respectImpassable = true } = options;
+
+    // If start coordinate doesn't exist on the grid, return empty array
+    if (!this.hasCellAtCoords(start)) {
+      return [];
+    }
+
+    // If range is 0, return only the start coordinate
+    if (range === 0) {
+      return [start];
+    }
+
+    const visited = new Set<string>();
+    const reachable: HexCoordinates[] = [];
+    const queue: Array<{ coords: HexCoordinates; distance: number }> = [];
+
+    // Add start coordinate to results and queue
+    const startId = this.createCellId(start.q, start.r, start.s);
+    visited.add(startId);
+    reachable.push(start);
+    queue.push({ coords: start, distance: 0 });
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+
+      // If we've reached the maximum range, don't explore further
+      if (current.distance >= range) {
+        continue;
+      }
+
+      // Get all neighboring coordinates
+      const neighbors = this.getNeighborCoordinatesFromCoords(current.coords);
+
+      for (const neighbor of neighbors) {
+        const neighborId = this.createCellId(
+          neighbor.q,
+          neighbor.r,
+          neighbor.s
+        );
+
+        // Skip if already visited
+        if (visited.has(neighborId)) {
+          continue;
+        }
+
+        // Check if the neighbor cell exists on the grid
+        const neighborCell = this.getCellByCoords(neighbor);
+        if (!neighborCell) {
+          continue;
+        }
+
+        // Check if we should respect impassable cells
+        if (respectImpassable && neighborCell.isImpassable) {
+          continue;
+        }
+
+        // Mark as visited and add to results
+        visited.add(neighborId);
+        reachable.push(neighbor);
+        queue.push({ coords: neighbor, distance: current.distance + 1 });
+      }
+    }
+
+    return reachable;
+  }
 }

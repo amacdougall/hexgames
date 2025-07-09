@@ -87,6 +87,7 @@ describe('EntityRenderer', () => {
         model: {} as THREE.Object3D,
         modelKey: 'warrior-model',
         movementSpeed: 1,
+        isInMovementMode: false,
       };
 
       // Mock EntityManager to return our test entity
@@ -129,6 +130,7 @@ describe('EntityRenderer', () => {
         cellPosition: testCell,
         model: {} as THREE.Object3D,
         movementSpeed: 1,
+        isInMovementMode: false,
       };
 
       (mockEntityManager.getAllEntities as jest.Mock).mockReturnValue([
@@ -159,6 +161,7 @@ describe('EntityRenderer', () => {
         model: {} as THREE.Object3D,
         modelKey: 'temp-model',
         movementSpeed: 1,
+        isInMovementMode: false,
       };
 
       // First update: add the entity
@@ -215,6 +218,7 @@ describe('EntityRenderer', () => {
         model: {} as THREE.Object3D,
         modelKey: 'moving-model',
         movementSpeed: 1,
+        isInMovementMode: false,
       };
 
       // First update: add the entity
@@ -277,6 +281,7 @@ describe('EntityRenderer', () => {
         model: {} as THREE.Object3D,
         modelKey: 'model-1',
         movementSpeed: 1,
+        isInMovementMode: false,
       };
 
       const entity2: Entity & { modelKey?: string } = {
@@ -285,6 +290,7 @@ describe('EntityRenderer', () => {
         model: {} as THREE.Object3D,
         modelKey: 'model-2',
         movementSpeed: 1,
+        isInMovementMode: false,
       };
 
       const model1 = new THREE.Object3D();
@@ -336,6 +342,7 @@ describe('EntityRenderer', () => {
         model: {} as THREE.Object3D,
         modelKey: 'error-model',
         movementSpeed: 1,
+        isInMovementMode: false,
       };
 
       (mockEntityManager.getAllEntities as jest.Mock).mockReturnValue([

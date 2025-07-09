@@ -41,11 +41,16 @@ const createMockCanvas = () => {
   // Store event listeners so they can be called when events are dispatched
   const eventListeners = new Map<
     string,
-    EventListenerOrEventListenerObject[]
+    (((event: Event) => void) | { handleEvent: (event: Event) => void })[]
   >();
 
   canvas.addEventListener = jest.fn(
-    (eventType: string, listener: EventListenerOrEventListenerObject) => {
+    (
+      eventType: string,
+      listener:
+        | ((event: Event) => void)
+        | { handleEvent: (event: Event) => void }
+    ) => {
       if (!eventListeners.has(eventType)) {
         eventListeners.set(eventType, []);
       }
@@ -54,7 +59,12 @@ const createMockCanvas = () => {
   );
 
   canvas.removeEventListener = jest.fn(
-    (eventType: string, listener: EventListenerOrEventListenerObject) => {
+    (
+      eventType: string,
+      listener:
+        | ((event: Event) => void)
+        | { handleEvent: (event: Event) => void }
+    ) => {
       if (eventListeners.has(eventType)) {
         const listeners = eventListeners.get(eventType)!;
         const index = listeners.indexOf(listener);
@@ -778,9 +788,6 @@ describe('HexBoard Input Integration', () => {
 
       // Use spy to add behavior without replacing the method
       handleCellClickSpy.mockImplementation((clickCoords: HexCoordinates) => {
-        // Simulate the original behavior without logging
-        const cell = hexBoard.getCellAtCoords(clickCoords);
-
         // Add the test-specific behavior
         hexBoard.setCellAtCoords(clickCoords, modifiedCell);
       });
