@@ -196,20 +196,6 @@ export class HexBoard<
     requestAnimationFrame(() => this.animate());
   }
 
-  // Render loop
-  private startRenderLoop(): void {
-    if (!this.renderer) return;
-
-    const animate = (): void => {
-      if (this.renderer && this.isInitialized) {
-        this.renderer.render();
-        requestAnimationFrame(animate);
-      }
-    };
-
-    animate();
-  }
-
   // Getters for accessing internal components (mainly for testing)
   public getHexGrid(): HexGrid<CustomProps> {
     return this.hexGrid;
