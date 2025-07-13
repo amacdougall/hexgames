@@ -80,14 +80,39 @@ if a clicked hex contains an entity or is a valid destination.
 
 ### 2. Rendering Changes
 
-#### 2.1. Highlighting
+#### 2.1. Application-Defined Render Effects
 
-- Extend `BoardRenderer` to:
-  - When in movement mode, highlight the entity
-  - When in movement mode, highlight valid movement destinations using a visual
-    effect (**Temporary implementation**: add a glowing outline to the rendered
-    hex tile; exact details are unimportant, but later we will move this logic
-    from `hexboard` to the application)
+To give the application full control over visual effects, `hexboard` will use an
+injectable strategy pattern for custom rendering logic. This will be implemented
+first for movement highlighting, but can be extended to other visual effects in
+the future.
+
+- **New `HighlightStrategy` Interface:** A new interface, `HighlightStrategy`,
+  will be defined in the library:
+
+  ```typescript
+  interface HighlightStrategy {
+    apply(object: THREE.Object3D): void;
+    remove(object: THREE.Object3D): void;
+  }
+  ```
+
+- **Update `BoardRenderer`:** The `BoardRenderer` will accept an optional
+  `HighlightStrategy` in its constructor.
+
+  - If no strategy is provided, a default implementation (e.g., applying an
+    emissive glow) will be used.
+  - The `BoardRenderer` will be responsible for _when_ to apply the highlight
+    (i.e., when `startMovement` is active) by calling the strategy's `apply` and
+    `remove` methods on the appropriate entity and cell meshes.
+
+- **Default Strategy:** The package will provide a default `HighlightStrategy`
+  which applies a yellow glow.
+
+- **Application Responsibility:** The application may provide a concrete
+  implementation of the `HighlightStrategy`. This gives the application
+  developer full control over _how_ objects are highlighted, allowing for custom
+  shaders, outlines, or any other visual effect.
 
 #### 2.2. Re-rendering
 
