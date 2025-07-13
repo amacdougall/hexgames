@@ -7,6 +7,10 @@ export {
   DefaultCellColorStrategy,
   ElevationColorStrategy,
 } from './cellColorStrategy';
+export {
+  HighlightStrategy,
+  DefaultHighlightStrategy,
+} from './highlightStrategy';
 export { hexToWorld } from './layout';
 export { ModelRegistry } from './modelRegistry';
 export { EntityRenderer } from './entityRenderer';

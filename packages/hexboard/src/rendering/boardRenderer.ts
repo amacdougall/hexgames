@@ -11,6 +11,10 @@ import {
   CellColorStrategy,
   DefaultCellColorStrategy,
 } from './cellColorStrategy';
+import {
+  DefaultHighlightStrategy,
+  HighlightStrategy,
+} from './highlightStrategy';
 
 export class BoardRenderer<
   CustomProps extends Record<string, unknown> = Record<string, never>,
@@ -23,19 +27,24 @@ export class BoardRenderer<
   private groundPlane: THREE.Mesh | null = null;
   private hexMeshes: Map<string, THREE.Mesh> = new Map();
   private colorStrategy: CellColorStrategy<CustomProps>;
+  private highlightStrategy: HighlightStrategy;
 
   /**
    * Creates a new BoardRenderer for rendering hex grids in 3D.
    *
    * @param hexGrid - The hex grid to render
    * @param colorStrategy - Optional color strategy for cell coloring. Defaults to DefaultCellColorStrategy
+   * @param highlightStrategy - Optional highlight strategy for visual effects. Defaults to DefaultHighlightStrategy
    */
   constructor(
     hexGrid: HexGrid<CustomProps>,
-    colorStrategy?: CellColorStrategy<CustomProps>
+    colorStrategy?: CellColorStrategy<CustomProps>,
+    highlightStrategy?: HighlightStrategy
   ) {
     this.hexGrid = hexGrid;
     this.colorStrategy = colorStrategy || new DefaultCellColorStrategy();
+    this.highlightStrategy =
+      highlightStrategy || new DefaultHighlightStrategy();
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera();
     this.renderer = new THREE.WebGLRenderer();
@@ -266,6 +275,50 @@ export class BoardRenderer<
    */
   getColorStrategy(): CellColorStrategy<CustomProps> {
     return this.colorStrategy;
+  }
+
+  /**
+   * Sets the highlight strategy used for visual effects.
+   *
+   * @param strategy - The new highlight strategy to use
+   */
+  setHighlightStrategy(strategy: HighlightStrategy): void {
+    this.highlightStrategy = strategy;
+  }
+
+  /**
+   * Gets the current highlight strategy being used for visual effects.
+   *
+   * @returns The current highlight strategy instance
+   */
+  getHighlightStrategy(): HighlightStrategy {
+    return this.highlightStrategy;
+  }
+
+  /**
+   * Applies highlight effect to a specific hex cell.
+   *
+   * @param coordinates - The hex coordinates of the cell to highlight
+   */
+  highlightHexCell(coordinates: HexCoordinates): void {
+    const key = this.createCoordinateKey(coordinates);
+    const mesh = this.hexMeshes.get(key);
+    if (mesh) {
+      this.highlightStrategy.apply(mesh);
+    }
+  }
+
+  /**
+   * Removes highlight effect from a specific hex cell.
+   *
+   * @param coordinates - The hex coordinates of the cell to remove highlighting from
+   */
+  removeHighlightFromHexCell(coordinates: HexCoordinates): void {
+    const key = this.createCoordinateKey(coordinates);
+    const mesh = this.hexMeshes.get(key);
+    if (mesh) {
+      this.highlightStrategy.remove(mesh);
+    }
   }
 
   /**
