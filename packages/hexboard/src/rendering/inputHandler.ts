@@ -133,16 +133,18 @@ export class InputHandler<_T extends object> {
       return null;
     }
 
-    // Get the first (closest) intersection
-    const intersection = intersects[0];
-    const mesh = intersection.object;
+    // Check all intersections to find the first one with hex coordinates
+    // This allows clicks to pass through entities and hit the tile beneath
+    for (const intersection of intersects) {
+      const mesh = intersection.object;
 
-    // Check if the mesh has coordinate data
-    if (
-      mesh.userData &&
-      this.isValidHexCoordinates(mesh.userData.coordinates)
-    ) {
-      return mesh.userData.coordinates as HexCoordinates;
+      // Check if the mesh has coordinate data
+      if (
+        mesh.userData &&
+        this.isValidHexCoordinates(mesh.userData.coordinates)
+      ) {
+        return mesh.userData.coordinates as HexCoordinates;
+      }
     }
 
     return null;
