@@ -1,93 +1,56 @@
-# Implementation Plan: Core Movement Mechanics
+# Implementation Plan: Core Logic Changes for Movement
 
-**Date:** 2025-07-08
+**Date:** 2025-07-12
 
 **Author:** GitHub Copilot (as Tech Lead)
 
-**Objective:** Implement the core, non-rendering logic for entity movement in
-the `hexboard` library. This involves adding pathfinding capabilities to
-`HexGrid` and state management for movement sessions to `EntityManager`.
+**Objective:** Implement the core logic for entity movement in the `hexboard`
+library. This includes managing movement state in the `EntityManager` and adding
+pathfinding utilities to the `HexGrid`.
 
 ---
 
 ## TDD Implementation Process
 
-We will follow a strict Test-Driven Development approach. For each piece of
-functionality, you will first write tests that fail, and then write the
-implementation code to make those tests pass.
+We will follow a strict Test-Driven Development process. The first step is to
+define the tests in natural language, which will serve as our specification.
 
-### Phase 1: Pathfinding Utility (`getReachableHexes`)
+### Phase 1: `EntityManager` Movement State
 
 #### Step 1.1: Write Test Cases (Natural Language)
 
-First, please add the following test case descriptions to a new test file at
-`packages/hexboard/tests/core/hexGrid.test.ts`. I will review them before you
-proceed to implementation. Write stubs, with natural language comments
-describing the test setup and expectations.
+Please update the existing test file at
+`packages/hexboard/tests/core/entityManager.test.ts` with the following tests
+inside a new `describe('Movement Mode', () => { ... })` block:
 
-- **`getReachableHexes`:**
-  - `it('should return only the start cell for range 0')`
-  - `it('should return the center cell and its 6 neighbors for range 1')`
-  - `it('should return 19 cells for range 2')`
-  - `it('should not include impassable cells in the results when respectImpassable is true')`
-  - `it('should include impassable cells in the results when respectImpassable is false')`
-  - `it('should return an empty array if the start coordinate does not exist on the grid')`
-  - `it('should handle pathfinding correctly from an edge or corner of the grid')`
+- `it('should start movement mode for an entity, storing available destinations and setting isInMovementMode to true')`
+- `it('should throw an error if startMovement is called for an entity that does not exist')`
+- `it('should throw an error if startMovement is called for an entity already in movement mode')`
+- `it('should allow moving an entity to a valid destination cell, updating its position and exiting movement mode')`
+- `it('should throw an error if moveEntity is called for an entity not in movement mode')`
+- `it('should throw an error if trying to move to a cell not in the available destinations')`
+- `it('should cancel movement mode, clearing destinations and resetting the entity state')`
+- `it('should not move the entity if an invalid destination is clicked and movement is subsequently cancelled')`
+- `it('should throw an error if cancelMovement is called for an entity not in movement mode')`
 
-#### Step 1.2: Implement Failing Unit Tests
-
-Once the natural language test cases are approved, implement them in
-`packages/hexboard/tests/core/hexGrid.test.ts`, replacing the comments. Use a
-setup block to create a standard `HexGrid` instance with a predictable layout,
-including some cells marked as impassable.
-
-Run the tests. They are all expected to fail, as the `getReachableHexes` method
-does not exist yet.
-
-#### Step 1.3: Implement Functionality
-
-Now, implement the `getReachableHexes` method in
-`packages/hexboard/src/core/hexGrid.ts`. Use a Breadth-First Search (BFS)
-algorithm. The implementation is complete when all the tests you wrote in the
-previous step pass.
-
-### Phase 2: Entity Movement State Management
+### Phase 2: `HexGrid` Pathfinding Utility
 
 #### Step 2.1: Write Test Cases (Natural Language)
 
-Next, create a new test file at
-`packages/hexboard/tests/core/entityManager.test.ts`. Add the following test
-cases for my review. Follow the same procedure as before.
+Please update the existing test file at
+`packages/hexboard/tests/core/hexGrid.test.ts` with the following tests inside a
+new `describe('getReachableHexes', () => { ... })` block:
 
-- **`isInMovementMode` property:**
-  - `it('should add an isInMovementMode=false property to a new entity')`
-- **`startMovement` method:**
-  - `it('should set the specified entity's isInMovementMode property to true')`
-  - `it('should throw an error if an invalid entity ID is provided')`
-  - `it('should store the provided destination coordinates for the movement session')`
-- **`cancelMovement` method:**
-  - `it('should set the specified entity's isInMovementMode property to false')`
-  - `it('should clear any stored destination coordinates for the session')`
-  - `it('should not throw an error if the entity was not in movement mode')`
-- **`moveEntity` method:**
-  - `it('should throw an error if the entity is not in movement mode')`
-  - `it('should throw an error if the destination cell is not in the list of available destinations')`
-  - `it('should update the entity's cell property to the new cell upon a valid move')`
-  - `it('should update the internal entityPositions map correctly upon a valid move')`
-  - `it('should set the entity's isInMovementMode property to false after a valid move')`
-  - `it('should clear the stored destination coordinates after a valid move')`
+- `it('should return all hexes within a given range')`
+- `it('should return only the start hex for a range of 0')`
+- `it('should correctly handle hexes at the edge of the grid')`
+- `it('should respect impassable hexes when the option is enabled')`
+- `it('should ignore impassable hexes when the option is disabled by default')`
+- `it('should return an empty array for a negative range')`
+- `it('should throw an error if the starting hex is out of bounds')`
 
-#### Step 2.2: Implement Failing Unit Tests
+### Next Steps
 
-After approval, implement these tests. You will need to add the
-`isInMovementMode` property to the `Entity` and `EntityDefinition` interfaces in
-`packages/hexboard/src/core/entity.ts` first, which may cause some existing
-tests to break. Please fix them. Then, write the new tests for the
-`EntityManager`. They are all expected to fail.
-
-#### Step 2.3: Implement Functionality
-
-Finally, implement the new properties and methods in
-`packages/hexboard/src/core/entity.ts` and
-`packages/hexboard/src/core/entityManager.ts`. Your implementation is complete
-when all `entityManager.test.ts` tests pass.
+Once these test cases are approved, the next step will be to write the failing
+unit tests in the specified files. After that, we will implement the
+functionality to make the tests pass.
