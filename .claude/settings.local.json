@@ -18,7 +18,8 @@
       "Bash(grep:*)",
       "Bash(npm test:*)",
       "Bash(rg:*)",
-      "Bash(TZ=America/New_York date -Iseconds)"
+      "Bash(TZ=America/New_York date -Iseconds)",
+      "Bash(npm run dev:*)"
     ],
     "deny": []
   }
