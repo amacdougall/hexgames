@@ -26,8 +26,15 @@ for a unidirectional data flow:
 3.  **Render:** The rendering engine observes changes in the game state and
     updates the 3D visualization accordingly.
 
-The `HexBoard` class serves as the primary public API, orchestrating the
-interaction between the logical and rendering systems.
+The `HexBoard` class orchestrates the interaction between the logical and
+rendering systems. This class is the primary interaction point for application
+which use this library.
+
+### Usage
+
+Exact library usage patterns are still evolving, but in general we expect
+applications to expand upon the capabilities of the `hexboard` library through
+dependency injection, including but not limited to the Strategy pattern.
 
 ## System Architecture
 
@@ -154,7 +161,7 @@ grid-specific events.
 
 ### 3. The Main `HexBoard` Class (`src/hexBoard.ts`)
 
-`HexBoard` is the high-level facade that simplifies the creation and management
+`HexBoard` is the high-level façade that simplifies the creation and management
 of a hex board.
 
 - It instantiates and holds references to the `HexGrid`, `BoardRenderer`, and
