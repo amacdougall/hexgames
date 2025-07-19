@@ -17,7 +17,8 @@
       "Bash(npx eslint:*)",
       "Bash(grep:*)",
       "Bash(npm test:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(TZ=America/New_York date -Iseconds)"
     ],
     "deny": []
   }
