@@ -2,26 +2,18 @@
 
 **Date:** 2025-07-08
 
-**Author:** GitHub Copilot (as Tech Lead)
-
 **Objective:** Use the new `hexboard` features to implement a complete movement
 flow in the `hexboard-test` application. This will serve as a validation of the
 library changes and a clear example for future users.
 
 ---
 
-## TDD Implementation Process
-
-For this demo, our "tests" will be the acceptance criteria for the user-facing
-behavior. We will not write automated unit tests for the demo application
-itself, but will instead use this plan as a checklist for manual testing.
-
 ### Phase 1: Application Logic for Movement
 
-#### Step 1.1: Define Acceptance Criteria (Natural Language)
+#### Step 1.1: Acceptance Criteria
 
-I will review these criteria with you. Once approved, you will use them to guide
-your implementation.
+This demo will be manually tested, but consider these acceptance criteria during
+development.
 
 1.  **Initial State:** When the application loads, a single entity (the
     dodecahedron) is visible on a random cell. No hexes are highlighted.
