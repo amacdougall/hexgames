@@ -134,6 +134,16 @@ export class EntityManager<
   }
 
   /**
+   * Gets the available destinations for an entity's current movement session.
+   *
+   * @param entityId The ID of the entity to get destinations for
+   * @returns Array of available destination coordinates, or empty array if no session exists
+   */
+  getMovementDestinations(entityId: string): HexCoordinates[] {
+    return this.movementSessions.get(entityId) || [];
+  }
+
+  /**
    * Cancels the movement session for an entity, setting its isInMovementMode to false
    * and clearing any stored destination coordinates.
    *
@@ -194,7 +204,7 @@ export class EntityManager<
   }
 
   private getCellId(cell: Cell<CustomProps>): string {
-    return `${cell.q},${cell.r}`;
+    return `${cell.q},${cell.r},${cell.s}`;
   }
 
   private addEntityToPosition(cellId: string, entityId: string): void {

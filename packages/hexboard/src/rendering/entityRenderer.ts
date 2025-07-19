@@ -8,8 +8,10 @@ import { hexToWorld } from './layout';
  * This class bridges the gap between the core entity system and the 3D rendering layer.
  * It observes entities from the EntityManager and manages their corresponding 3D models in the scene.
  */
-export class EntityRenderer {
-  private entityManager: EntityManager;
+export class EntityRenderer<
+  CustomProps extends Record<string, unknown> = Record<string, never>,
+> {
+  private entityManager: EntityManager<CustomProps>;
   private scene: THREE.Scene;
   private modelRegistry: ModelRegistry;
   private entityModels = new Map<string, THREE.Object3D>();
@@ -21,7 +23,7 @@ export class EntityRenderer {
    * @param modelRegistry - Registry for creating 3D model instances
    */
   constructor(
-    entityManager: EntityManager,
+    entityManager: EntityManager<CustomProps>,
     scene: THREE.Scene,
     modelRegistry: ModelRegistry
   ) {
@@ -88,5 +90,14 @@ export class EntityRenderer {
       this.scene.remove(model);
       this.entityModels.delete(entityId);
     });
+  }
+
+  /**
+   * Gets the 3D model for a specific entity.
+   * @param entityId - The ID of the entity
+   * @returns The THREE.Object3D representing the entity, or undefined if not found
+   */
+  getEntityModel(entityId: string): THREE.Object3D | undefined {
+    return this.entityModels.get(entityId);
   }
 }

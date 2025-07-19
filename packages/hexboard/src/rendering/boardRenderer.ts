@@ -322,6 +322,46 @@ export class BoardRenderer<
   }
 
   /**
+   * Highlights multiple hex cells (e.g., for movement destinations).
+   *
+   * @param coordinatesList - Array of hex coordinates to highlight
+   */
+  highlightHexCells(coordinatesList: HexCoordinates[]): void {
+    coordinatesList.forEach((coordinates) =>
+      this.highlightHexCell(coordinates)
+    );
+  }
+
+  /**
+   * Removes highlight effects from multiple hex cells.
+   *
+   * @param coordinatesList - Array of hex coordinates to remove highlighting from
+   */
+  removeHighlightFromHexCells(coordinatesList: HexCoordinates[]): void {
+    coordinatesList.forEach((coordinates) =>
+      this.removeHighlightFromHexCell(coordinates)
+    );
+  }
+
+  /**
+   * Applies highlight effect to an entity model.
+   *
+   * @param entityModel - The THREE.Object3D representing the entity
+   */
+  highlightEntity(entityModel: THREE.Object3D): void {
+    this.highlightStrategy.apply(entityModel);
+  }
+
+  /**
+   * Removes highlight effect from an entity model.
+   *
+   * @param entityModel - The THREE.Object3D representing the entity
+   */
+  removeHighlightFromEntity(entityModel: THREE.Object3D): void {
+    this.highlightStrategy.remove(entityModel);
+  }
+
+  /**
    * Renders the current frame.
    */
   render(): void {

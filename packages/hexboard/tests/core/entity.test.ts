@@ -316,7 +316,7 @@ describe('EntityManager', () => {
       };
 
       entityManager.addEntity(entityDef);
-      const entitiesAtCell = entityManager.getEntitiesAt('0,0');
+      const entitiesAtCell = entityManager.getEntitiesAt('0,0,0');
 
       expect(entitiesAtCell).toHaveLength(1);
       expect(entitiesAtCell[0].id).toBe('positioned-entity');
@@ -470,10 +470,10 @@ describe('EntityManager', () => {
       };
 
       entityManager.addEntity(entityDef);
-      expect(entityManager.getEntitiesAt('0,0')).toHaveLength(1);
+      expect(entityManager.getEntitiesAt('0,0,0')).toHaveLength(1);
 
       entityManager.removeEntity('tracked-entity');
-      expect(entityManager.getEntitiesAt('0,0')).toHaveLength(0);
+      expect(entityManager.getEntitiesAt('0,0,0')).toHaveLength(0);
     });
 
     it('should handle removing non-existent entity gracefully', () => {
@@ -508,7 +508,7 @@ describe('EntityManager', () => {
 
   describe('getEntitiesAt', () => {
     it('should return empty array for cell with no entities', () => {
-      const entities = entityManager.getEntitiesAt('0,0');
+      const entities = entityManager.getEntitiesAt('0,0,0');
       expect(entities).toEqual([]);
     });
 
@@ -520,7 +520,7 @@ describe('EntityManager', () => {
       };
 
       entityManager.addEntity(entityDef);
-      const entities = entityManager.getEntitiesAt('0,0');
+      const entities = entityManager.getEntitiesAt('0,0,0');
 
       expect(entities).toHaveLength(1);
       expect(entities[0].id).toBe('single-entity');
@@ -541,7 +541,7 @@ describe('EntityManager', () => {
 
       entityManager.addEntity(entity1);
       entityManager.addEntity(entity2);
-      const entities = entityManager.getEntitiesAt('0,0');
+      const entities = entityManager.getEntitiesAt('0,0,0');
 
       expect(entities).toHaveLength(2);
       const ids = entities.map((e: Entity) => e.id);
@@ -579,13 +579,13 @@ describe('EntityManager', () => {
       };
 
       entityManager.addEntity(entityDef);
-      expect(entityManager.getEntitiesAt('0,0')).toHaveLength(1);
-      expect(entityManager.getEntitiesAt('1,-1')).toHaveLength(0);
+      expect(entityManager.getEntitiesAt('0,0,0')).toHaveLength(1);
+      expect(entityManager.getEntitiesAt('1,-1,0')).toHaveLength(0);
 
       entityManager.startMovement('tracked-move-entity', [testCell2]);
       entityManager.moveEntity('tracked-move-entity', testCell2);
-      expect(entityManager.getEntitiesAt('0,0')).toHaveLength(0);
-      expect(entityManager.getEntitiesAt('1,-1')).toHaveLength(1);
+      expect(entityManager.getEntitiesAt('0,0,0')).toHaveLength(0);
+      expect(entityManager.getEntitiesAt('1,-1,0')).toHaveLength(1);
     });
 
     it('should throw error for non-existent entity', () => {
@@ -630,7 +630,7 @@ describe('EntityManager', () => {
       entityManager.startMovement('moving-entity', [testCell2]);
       entityManager.moveEntity('moving-entity', testCell2);
 
-      const entitiesAtDestination = entityManager.getEntitiesAt('1,-1');
+      const entitiesAtDestination = entityManager.getEntitiesAt('1,-1,0');
       expect(entitiesAtDestination).toHaveLength(2);
     });
   });
@@ -680,16 +680,16 @@ describe('EntityManager', () => {
 
       entities.forEach((e) => entityManager.addEntity(e));
 
-      expect(entityManager.getEntitiesAt('0,0')).toHaveLength(2);
-      expect(entityManager.getEntitiesAt('1,-1')).toHaveLength(1);
+      expect(entityManager.getEntitiesAt('0,0,0')).toHaveLength(2);
+      expect(entityManager.getEntitiesAt('1,-1,0')).toHaveLength(1);
 
       entityManager.startMovement('e1', [testCell2]);
       entityManager.moveEntity('e1', testCell2);
-      expect(entityManager.getEntitiesAt('0,0')).toHaveLength(1);
-      expect(entityManager.getEntitiesAt('1,-1')).toHaveLength(2);
+      expect(entityManager.getEntitiesAt('0,0,0')).toHaveLength(1);
+      expect(entityManager.getEntitiesAt('1,-1,0')).toHaveLength(2);
 
       entityManager.removeEntity('e3');
-      expect(entityManager.getEntitiesAt('1,-1')).toHaveLength(1);
+      expect(entityManager.getEntitiesAt('1,-1,0')).toHaveLength(1);
       expect(entityManager.getEntity('e3')).toBeUndefined();
     });
   });
@@ -940,8 +940,8 @@ describe('EntityManager', () => {
         entityManager.startMovement('position-tracking-entity', destinations);
         entityManager.moveEntity('position-tracking-entity', testCell2);
 
-        expect(entityManager.getEntitiesAt('0,0')).toHaveLength(0);
-        expect(entityManager.getEntitiesAt('1,-1')).toHaveLength(1);
+        expect(entityManager.getEntitiesAt('0,0,0')).toHaveLength(0);
+        expect(entityManager.getEntitiesAt('1,-1,0')).toHaveLength(1);
       });
 
       it("should set the entity's isInMovementMode property to false after a valid move", () => {
@@ -981,6 +981,80 @@ describe('EntityManager', () => {
         expect(() => {
           entityManager.moveEntity('clear-destinations-entity', testCell);
         }).toThrow('Entity clear-destinations-entity is not in movement mode');
+      });
+    });
+
+    describe('getMovementDestinations method', () => {
+      it('should return available destinations for an entity in movement mode', () => {
+        const entityDef: EntityDefinition = {
+          id: 'destination-getter-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        entityManager.addEntity(entityDef);
+        const destinations = [
+          { q: 1, r: 0, s: -1 },
+          { q: 0, r: 1, s: -1 },
+          { q: -1, r: 1, s: 0 },
+        ];
+
+        entityManager.startMovement('destination-getter-entity', destinations);
+        const retrievedDestinations = entityManager.getMovementDestinations('destination-getter-entity');
+
+        expect(retrievedDestinations).toEqual(destinations);
+      });
+
+      it('should return an empty array for an entity not in movement mode', () => {
+        const entityDef: EntityDefinition = {
+          id: 'no-movement-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        entityManager.addEntity(entityDef);
+        const destinations = entityManager.getMovementDestinations('no-movement-entity');
+
+        expect(destinations).toEqual([]);
+      });
+
+      it('should return an empty array for a non-existent entity', () => {
+        const destinations = entityManager.getMovementDestinations('non-existent-entity');
+        expect(destinations).toEqual([]);
+      });
+
+      it('should return an empty array after movement is cancelled', () => {
+        const entityDef: EntityDefinition = {
+          id: 'cancelled-movement-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        entityManager.addEntity(entityDef);
+        const destinations = [{ q: 1, r: 0, s: -1 }];
+
+        entityManager.startMovement('cancelled-movement-entity', destinations);
+        expect(entityManager.getMovementDestinations('cancelled-movement-entity')).toEqual(destinations);
+
+        entityManager.cancelMovement('cancelled-movement-entity');
+        expect(entityManager.getMovementDestinations('cancelled-movement-entity')).toEqual([]);
+      });
+
+      it('should return an empty array after entity completes a move', () => {
+        const entityDef: EntityDefinition = {
+          id: 'completed-move-entity',
+          type: 'warrior',
+          cellPosition: testCell,
+        };
+
+        entityManager.addEntity(entityDef);
+        const destinations = [testCell2];
+
+        entityManager.startMovement('completed-move-entity', destinations);
+        expect(entityManager.getMovementDestinations('completed-move-entity')).toEqual(destinations);
+
+        entityManager.moveEntity('completed-move-entity', testCell2);
+        expect(entityManager.getMovementDestinations('completed-move-entity')).toEqual([]);
       });
     });
   });
