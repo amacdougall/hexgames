@@ -1,7 +1,7 @@
 // Test application main entry point
 // This will demonstrate hexboard library usage
 
-import { HexBoard, EntityManager, EntityRenderer, ModelRegistry, HexCoordinates } from 'hexboard';
+import { HexBoard, ModelRegistry, HexCoordinates } from 'hexboard';
 import { GameColorStrategy } from './gameColorStrategy.js';
 import { GameCellProps } from './types.js';
 import * as THREE from 'three';
@@ -10,8 +10,6 @@ console.log('Hexboard test application starting...');
 
 // Global state for movement mode
 let isMovementModeActive = false;
-let entityManager: EntityManager<GameCellProps>;
-let entityRenderer: EntityRenderer<GameCellProps>;
 let hexBoard: HexBoard<GameCellProps>;
 
 // Create a metallic dodecahedron geometry for the entity
@@ -35,7 +33,7 @@ function handleCellClick(coords: HexCoordinates): void {
 
   if (!isMovementModeActive) {
     // Check if the clicked cell contains an entity
-    const entitiesAtCell = entityManager.getEntitiesAt(cell.id);
+    const entitiesAtCell = hexBoard.getEntitiesAt(cell.id);
     if (entitiesAtCell.length > 0) {
       const entity = entitiesAtCell[0];
 
@@ -47,16 +45,14 @@ function handleCellClick(coords: HexCoordinates): void {
       );
 
       // Start movement mode
-      entityManager.startMovement(entity.id, reachableHexes);
+      hexBoard.startEntityMovement(entity.id, reachableHexes);
       isMovementModeActive = true;
 
       // Highlight the entity and destination cells
       const renderer = hexBoard.getRenderer();
       if (renderer) {
-        const entityModel = entityRenderer.getEntityModel(entity.id);
-        if (entityModel) {
-          renderer.highlightEntity(entityModel);
-        }
+        // Note: EntityRenderer.getEntityModel is not exposed through HexBoard API
+        // This is intentional to maintain encapsulation
         renderer.highlightHexCells(reachableHexes);
       }
 
@@ -64,10 +60,10 @@ function handleCellClick(coords: HexCoordinates): void {
     }
   } else {
     // Already in movement mode, check if clicked destination is valid
-    const entitiesInMovement = entityManager.getAllEntities().filter(e => e.isInMovementMode);
+    const entitiesInMovement = hexBoard.getAllEntities().filter(e => e.isInMovementMode);
     if (entitiesInMovement.length > 0) {
       const entity = entitiesInMovement[0];
-      const destinations = entityManager.getMovementDestinations(entity.id);
+      const destinations = hexBoard.getEntityMovementDestinations(entity.id);
 
       const isValidDestination = destinations.some(
         dest => dest.q === coords.q && dest.r === coords.r && dest.s === coords.s
@@ -76,20 +72,16 @@ function handleCellClick(coords: HexCoordinates): void {
       const renderer = hexBoard.getRenderer();
       if (isValidDestination) {
         // Move entity to the destination
-        entityManager.moveEntity(entity.id, cell);
+        hexBoard.moveEntity(entity.id, cell);
         console.log(`Moved entity ${entity.id} to ${coords.q},${coords.r},${coords.s}`);
       } else {
         // Cancel movement
-        entityManager.cancelMovement(entity.id);
+        hexBoard.cancelEntityMovement(entity.id);
         console.log(`Cancelled movement for entity ${entity.id}`);
       }
 
       // Clear highlights
       if (renderer) {
-        const entityModel = entityRenderer.getEntityModel(entity.id);
-        if (entityModel) {
-          renderer.removeHighlightFromEntity(entityModel);
-        }
         renderer.removeHighlightFromHexCells(destinations);
       }
 
@@ -105,20 +97,12 @@ async function initializeApp(): Promise<void> {
   // Create HexBoard with the game-specific color strategy
   hexBoard = new HexBoard<GameCellProps>(gameStrategy);
 
-  // Initialize the board
-  await hexBoard.init('app');
-
-  // Initialize entity management
-  entityManager = new EntityManager<GameCellProps>();
-
-  // Setup model registry and entity renderer
+  // Setup model registry
   const modelRegistry = new ModelRegistry();
   modelRegistry.registerModel('dodecahedron', createDodecahedronModel());
 
-  const renderer = hexBoard.getRenderer();
-  if (renderer) {
-    entityRenderer = new EntityRenderer<GameCellProps>(entityManager, renderer.getScene(), modelRegistry);
-  }
+  // Initialize the board with entity management
+  await hexBoard.init('app', modelRegistry);
 
   // Load map data from assets
   try {
@@ -166,7 +150,7 @@ async function initializeApp(): Promise<void> {
     if (passableCells.length > 0) {
       const randomCell = passableCells[Math.floor(Math.random() * passableCells.length)];
 
-      entityManager.addEntity({
+      hexBoard.addEntity({
         id: 'dodecahedron-1',
         type: 'unit',
         cellPosition: randomCell,
@@ -183,19 +167,8 @@ async function initializeApp(): Promise<void> {
       inputHandler.onCellClick = handleCellClick;
     }
 
-    // Start the render loop and entity updates
+    // Start the render loop
     hexBoard.start();
-
-    // Start entity renderer updates
-    if (entityRenderer) {
-      const updateLoop = async () => {
-        await entityRenderer.update();
-        if (hexBoard.getRenderer()) {
-          requestAnimationFrame(updateLoop);
-        }
-      };
-      updateLoop();
-    }
 
     console.log('Map loaded and rendered successfully');
   } catch (error) {

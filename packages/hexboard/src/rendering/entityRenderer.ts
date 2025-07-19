@@ -100,4 +100,18 @@ export class EntityRenderer<
   getEntityModel(entityId: string): THREE.Object3D | undefined {
     return this.entityModels.get(entityId);
   }
+
+  /**
+   * Disposes of the EntityRenderer, cleaning up all entity models from the scene.
+   * Should be called when the EntityRenderer is no longer needed.
+   */
+  dispose(): void {
+    // Remove all entity models from the scene
+    this.entityModels.forEach((model) => {
+      this.scene.remove(model);
+    });
+
+    // Clear the entity models map
+    this.entityModels.clear();
+  }
 }

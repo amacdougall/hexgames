@@ -1,8 +1,11 @@
 import { HexGrid } from './core/hexGrid';
 import { Cell, CellDefinition } from './core/cell';
 import { HexCoordinates } from './core/coordinates';
+import { Entity, EntityDefinition, EntityManager } from './core/entity';
 import { BoardRenderer } from './rendering/boardRenderer';
 import { InputHandler } from './rendering/inputHandler';
+import { EntityRenderer } from './rendering/entityRenderer';
+import { ModelRegistry } from './rendering/modelRegistry';
 import {
   CellColorStrategy,
   DefaultCellColorStrategy,
@@ -14,6 +17,8 @@ export class HexBoard<
   private hexGrid: HexGrid<CustomProps>;
   private renderer?: BoardRenderer<CustomProps>;
   private inputHandler?: InputHandler<CustomProps>;
+  private entityManager?: EntityManager<CustomProps>;
+  private entityRenderer?: EntityRenderer<CustomProps>;
   private container?: HTMLElement;
   private isInitialized = false;
   private colorStrategy?: CellColorStrategy<CustomProps>;
@@ -24,7 +29,10 @@ export class HexBoard<
     this.colorStrategy = colorStrategy;
   }
 
-  public async init(containerId: string): Promise<void> {
+  public async init(
+    containerId: string,
+    modelRegistry?: ModelRegistry
+  ): Promise<void> {
     const container = document.getElementById(containerId);
     if (!container) {
       // TODO: Implement proper error handling/reporting system
@@ -61,6 +69,21 @@ export class HexBoard<
     // Initialize input handling
     this.inputHandler.initialize();
 
+    // Create EntityManager
+    this.entityManager = new EntityManager<CustomProps>();
+
+    // Create EntityRenderer if ModelRegistry is provided
+    if (modelRegistry) {
+      this.entityRenderer = new EntityRenderer<CustomProps>(
+        this.entityManager,
+        this.renderer.getScene(),
+        modelRegistry
+      );
+
+      // Connect EntityRenderer to BoardRenderer
+      this.renderer.setEntityRenderer(this.entityRenderer);
+    }
+
     this.isInitialized = true;
   }
 
@@ -71,6 +94,15 @@ export class HexBoard<
 
     // Stop render loop
     this.stop();
+
+    // Clean up EntityRenderer
+    if (this.entityRenderer) {
+      this.entityRenderer.dispose();
+      this.entityRenderer = undefined;
+    }
+
+    // Clean up EntityManager
+    this.entityManager = undefined;
 
     // Clean up input handler
     if (this.inputHandler) {
@@ -187,13 +219,111 @@ export class HexBoard<
     this.isRunning = false;
   }
 
-  private animate(): void {
+  private async animate(): Promise<void> {
     if (!this.isRunning || !this.renderer) {
       return;
     }
 
-    this.renderer.render();
+    await this.renderer.render();
     requestAnimationFrame(() => this.animate());
+  }
+
+  // Entity Management API
+  public addEntity(
+    definition: EntityDefinition<CustomProps>
+  ): Entity<CustomProps> | undefined {
+    if (!this.entityManager) {
+      console.warn(
+        'HexBoard: EntityManager not initialized. Call init() first.'
+      );
+      return undefined;
+    }
+    return this.entityManager.addEntity(definition);
+  }
+
+  public removeEntity(entityId: string): boolean {
+    if (!this.entityManager) {
+      console.warn(
+        'HexBoard: EntityManager not initialized. Call init() first.'
+      );
+      return false;
+    }
+    this.entityManager.removeEntity(entityId);
+    return true;
+  }
+
+  public moveEntity(entityId: string, toCell: Cell<CustomProps>): void {
+    if (!this.entityManager) {
+      console.warn(
+        'HexBoard: EntityManager not initialized. Call init() first.'
+      );
+      return;
+    }
+    this.entityManager.moveEntity(entityId, toCell);
+  }
+
+  public getEntityById(entityId: string): Entity<CustomProps> | undefined {
+    if (!this.entityManager) {
+      console.warn(
+        'HexBoard: EntityManager not initialized. Call init() first.'
+      );
+      return undefined;
+    }
+    return this.entityManager.getEntity(entityId);
+  }
+
+  public getEntitiesAt(cellId: string): Entity<CustomProps>[] {
+    if (!this.entityManager) {
+      console.warn(
+        'HexBoard: EntityManager not initialized. Call init() first.'
+      );
+      return [];
+    }
+    return this.entityManager.getEntitiesAt(cellId);
+  }
+
+  public getAllEntities(): Entity<CustomProps>[] {
+    if (!this.entityManager) {
+      console.warn(
+        'HexBoard: EntityManager not initialized. Call init() first.'
+      );
+      return [];
+    }
+    return this.entityManager.getAllEntities();
+  }
+
+  // Entity Movement API
+  public startEntityMovement(
+    entityId: string,
+    reachableHexes: HexCoordinates[]
+  ): void {
+    if (!this.entityManager) {
+      console.warn(
+        'HexBoard: EntityManager not initialized. Call init() first.'
+      );
+      return;
+    }
+    this.entityManager.startMovement(entityId, reachableHexes);
+  }
+
+  public cancelEntityMovement(entityId: string): void {
+    if (!this.entityManager) {
+      console.warn(
+        'HexBoard: EntityManager not initialized. Call init() first.'
+      );
+      return;
+    }
+    this.entityManager.cancelMovement(entityId);
+  }
+
+  public getEntityMovementDestinations(entityId: string): HexCoordinates[] {
+    if (!this.entityManager) {
+      console.warn(
+        'HexBoard: EntityManager not initialized. Call init() first.'
+      );
+      return [];
+    }
+    return this.entityManager.getMovementDestinations(entityId);
   }
 
   // Getters for accessing internal components (mainly for testing)

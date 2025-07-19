@@ -15,6 +15,7 @@ import {
   DefaultHighlightStrategy,
   HighlightStrategy,
 } from './highlightStrategy';
+import { EntityRenderer } from './entityRenderer';
 
 export class BoardRenderer<
   CustomProps extends Record<string, unknown> = Record<string, never>,
@@ -28,6 +29,7 @@ export class BoardRenderer<
   private hexMeshes: Map<string, THREE.Mesh> = new Map();
   private colorStrategy: CellColorStrategy<CustomProps>;
   private highlightStrategy: HighlightStrategy;
+  private entityRenderer?: EntityRenderer<CustomProps>;
 
   /**
    * Creates a new BoardRenderer for rendering hex grids in 3D.
@@ -362,10 +364,25 @@ export class BoardRenderer<
   }
 
   /**
+   * Sets the EntityRenderer for updating entity models during render.
+   *
+   * @param entityRenderer - The EntityRenderer instance to use
+   */
+  setEntityRenderer(entityRenderer: EntityRenderer<CustomProps>): void {
+    this.entityRenderer = entityRenderer;
+  }
+
+  /**
    * Renders the current frame.
    */
-  render(): void {
+  async render(): Promise<void> {
     this.controls.update();
+
+    // Update entity models if EntityRenderer is available
+    if (this.entityRenderer) {
+      await this.entityRenderer.update();
+    }
+
     this.renderer.render(this.scene, this.camera);
   }
 
