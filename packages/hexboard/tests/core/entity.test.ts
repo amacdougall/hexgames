@@ -1000,7 +1000,9 @@ describe('EntityManager', () => {
         ];
 
         entityManager.startMovement('destination-getter-entity', destinations);
-        const retrievedDestinations = entityManager.getMovementDestinations('destination-getter-entity');
+        const retrievedDestinations = entityManager.getMovementDestinations(
+          'destination-getter-entity'
+        );
 
         expect(retrievedDestinations).toEqual(destinations);
       });
@@ -1013,13 +1015,16 @@ describe('EntityManager', () => {
         };
 
         entityManager.addEntity(entityDef);
-        const destinations = entityManager.getMovementDestinations('no-movement-entity');
+        const destinations =
+          entityManager.getMovementDestinations('no-movement-entity');
 
         expect(destinations).toEqual([]);
       });
 
       it('should return an empty array for a non-existent entity', () => {
-        const destinations = entityManager.getMovementDestinations('non-existent-entity');
+        const destinations = entityManager.getMovementDestinations(
+          'non-existent-entity'
+        );
         expect(destinations).toEqual([]);
       });
 
@@ -1034,10 +1039,14 @@ describe('EntityManager', () => {
         const destinations = [{ q: 1, r: 0, s: -1 }];
 
         entityManager.startMovement('cancelled-movement-entity', destinations);
-        expect(entityManager.getMovementDestinations('cancelled-movement-entity')).toEqual(destinations);
+        expect(
+          entityManager.getMovementDestinations('cancelled-movement-entity')
+        ).toEqual(destinations);
 
         entityManager.cancelMovement('cancelled-movement-entity');
-        expect(entityManager.getMovementDestinations('cancelled-movement-entity')).toEqual([]);
+        expect(
+          entityManager.getMovementDestinations('cancelled-movement-entity')
+        ).toEqual([]);
       });
 
       it('should return an empty array after entity completes a move', () => {
@@ -1051,10 +1060,14 @@ describe('EntityManager', () => {
         const destinations = [testCell2];
 
         entityManager.startMovement('completed-move-entity', destinations);
-        expect(entityManager.getMovementDestinations('completed-move-entity')).toEqual(destinations);
+        expect(
+          entityManager.getMovementDestinations('completed-move-entity')
+        ).toEqual(destinations);
 
         entityManager.moveEntity('completed-move-entity', testCell2);
-        expect(entityManager.getMovementDestinations('completed-move-entity')).toEqual([]);
+        expect(
+          entityManager.getMovementDestinations('completed-move-entity')
+        ).toEqual([]);
       });
     });
   });

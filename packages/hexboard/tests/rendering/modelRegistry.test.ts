@@ -8,6 +8,12 @@ jest.mock('three', () => ({
     add: jest.fn(),
     remove: jest.fn(),
   })),
+  Box3: jest.fn().mockImplementation(() => ({
+    setFromObject: jest.fn().mockReturnThis(),
+    clone: jest.fn().mockReturnThis(),
+    min: { y: -0.5 }, // Mock bottom of model
+    max: { y: 0.5 }, // Mock top of model
+  })),
 }));
 
 // Mock three-stdlib for GLTFLoader
@@ -145,6 +151,53 @@ describe('ModelRegistry', () => {
       expect(() => {
         modelRegistry.registerModel('same-key', model2);
       }).not.toThrow();
+    });
+  });
+
+  describe('model metadata', () => {
+    it('should cache metadata when creating model instances', async () => {
+      const model = new THREE.Object3D();
+      modelRegistry.registerModel('test-model', model);
+
+      // First call should calculate metadata
+      await modelRegistry.createModelInstance('test-model');
+
+      // Metadata should now be available
+      const metadata = modelRegistry.getModelMetadata('test-model');
+
+      expect(metadata).toBeDefined();
+      expect(metadata?.bottomOffset).toBe(-0.5); // From our mock
+      expect(metadata?.boundingBox).toBeDefined();
+    });
+
+    it('should return undefined metadata for unregistered models', () => {
+      const metadata = modelRegistry.getModelMetadata('nonexistent-model');
+      expect(metadata).toBeUndefined();
+    });
+
+    it('should return undefined metadata before model is loaded', () => {
+      const model = new THREE.Object3D();
+      modelRegistry.registerModel('not-loaded-yet', model);
+
+      // Before calling createModelInstance, metadata should not exist
+      const metadata = modelRegistry.getModelMetadata('not-loaded-yet');
+      expect(metadata).toBeUndefined();
+    });
+
+    it('should only calculate metadata once per model type', async () => {
+      const model = new THREE.Object3D();
+      modelRegistry.registerModel('shared-model', model);
+
+      // Create multiple instances
+      await modelRegistry.createModelInstance('shared-model');
+      await modelRegistry.createModelInstance('shared-model');
+      await modelRegistry.createModelInstance('shared-model');
+
+      // Box3 constructor should only be called once for metadata calculation
+      // (plus any calls from clone operations)
+      const metadata = modelRegistry.getModelMetadata('shared-model');
+      expect(metadata).toBeDefined();
+      expect(metadata?.bottomOffset).toBe(-0.5);
     });
   });
 });

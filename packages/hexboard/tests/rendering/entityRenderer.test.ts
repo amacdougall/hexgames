@@ -14,6 +14,11 @@ jest.mock('three', () => ({
     z: z || 0,
     set: jest.fn(),
   })),
+  Box3: jest.fn().mockImplementation(() => ({
+    setFromObject: jest.fn().mockReturnThis(),
+    min: { y: 0 }, // Mock the minimum bounds
+    max: { y: 1 }, // Mock the maximum bounds
+  })),
 }));
 
 // Mock the layout utility
@@ -38,6 +43,7 @@ const mockEntityManager: MockEntityManager = {
 const mockModelRegistry: MockModelRegistry = {
   registerModel: jest.fn(),
   createModelInstance: jest.fn(),
+  getModelMetadata: jest.fn(),
 };
 
 const mockScene = new THREE.Scene();
@@ -53,6 +59,13 @@ describe('EntityRenderer', () => {
       mockModelRegistry as unknown as ModelRegistry
     );
     mockModel = new THREE.Object3D();
+
+    // Setup default metadata mock
+    (mockModelRegistry.getModelMetadata as jest.Mock).mockReturnValue({
+      boundingBox: new THREE.Box3(),
+      bottomOffset: -0.5,
+    });
+
     jest.clearAllMocks();
   });
 
@@ -109,7 +122,7 @@ describe('EntityRenderer', () => {
         'warrior-model'
       );
       expect(mockScene.add).toHaveBeenCalledWith(mockModel);
-      expect(mockModel.position.set).toHaveBeenCalledWith(15, 5, 25);
+      expect(mockModel.position.set).toHaveBeenCalledWith(15, 5.5, 25);
       // Note: hexToWorld is mocked and called within our mock implementation
     });
 
@@ -233,7 +246,7 @@ describe('EntityRenderer', () => {
       await entityRenderer.update();
 
       // Verify initial position
-      expect(mockModel.position.set).toHaveBeenCalledWith(10, 0, 20);
+      expect(mockModel.position.set).toHaveBeenCalledWith(10, 0.5, 20);
 
       // Reset mocks
       jest.clearAllMocks();
@@ -248,7 +261,7 @@ describe('EntityRenderer', () => {
       await entityRenderer.update();
 
       // Verify position was updated but model wasn't re-added
-      expect(mockModel.position.set).toHaveBeenCalledWith(30, 2, 40);
+      expect(mockModel.position.set).toHaveBeenCalledWith(30, 2.5, 40);
       expect(mockScene.add).not.toHaveBeenCalled();
     });
 

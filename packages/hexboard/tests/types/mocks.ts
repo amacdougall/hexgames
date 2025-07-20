@@ -42,6 +42,7 @@ export interface MockEntityManager {
 export interface MockModelRegistry {
   registerModel: jest.Mock;
   createModelInstance: jest.Mock;
+  getModelMetadata: jest.Mock;
 }
 
 export interface MockColorStrategy {

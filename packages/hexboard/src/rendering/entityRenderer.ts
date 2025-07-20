@@ -46,15 +46,10 @@ export class EntityRenderer<
 
     // Process each entity
     for (const entity of allEntities) {
-      if (this.entityModels.has(entity.id)) {
+      if (this.entityModels.has(entity.id) && entity.modelKey) {
         // Entity already has a model, update its position
         const model = this.entityModels.get(entity.id)!;
-        const worldPos = hexToWorld(entity.cellPosition);
-        model.position.set(
-          worldPos.x,
-          entity.cellPosition.elevation,
-          worldPos.z
-        );
+        this.setEntityPosition(model, entity.cellPosition, entity.modelKey);
       } else if (entity.modelKey) {
         // New entity with a model key, create and add its model
         try {
@@ -64,13 +59,8 @@ export class EntityRenderer<
           this.entityModels.set(entity.id, model);
           this.scene.add(model);
 
-          // Position the model at the entity's location
-          const worldPos = hexToWorld(entity.cellPosition);
-          model.position.set(
-            worldPos.x,
-            entity.cellPosition.elevation,
-            worldPos.z
-          );
+          // Position the model so its bottom sits on the tile's top surface
+          this.setEntityPosition(model, entity.cellPosition, entity.modelKey);
         } catch (error) {
           // Handle model creation errors gracefully
           console.warn(
@@ -90,6 +80,37 @@ export class EntityRenderer<
       this.scene.remove(model);
       this.entityModels.delete(entityId);
     });
+  }
+
+  /**
+   * Positions an entity model so its bottom sits on the top surface of the tile.
+   * This ensures entities appear to be standing on the hex tiles rather than floating
+   * or being buried in them.
+   * @param model - The THREE.Object3D representing the entity
+   * @param cellPosition - The hex coordinates and elevation of the cell
+   * @param modelKey - The model key to look up cached metadata
+   */
+  private setEntityPosition(
+    model: THREE.Object3D,
+    cellPosition: { q: number; r: number; s: number; elevation: number },
+    modelKey: string
+  ): void {
+    const worldPos = hexToWorld(cellPosition);
+
+    // Calculate the tile's top surface height
+    // Tiles are cylinders positioned at elevation/2 with height=elevation
+    // So top surface is at: (elevation/2) + (elevation/2) = elevation
+    const tileTopHeight = cellPosition.elevation;
+
+    // Get cached model metadata to avoid expensive bounding box calculation
+    const metadata = this.modelRegistry.getModelMetadata(modelKey);
+    const modelBottomOffset = metadata?.bottomOffset ?? 0;
+
+    // Position the model so its bottom sits on the tile's top surface
+    // We subtract the model's bottom offset because it might be negative
+    const entityY = tileTopHeight - modelBottomOffset;
+
+    model.position.set(worldPos.x, entityY, worldPos.z);
   }
 
   /**

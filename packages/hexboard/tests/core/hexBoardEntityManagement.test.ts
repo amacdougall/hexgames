@@ -26,9 +26,9 @@ jest.mock('three-stdlib', () => ({
   })),
   GLTFLoader: jest.fn().mockImplementation(() => ({
     loadAsync: jest.fn().mockResolvedValue({
-      scene: { clone: jest.fn().mockReturnValue({}) }
-    })
-  }))
+      scene: { clone: jest.fn().mockReturnValue({}) },
+    }),
+  })),
 }));
 
 // Mock EntityManager
@@ -46,7 +46,7 @@ jest.mock('../../src/core/entity', () => {
       startMovement: jest.fn(),
       cancelMovement: jest.fn(),
       getMovementDestinations: jest.fn(),
-    }))
+    })),
   };
 });
 
@@ -55,7 +55,7 @@ jest.mock('../../src/rendering/entityRenderer', () => ({
   EntityRenderer: jest.fn().mockImplementation(() => ({
     update: jest.fn(),
     dispose: jest.fn(),
-  }))
+  })),
 }));
 
 // Mock ModelRegistry
@@ -63,7 +63,7 @@ jest.mock('../../src/rendering/modelRegistry', () => ({
   ModelRegistry: jest.fn().mockImplementation(() => ({
     registerModel: jest.fn(),
     createModelInstance: jest.fn(),
-  }))
+  })),
 }));
 
 // Create mock canvas element
@@ -125,15 +125,17 @@ describe('HexBoard Entity Management Integration', () => {
     // Mock Three.js constructors
     mockRenderer = createMockRenderer();
     (THREE.WebGLRenderer as jest.Mock).mockImplementation(() => mockRenderer);
-    (THREE.PerspectiveCamera as unknown as jest.Mock).mockImplementation(() => ({
-      near: 0.1,
-      far: 1000,
-      fov: 75,
-      aspect: 1.33,
-      position: { set: jest.fn(), x: 10, y: 10, z: 10 },
-      lookAt: jest.fn(),
-      updateProjectionMatrix: jest.fn(),
-    }));
+    (THREE.PerspectiveCamera as unknown as jest.Mock).mockImplementation(
+      () => ({
+        near: 0.1,
+        far: 1000,
+        fov: 75,
+        aspect: 1.33,
+        position: { set: jest.fn(), x: 10, y: 10, z: 10 },
+        lookAt: jest.fn(),
+        updateProjectionMatrix: jest.fn(),
+      })
+    );
     (THREE.Scene as unknown as jest.Mock).mockImplementation(() => ({
       add: jest.fn(),
       remove: jest.fn(),
@@ -149,8 +151,12 @@ describe('HexBoard Entity Management Integration', () => {
       castShadow: true,
     }));
     (THREE.AmbientLight as unknown as jest.Mock).mockImplementation(() => ({}));
-    (THREE.CylinderGeometry as unknown as jest.Mock).mockImplementation(() => ({}));
-    (THREE.MeshLambertMaterial as unknown as jest.Mock).mockImplementation(() => ({}));
+    (THREE.CylinderGeometry as unknown as jest.Mock).mockImplementation(
+      () => ({})
+    );
+    (THREE.MeshLambertMaterial as unknown as jest.Mock).mockImplementation(
+      () => ({})
+    );
     (THREE.Mesh as unknown as jest.Mock).mockImplementation(() => ({
       position: { set: jest.fn(), x: 0, y: 0, z: 0 },
       geometry: { dispose: jest.fn() },
@@ -222,7 +228,7 @@ describe('HexBoard Entity Management Integration', () => {
 
       // Verify EntityRenderer was created
       expect((hexBoard as any).entityRenderer).toBeDefined();
-      
+
       // Verify EntityRenderer constructor was called with correct parameters
       expect(EntityRenderer).toHaveBeenCalledWith(
         expect.any(Object), // EntityManager mock
@@ -266,14 +272,14 @@ describe('HexBoard Entity Management Integration', () => {
         elevation: 0,
         movementCost: 1,
         isImpassable: false,
-        customProps: { terrain: 'grass' }
+        customProps: { terrain: 'grass' },
       };
 
       testEntityDefinition = {
         id: 'test-entity',
         type: 'warrior',
         cellPosition: testCell,
-        modelKey: 'warrior-model'
+        modelKey: 'warrior-model',
       };
 
       testEntity = {
@@ -281,22 +287,24 @@ describe('HexBoard Entity Management Integration', () => {
         cellPosition: testCell,
         model: {} as THREE.Object3D,
         modelKey: 'warrior-model',
-        isInMovementMode: false
+        isInMovementMode: false,
       };
 
       // Initialize HexBoard with EntityManager
       await hexBoard.init('test-container');
-      
+
       // Set up the internal entityManager mock (this will fail until implementation exists)
       (hexBoard as any).entityManager = mockEntityManager;
-      
+
       // Mock the EntityManager methods to return expected values
       mockEntityManager.addEntity.mockReturnValue(testEntity as Entity);
       mockEntityManager.removeEntity.mockReturnValue(true as any);
       mockEntityManager.getEntity.mockReturnValue(testEntity as Entity);
       mockEntityManager.getEntitiesAt.mockReturnValue([testEntity as Entity]);
       mockEntityManager.getAllEntities.mockReturnValue([testEntity as Entity]);
-      mockEntityManager.getMovementDestinations.mockReturnValue([{ q: 1, r: 0, s: -1 }]);
+      mockEntityManager.getMovementDestinations.mockReturnValue([
+        { q: 1, r: 0, s: -1 },
+      ]);
     });
 
     describe('addEntity', () => {
@@ -304,7 +312,9 @@ describe('HexBoard Entity Management Integration', () => {
         // This will fail until the addEntity method is implemented on HexBoard
         (hexBoard as any).addEntity(testEntityDefinition);
 
-        expect(mockEntityManager.addEntity).toHaveBeenCalledWith(testEntityDefinition);
+        expect(mockEntityManager.addEntity).toHaveBeenCalledWith(
+          testEntityDefinition
+        );
       });
 
       it('should return the entity created by the EntityManager', () => {
@@ -320,7 +330,9 @@ describe('HexBoard Entity Management Integration', () => {
         // This will fail until the removeEntity method is implemented on HexBoard
         (hexBoard as any).removeEntity('test-entity');
 
-        expect(mockEntityManager.removeEntity).toHaveBeenCalledWith('test-entity');
+        expect(mockEntityManager.removeEntity).toHaveBeenCalledWith(
+          'test-entity'
+        );
       });
 
       it('should return the result from the EntityManager call', () => {
@@ -336,7 +348,10 @@ describe('HexBoard Entity Management Integration', () => {
         // This will fail until the moveEntity method is implemented on HexBoard
         (hexBoard as any).moveEntity('test-entity', testCell);
 
-        expect(mockEntityManager.moveEntity).toHaveBeenCalledWith('test-entity', testCell);
+        expect(mockEntityManager.moveEntity).toHaveBeenCalledWith(
+          'test-entity',
+          testCell
+        );
       });
     });
 
@@ -386,16 +401,16 @@ describe('HexBoard Entity Management Integration', () => {
           elevation: 0,
           movementCost: 1,
           isImpassable: false,
-          customProps: { terrain: 'grass' }
+          customProps: { terrain: 'grass' },
         },
         model: {} as THREE.Object3D,
-        isInMovementMode: false
+        isInMovementMode: false,
       };
 
       testDestinations = [
         { q: 1, r: 0, s: -1 },
         { q: 0, r: 1, s: -1 },
-        { q: -1, r: 1, s: 0 }
+        { q: -1, r: 1, s: 0 },
       ];
 
       await hexBoard.init('test-container');
@@ -404,15 +419,23 @@ describe('HexBoard Entity Management Integration', () => {
       (hexBoard as any).entityManager = mockEntityManager;
 
       // Mock EntityManager methods
-      mockEntityManager.getMovementDestinations.mockReturnValue(testDestinations);
+      mockEntityManager.getMovementDestinations.mockReturnValue(
+        testDestinations
+      );
     });
 
     describe('startEntityMovement', () => {
       it('should call startMovement on the internal EntityManager with the correct entity ID and hexes', () => {
         // This will fail until the startEntityMovement method is implemented on HexBoard
-        (hexBoard as any).startEntityMovement('movement-entity', testDestinations);
+        (hexBoard as any).startEntityMovement(
+          'movement-entity',
+          testDestinations
+        );
 
-        expect(mockEntityManager.startMovement).toHaveBeenCalledWith('movement-entity', testDestinations);
+        expect(mockEntityManager.startMovement).toHaveBeenCalledWith(
+          'movement-entity',
+          testDestinations
+        );
       });
     });
 
@@ -421,16 +444,22 @@ describe('HexBoard Entity Management Integration', () => {
         // This will fail until the cancelEntityMovement method is implemented on HexBoard
         (hexBoard as any).cancelEntityMovement('movement-entity');
 
-        expect(mockEntityManager.cancelMovement).toHaveBeenCalledWith('movement-entity');
+        expect(mockEntityManager.cancelMovement).toHaveBeenCalledWith(
+          'movement-entity'
+        );
       });
     });
 
     describe('getEntityMovementDestinations', () => {
       it('should call getMovementDestinations on the internal EntityManager and return the result', () => {
         // This will fail until the getEntityMovementDestinations method is implemented on HexBoard
-        const result = (hexBoard as any).getEntityMovementDestinations('movement-entity');
+        const result = (hexBoard as any).getEntityMovementDestinations(
+          'movement-entity'
+        );
 
-        expect(mockEntityManager.getMovementDestinations).toHaveBeenCalledWith('movement-entity');
+        expect(mockEntityManager.getMovementDestinations).toHaveBeenCalledWith(
+          'movement-entity'
+        );
         expect(result).toEqual(testDestinations);
       });
     });
