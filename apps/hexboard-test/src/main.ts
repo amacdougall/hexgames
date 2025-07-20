@@ -38,11 +38,17 @@ function handleCellClick(coords: HexCoordinates): void {
       const entity = entitiesAtCell[0];
 
       // Calculate reachable hexes (2-step range, respecting impassable)
-      const reachableHexes = hexBoard.getHexGrid().getReachableHexes(
-        { q: entity.cellPosition.q, r: entity.cellPosition.r, s: entity.cellPosition.s },
-        2,
-        { respectImpassable: true }
-      );
+      const reachableHexes = hexBoard
+        .getHexGrid()
+        .getReachableHexes(
+          {
+            q: entity.cellPosition.q,
+            r: entity.cellPosition.r,
+            s: entity.cellPosition.s,
+          },
+          2,
+          { respectImpassable: true }
+        );
 
       // Start movement mode
       hexBoard.startEntityMovement(entity.id, reachableHexes);
@@ -56,24 +62,31 @@ function handleCellClick(coords: HexCoordinates): void {
         renderer.highlightHexCells(reachableHexes);
       }
 
-      console.log(`Started movement mode for entity ${entity.id} with ${reachableHexes.length} destinations`);
+      console.log(
+        `Started movement mode for entity ${entity.id} with ${reachableHexes.length} destinations`
+      );
     }
   } else {
     // Already in movement mode, check if clicked destination is valid
-    const entitiesInMovement = hexBoard.getAllEntities().filter(e => e.isInMovementMode);
+    const entitiesInMovement = hexBoard
+      .getAllEntities()
+      .filter((e) => e.isInMovementMode);
     if (entitiesInMovement.length > 0) {
       const entity = entitiesInMovement[0];
       const destinations = hexBoard.getEntityMovementDestinations(entity.id);
 
       const isValidDestination = destinations.some(
-        dest => dest.q === coords.q && dest.r === coords.r && dest.s === coords.s
+        (dest) =>
+          dest.q === coords.q && dest.r === coords.r && dest.s === coords.s
       );
 
       const renderer = hexBoard.getRenderer();
       if (isValidDestination) {
         // Move entity to the destination
         hexBoard.moveEntity(entity.id, cell);
-        console.log(`Moved entity ${entity.id} to ${coords.q},${coords.r},${coords.s}`);
+        console.log(
+          `Moved entity ${entity.id} to ${coords.q},${coords.r},${coords.s}`
+        );
       } else {
         // Cancel movement
         hexBoard.cancelEntityMovement(entity.id);
@@ -145,10 +158,11 @@ async function initializeApp(): Promise<void> {
 
     // After loading the map, create a dodecahedron entity on a random passable cell
     const allCells = hexBoard.getAllCells();
-    const passableCells = allCells.filter(cell => !cell.isImpassable);
+    const passableCells = allCells.filter((cell) => !cell.isImpassable);
 
     if (passableCells.length > 0) {
-      const randomCell = passableCells[Math.floor(Math.random() * passableCells.length)];
+      const randomCell =
+        passableCells[Math.floor(Math.random() * passableCells.length)];
 
       hexBoard.addEntity({
         id: 'dodecahedron-1',
@@ -158,7 +172,9 @@ async function initializeApp(): Promise<void> {
         movementSpeed: 1,
       });
 
-      console.log(`Created dodecahedron entity at ${randomCell.q}, ${randomCell.r}, ${randomCell.s}`);
+      console.log(
+        `Created dodecahedron entity at ${randomCell.q}, ${randomCell.r}, ${randomCell.s}`
+      );
     }
 
     // Connect click handler to input system
