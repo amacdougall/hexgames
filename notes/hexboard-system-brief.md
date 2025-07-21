@@ -1,12 +1,12 @@
 # Hexboard System Brief
 
-**Date:** 2025-07-06
+**Date:** 2025-07-22
 
 **Audience:** AI coding agents contributing to the `hexboard` library.
 
-**Author:** Gemini 2.5 Pro with some human edits and addenda. The original
-prompt can be found at the bottom of this document. Generated using the codebase
-as of commit `5a9f7fe`.
+**Author:** Updated by Claude Sonnet 4 based on current codebase state.
+Originally written by Gemini 2.5 Pro with some human edits and addenda. The
+original prompt can be found at the bottom of this document.
 
 This document provides a technical overview of the `hexboard` library, its
 architecture, and its core components. The library is designed to provide a
@@ -86,12 +86,17 @@ Entities represent dynamic game objects that reside on cells (e.g., characters,
 items).
 
 - **`EntityDefinition`** and **`Entity`**: Similar to cells, these interfaces
-  define the data for creating and representing entities. Entities have an ID
-  and can have `customProps`.
+  define the data for creating and representing entities. Entities have an ID,
+  position on the grid, movement properties, and can have `customProps`.
+  Entities support `modelKey` for linking to 3D models in the rendering system,
+  and `isInMovementMode` to track whether they're currently in a movement
+  session.
 - **`EntityManager`**: A manager class responsible for the lifecycle of
   entities. It tracks all entities and their positions on the grid (mapping cell
   IDs to entity IDs). It provides methods to create, delete, move, and query
-  entities.
+  entities. The EntityManager supports sophisticated movement sessions where
+  entities can be put into "movement mode" with a list of valid destinations,
+  allowing for turn-based movement validation.
 
 ### 2. Rendering
 
@@ -121,33 +126,52 @@ coordinate. The current implementation assumes a "flat-top" hexagon orientation.
   storing them in a `Map`.
 - It uses a strategy pattern for cell coloring, allowing for flexible and
   interchangeable coloring logic.
+- It supports pluggable highlight strategies for visual effects, enabling
+  highlighting of cells and entities.
+- It integrates with EntityRenderer for automatic entity model updates during
+  the render loop.
+- It provides a comprehensive highlighting API for individual cells, multiple
+  cells, and entities.
+- It includes ground plane rendering functionality for creating base surfaces.
 
 #### 2.3. Cell Coloring (`src/rendering/cellColorStrategy.ts`)
 
 This defines the strategy for how cells are colored.
 
 - **`CellColorStrategy`**: An interface that defines a single method,
-  `getColor()`, which takes a `Cell` and returns a color.
+  `getCellColor()`, which takes a `Cell` and returns a color.
 - **`DefaultCellColorStrategy`**: The default implementation, which colors cells
   based on a combination of `isImpassable` (water) and `elevation` (from
   lowlands to mountains).
 - **`ElevationColorStrategy`**: A simpler strategy that only considers
   elevation.
 
-#### 2.4. Entity Rendering (`src/rendering/entityRenderer.ts` and `src/rendering/modelRegistry.ts`)
+#### 2.4. Highlight Strategies (`src/rendering/highlightStrategy.ts`)
+
+This defines the strategy system for visual effects and highlighting.
+
+- **`HighlightStrategy`**: An interface defining `apply()` and `remove()`
+  methods for adding and removing visual effects from THREE.Object3D objects.
+- **`DefaultHighlightStrategy`**: The default implementation that adds a bright
+  yellow emissive glow to highlighted objects and restores original materials
+  when highlighting is removed.
+
+#### 2.5. Entity Rendering (`src/rendering/entityRenderer.ts` and `src/rendering/modelRegistry.ts`)
 
 This system handles the visual representation of entities.
 
 - **`ModelRegistry`**: A registry for 3D model assets. It can hold pre-loaded
   `THREE.Object3D` models or URLs to GLTF files for asynchronous loading. This
-  allows for efficient reuse of model data.
+  allows for efficient reuse of model data. It includes model metadata caching
+  with `bottomOffset` values to optimize entity positioning calculations.
 - **`EntityRenderer`**: This class observes an `EntityManager`. When entities
   are added, removed, or moved in the logical state, the `EntityRenderer`
   creates, destroys, or repositions their corresponding 3D models in the
   `THREE.Scene`. It uses the `ModelRegistry` to get the appropriate model for
-  each entity.
+  each entity. It properly positions entities so their bottom sits precisely on
+  the top surface of hex tiles, using cached model metadata for performance.
 
-#### 2.5. Input Handling (`src/rendering/inputHandler.ts`)
+#### 2.6. Input Handling (`src/rendering/inputHandler.ts`)
 
 `InputHandler` captures browser mouse events and translates them into
 grid-specific events.
@@ -164,12 +188,18 @@ grid-specific events.
 `HexBoard` is the high-level façade that simplifies the creation and management
 of a hex board.
 
-- It instantiates and holds references to the `HexGrid`, `BoardRenderer`, and
-  `InputHandler`.
-- It provides a simple `init()` method to set up the rendering canvas in the
-  DOM.
+- It instantiates and holds references to the `HexGrid`, `BoardRenderer`,
+  `InputHandler`, `EntityManager`, and optionally `EntityRenderer`.
+- It provides a simple `init()` method to set up the rendering canvas in the DOM
+  and optionally accept a `ModelRegistry` for entity rendering.
 - It exposes a curated set of methods from the underlying systems, such as
   `getCellAtCoords()` from `HexGrid` and `renderAll()` from `BoardRenderer`.
+- It provides a full entity management API including `addEntity()`,
+  `removeEntity()`, `moveEntity()`, and sophisticated movement session
+  management with `startEntityMovement()`, `cancelEntityMovement()`, and
+  `getEntityMovementDestinations()`.
+- It includes a complete render loop with `start()`, `stop()`, and automatic
+  entity updates.
 - This is the intended entry point for consumers of the library.
 
 ### 4. Map Definitions (`src/map/mapDefinition.ts`)
@@ -180,6 +210,10 @@ interface is provided. It defines a structure for a JSON file that can specify:
 - A map name.
 - Default cell properties.
 - A list of `CellDefinition` objects to populate the grid.
+
+**NOTE**: This feature appears to be defined but may not be actively used in the
+current implementation. The main usage pattern focuses on programmatic board
+creation through the HexBoard API.
 
 ### 5. Testing (`/tests`)
 
