@@ -38,17 +38,15 @@ function handleCellClick(coords: HexCoordinates): void {
       const entity = entitiesAtCell[0];
 
       // Calculate reachable hexes (2-step range, respecting impassable)
-      const reachableHexes = hexBoard
-        .getHexGrid()
-        .getReachableHexes(
-          {
-            q: entity.cellPosition.q,
-            r: entity.cellPosition.r,
-            s: entity.cellPosition.s,
-          },
-          2,
-          { respectImpassable: true }
-        );
+      const reachableHexes = hexBoard.getHexGrid().getReachableHexes(
+        {
+          q: entity.cellPosition.q,
+          r: entity.cellPosition.r,
+          s: entity.cellPosition.s,
+        },
+        2,
+        { respectImpassable: true }
+      );
 
       // Start movement mode
       hexBoard.startEntityMovement(entity.id, reachableHexes);
