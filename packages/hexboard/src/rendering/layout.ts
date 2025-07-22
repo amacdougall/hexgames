@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { HexCoordinates } from '../core/coordinates';
+import { Cell } from '../core/cell';
+import { Direction } from '../core/types';
 
 /* NOTE: This file contains utility functions related to conversion from the
  * logical hex grid to a rendered 3D scene.
@@ -12,6 +14,16 @@ import { HexCoordinates } from '../core/coordinates';
  * example, a pathfinding algorithm would not belong here. Neither would a method
  * which identifies the neighbors of a cell.
  */
+
+// Order corresponds to Direction enum: North, Northeast, Southeast, South, Southwest, Northwest
+const HEX_CORNERS = [
+  new THREE.Vector3(-0.5, 0, -Math.sqrt(3) / 2), // North-West corner for North face
+  new THREE.Vector3(0.5, 0, -Math.sqrt(3) / 2), // North-East corner for North/Northeast face
+  new THREE.Vector3(1, 0, 0), // East corner for Northeast/Southeast face
+  new THREE.Vector3(0.5, 0, Math.sqrt(3) / 2), // South-East corner for Southeast/South face
+  new THREE.Vector3(-0.5, 0, Math.sqrt(3) / 2), // South-West corner for South/Southwest face
+  new THREE.Vector3(-1, 0, 0), // West corner for Southwest/Northwest face
+];
 
 /**
  * Converts hex coordinates to world position using flat-top hexagon layout.
@@ -63,4 +75,37 @@ function roundHexCoordinates({ q, r, s }: HexCoordinates): HexCoordinates {
   }
 
   return { q: rq, r: rr, s: rs };
+}
+
+/**
+ * Gets the world-space vertices for a specific face of a hexagonal cell.
+ * Each face is defined by two adjacent corners of the hexagon.
+ *
+ * @param cell - The hexagonal cell
+ * @param direction - The face direction (North, Northeast, etc.)
+ * @returns Array of two Vector3 objects representing the face vertices
+ */
+export function getHexFaceVertices(
+  cell: Cell,
+  direction: Direction
+): [THREE.Vector3, THREE.Vector3] {
+  // 1. Get the world-space center of the hex cell
+  const center = hexToWorld(cell);
+
+  // 2. Determine the two corners for the given face direction
+  const corner1Index = direction;
+  const corner2Index = (direction + 1) % 6;
+
+  const corner1 = HEX_CORNERS[corner1Index].clone();
+  const corner2 = HEX_CORNERS[corner2Index].clone();
+
+  // 3. Add the cell's center to the local corner offsets
+  corner1.add(center);
+  corner2.add(center);
+
+  // 4. Apply the cell's elevation to the Y-coordinate
+  corner1.y = cell.elevation;
+  corner2.y = cell.elevation;
+
+  return [corner1, corner2];
 }
