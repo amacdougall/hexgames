@@ -14,7 +14,18 @@ export {
   DefaultCellColorStrategy,
   ElevationColorStrategy,
 } from './rendering/cellColorStrategy';
+// Export new cell group highlighting interfaces and classes
+export { CellGroupHighlightStrategy } from './rendering/cellGroupHighlightStrategy';
+export { BoundaryLineStrategy } from './rendering/boundaryLineStrategy';
+
+// Export updated model highlighting interfaces and classes
 export {
-  HighlightStrategy,
-  DefaultHighlightStrategy,
+  ModelHighlightStrategy,
+  DefaultModelHighlightStrategy,
+} from './rendering/highlightStrategy';
+
+// Keep backward compatibility exports
+export {
+  ModelHighlightStrategy as HighlightStrategy,
+  DefaultModelHighlightStrategy as DefaultHighlightStrategy,
 } from './rendering/highlightStrategy';

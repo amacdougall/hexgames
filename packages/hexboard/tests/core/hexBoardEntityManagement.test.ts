@@ -1,5 +1,5 @@
 import { HexBoard } from '../../src/hexBoard';
-import { EntityManager, EntityDefinition, Entity } from '../../src/core/entity';
+import { Entity, EntityDefinition, EntityManager } from '../../src/core/entity';
 import { EntityRenderer } from '../../src/rendering/entityRenderer';
 import { ModelRegistry } from '../../src/rendering/modelRegistry';
 import { Cell } from '../../src/core/cell';

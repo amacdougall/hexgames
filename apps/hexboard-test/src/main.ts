@@ -1,7 +1,7 @@
 // Test application main entry point
 // This will demonstrate hexboard library usage
 
-import { HexBoard, ModelRegistry, HexCoordinates } from 'hexboard';
+import { HexBoard, HexCoordinates, ModelRegistry } from 'hexboard';
 import { GameColorStrategy } from './gameColorStrategy.js';
 import { GameCellProps } from './types.js';
 import * as THREE from 'three';
@@ -38,17 +38,15 @@ function handleCellClick(coords: HexCoordinates): void {
       const entity = entitiesAtCell[0];
 
       // Calculate reachable hexes (2-step range, respecting impassable)
-      const reachableHexes = hexBoard
-        .getHexGrid()
-        .getReachableHexes(
-          {
-            q: entity.cellPosition.q,
-            r: entity.cellPosition.r,
-            s: entity.cellPosition.s,
-          },
-          2,
-          { respectImpassable: true }
-        );
+      const reachableHexes = hexBoard.getHexGrid().getReachableHexes(
+        {
+          q: entity.cellPosition.q,
+          r: entity.cellPosition.r,
+          s: entity.cellPosition.s,
+        },
+        2,
+        { respectImpassable: true }
+      );
 
       // Start movement mode
       hexBoard.startEntityMovement(entity.id, reachableHexes);

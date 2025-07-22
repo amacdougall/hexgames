@@ -1,6 +1,7 @@
 // HexGrid logic class
 import { Cell, CellDefinition } from './cell';
 import { HexCoordinates, axialToCubic } from './coordinates';
+import { BoundaryMap, Direction } from './types';
 
 export class HexGrid<
   CustomProps extends Record<string, unknown> = Record<string, never>,
@@ -492,12 +493,12 @@ export class HexGrid<
    */
   getNeighborCoordinates(q: number, r: number): HexCoordinates[] {
     const neighbors = [
-      { q: q + 1, r }, // Southeast
-      { q, r: r - 1 }, // Northeast
       { q: q - 1, r: r - 1 }, // North
-      { q: q - 1, r }, // Northwest
-      { q, r: r + 1 }, // Southwest
+      { q, r: r - 1 }, // Northeast
+      { q: q + 1, r }, // Southeast
       { q: q + 1, r: r + 1 }, // South
+      { q, r: r + 1 }, // Southwest
+      { q: q - 1, r }, // Northwest
     ];
 
     return neighbors.map((neighbor) => ({
@@ -608,5 +609,45 @@ export class HexGrid<
     }
 
     return reachable;
+  }
+
+  /**
+   * Identifies boundary faces for a collection of cells.
+   * A face is considered a boundary if the cell on one side is in the selection
+   * and the cell on the other side is not in the selection or doesn't exist.
+   *
+   * @param cells - Array of cells to analyze for boundary detection
+   * @returns Map where keys are cell IDs and values are sets of boundary directions
+   */
+  public findBoundaryFaces(cells: Cell<CustomProps>[]): BoundaryMap {
+    // Handle empty input
+    if (cells.length === 0) {
+      return new Map();
+    }
+
+    // Convert input to Set for O(1) lookup performance
+    const selectedCellIds = new Set<string>(cells.map((cell) => cell.id));
+    const boundaryMap: BoundaryMap = new Map();
+
+    for (const cell of cells) {
+      // Get all six neighbor coordinates using existing method
+      const neighborCoords = this.getNeighborCoordinates(cell.q, cell.r);
+      const boundaryDirections = new Set<Direction>();
+
+      // Check each neighbor in order (matches Direction enum order)
+      neighborCoords.forEach((coords, index) => {
+        const neighbor = this.getCellByCoords(coords);
+
+        // Face is a boundary if neighbor doesn't exist or isn't selected
+        if (!neighbor || !selectedCellIds.has(neighbor.id)) {
+          boundaryDirections.add(index as Direction);
+        }
+      });
+
+      // Always add to map, even if cell has no boundary faces
+      boundaryMap.set(cell.id, boundaryDirections);
+    }
+
+    return boundaryMap;
   }
 }
