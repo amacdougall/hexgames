@@ -874,14 +874,14 @@ describe('HexGrid', () => {
       // Then: Only external faces should be marked as boundary
       expect(boundaryMap.size).toBe(3);
 
-      // Each cell should have 4 boundary faces (6 total - 2 shared with neighbors)
+      // Cell1 has 4 boundary faces (shares 2 edges), Cell2 and Cell3 have 5 each (share 1 edge each)
       const cell1Boundaries = boundaryMap.get(cell1.id);
       const cell2Boundaries = boundaryMap.get(cell2.id);
       const cell3Boundaries = boundaryMap.get(cell3.id);
 
       expect(cell1Boundaries!.size).toBe(4);
-      expect(cell2Boundaries!.size).toBe(4);
-      expect(cell3Boundaries!.size).toBe(4);
+      expect(cell2Boundaries!.size).toBe(5);
+      expect(cell3Boundaries!.size).toBe(5);
 
       // Verify specific shared edges are not boundaries
       expect(cell1Boundaries!.has(Direction.Southeast)).toBe(false); // shared with cell2
@@ -999,13 +999,13 @@ describe('HexGrid', () => {
       const centerBoundaries = boundaryMap.get(centerCell!.id);
       expect(centerBoundaries!.size).toBe(0);
 
-      // Each edge cell should have 4 boundary faces (2 connected + 4 external)
+      // Each edge cell should have 3 boundary faces (3 connected + 3 external)
       const neighbors = grid.getNeighborCoordinates(0, 0);
       neighbors.forEach((coord) => {
         const neighbor = grid.getCellByCoords(coord);
         expect(neighbor).not.toBeNull();
         const neighborBoundaries = boundaryMap.get(neighbor!.id);
-        expect(neighborBoundaries!.size).toBe(4);
+        expect(neighborBoundaries!.size).toBe(3);
       });
     });
   });
