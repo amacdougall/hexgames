@@ -130,7 +130,7 @@ for group-based effects will be added.
   - **Description:** A default implementation of `CellGroupHighlightStrategy`.
   - Its `apply` method will use `findBoundaryFaces` and `getHexFaceVertices` to
     generate a `THREE.Group` containing `THREE.Line` meshes that outline the
-    selection.
+    selection in white.
 
 ### 3.4. `BoardRenderer` Integration
 
