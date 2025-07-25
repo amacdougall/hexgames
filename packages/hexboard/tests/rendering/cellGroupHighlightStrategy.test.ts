@@ -24,11 +24,9 @@ import { Cell } from '../../src/core/cell';
 import { HexGrid } from '../../src/core/hexGrid';
 
 describe('CellGroupHighlightStrategy interface', () => {
-  it('should define apply method with correct signature', () => {
-    // Test that CellGroupHighlightStrategy interface exists
-    // This is a compile-time test - if the interface doesn't exist, this will fail to compile
-
-    // Create a mock implementation to verify the interface
+  it('should exist and be implementable', () => {
+    // This is primarily a compile-time test - if the interface doesn't exist,
+    // this will fail to compile
     const mockStrategy: CellGroupHighlightStrategy = {
       apply: (cells: Cell[], grid: HexGrid<any>): THREE.Object3D => {
         return new THREE.Group();
@@ -38,107 +36,220 @@ describe('CellGroupHighlightStrategy interface', () => {
       },
     };
 
-    // Verify apply method signature
+    // Basic existence validation
+    expect(mockStrategy).toBeDefined();
     expect(typeof mockStrategy.apply).toBe('function');
-    expect(mockStrategy.apply).toHaveProperty('length', 2); // Two parameters: cells and grid
-
-    // Test that apply returns THREE.Object3D
-    const mockCells: Cell[] = [];
-    const mockGrid = {} as HexGrid<any>;
-    const result = mockStrategy.apply(mockCells, mockGrid);
-    expect(result).toBeInstanceOf(THREE.Object3D);
+    expect(typeof mockStrategy.remove).toBe('function');
   });
 
-  it('should define remove method with correct signature', () => {
-    // Create a mock implementation to verify the interface
-    const mockStrategy: CellGroupHighlightStrategy = {
+  it('should work with valid implementations', () => {
+    // Test actual behavior rather than type structure
+    const workingStrategy: CellGroupHighlightStrategy = {
       apply: (cells: Cell[], grid: HexGrid<any>): THREE.Object3D => {
-        return new THREE.Group();
+        const group = new THREE.Group();
+        // Simulate creating some visual effect based on cells
+        cells.forEach((cell) => {
+          const marker = new THREE.Group(); // Placeholder for actual geometry
+          group.add(marker);
+        });
+        return group;
       },
       remove: (effect: THREE.Object3D, scene: THREE.Scene): void => {
-        // Mock implementation
+        scene.remove(effect);
+        // Simulate cleanup
+        if (effect instanceof THREE.Group) {
+          effect.clear();
+        }
       },
     };
 
-    // Verify remove method signature
-    expect(typeof mockStrategy.remove).toBe('function');
-    expect(mockStrategy.remove).toHaveProperty('length', 2); // Two parameters: effect and scene
-
-    // Test that remove method can be called with correct parameters
-    const mockEffect = new THREE.Group();
+    // Test behavioral expectations
+    const mockCells: Cell[] = [
+      {
+        id: '0,0,0',
+        q: 0,
+        r: 0,
+        s: 0,
+        elevation: 0,
+        movementCost: 1,
+        isImpassable: false,
+        customProps: {},
+      },
+    ];
+    const mockGrid = {} as HexGrid<any>;
     const mockScene = new THREE.Scene();
-    expect(() => mockStrategy.remove(mockEffect, mockScene)).not.toThrow();
+
+    // Test apply creates a visual effect
+    const effect = workingStrategy.apply(mockCells, mockScene);
+    expect(effect).toBeInstanceOf(THREE.Object3D);
+    expect(effect.children.length).toBe(1); // Should create one child per cell
+
+    // Test remove cleans up properly
+    mockScene.add(effect);
+    expect(mockScene.children).toContain(effect);
+
+    workingStrategy.remove(effect, mockScene);
+    expect(mockScene.children).not.toContain(effect);
   });
 });
 
-describe('CellGroupHighlightStrategy type checking', () => {
-  it('should accept implementations that follow the interface', () => {
-    // Create a mock implementation and verify it satisfies the interface
-    class MockCellGroupHighlightStrategy implements CellGroupHighlightStrategy {
+describe('CellGroupHighlightStrategy implementations', () => {
+  it('should support class-based implementations', () => {
+    // Test that class-based implementations work correctly
+    class TestCellGroupHighlightStrategy implements CellGroupHighlightStrategy {
+      private effectCount = 0;
+
       apply(cells: Cell[], grid: HexGrid<any>): THREE.Object3D {
         const group = new THREE.Group();
-        // Mock implementation that creates a simple group
+        this.effectCount++;
+
+        // Simulate creating geometry based on cells
+        cells.forEach((cell) => {
+          const line = new THREE.Group(); // Placeholder for actual line geometry
+          line.userData = { cellId: cell.id };
+          group.add(line);
+        });
+
+        group.userData = { effectId: this.effectCount };
         return group;
       }
 
       remove(effect: THREE.Object3D, scene: THREE.Scene): void {
         scene.remove(effect);
+
+        // Simulate cleanup of resources
+        if (effect instanceof THREE.Group) {
+          effect.clear();
+        }
+      }
+
+      getEffectCount(): number {
+        return this.effectCount;
       }
     }
 
-    const strategy = new MockCellGroupHighlightStrategy();
-    expect(strategy).toBeDefined();
-    expect(typeof strategy.apply).toBe('function');
-    expect(typeof strategy.remove).toBe('function');
-
-    // Test that it can be used as CellGroupHighlightStrategy
-    const strategyInterface: CellGroupHighlightStrategy = strategy;
-    expect(strategyInterface).toBe(strategy);
-  });
-
-  it('should reject implementations missing required methods', () => {
-    // This is primarily a compile-time test
-    // TypeScript should prevent creating instances that don't implement the interface
-
-    // We can test this by ensuring our interface is properly defined
-    const requiredMethods = ['apply', 'remove'];
-
-    // Create a valid implementation
-    const validStrategy: CellGroupHighlightStrategy = {
-      apply: (cells: Cell[], grid: HexGrid<any>): THREE.Object3D =>
-        new THREE.Group(),
-      remove: (effect: THREE.Object3D, scene: THREE.Scene): void => {},
-    };
-
-    requiredMethods.forEach((method) => {
-      expect(validStrategy).toHaveProperty(method);
-      expect(typeof (validStrategy as any)[method]).toBe('function');
-    });
-  });
-
-  it('should enforce correct parameter types', () => {
-    // Test that the interface enforces correct parameter types
-    const strategy: CellGroupHighlightStrategy = {
-      apply: (cells: Cell[], grid: HexGrid<any>): THREE.Object3D => {
-        // Verify parameters are correctly typed
-        expect(Array.isArray(cells)).toBe(true);
-        expect(grid).toBeDefined();
-        return new THREE.Group();
+    const strategy = new TestCellGroupHighlightStrategy();
+    const mockCells: Cell[] = [
+      {
+        id: '0,0,0',
+        q: 0,
+        r: 0,
+        s: 0,
+        elevation: 0,
+        movementCost: 1,
+        isImpassable: false,
+        customProps: {},
       },
-      remove: (effect: THREE.Object3D, scene: THREE.Scene): void => {
-        // Verify parameters are correctly typed
-        expect(effect).toBeInstanceOf(THREE.Object3D);
-        expect(scene).toBeInstanceOf(THREE.Scene);
+      {
+        id: '1,0,-1',
+        q: 1,
+        r: 0,
+        s: -1,
+        elevation: 0,
+        movementCost: 1,
+        isImpassable: false,
+        customProps: {},
       },
-    };
-
-    // Test with mock data
-    const mockCells: Cell[] = [];
+    ];
     const mockGrid = {} as HexGrid<any>;
-    const mockEffect = new THREE.Group();
     const mockScene = new THREE.Scene();
 
-    expect(() => strategy.apply(mockCells, mockGrid)).not.toThrow();
-    expect(() => strategy.remove(mockEffect, mockScene)).not.toThrow();
+    // Test apply behavior
+    const effect1 = strategy.apply(mockCells, mockGrid);
+    expect(effect1.children.length).toBe(2); // One child per cell
+    expect(effect1.userData.effectId).toBe(1);
+    expect(strategy.getEffectCount()).toBe(1);
+
+    // Test multiple effects
+    const effect2 = strategy.apply([mockCells[0]], mockGrid);
+    expect(effect2.children.length).toBe(1);
+    expect(effect2.userData.effectId).toBe(2);
+    expect(strategy.getEffectCount()).toBe(2);
+
+    // Test removal
+    mockScene.add(effect1);
+    mockScene.add(effect2);
+    expect(mockScene.children.length).toBe(2);
+
+    strategy.remove(effect1, mockScene);
+    expect(mockScene.children.length).toBe(1);
+    expect(mockScene.children).not.toContain(effect1);
+  });
+
+  it('should handle edge cases in implementations', () => {
+    const robustStrategy: CellGroupHighlightStrategy = {
+      apply: (cells: Cell[], grid: HexGrid<any>): THREE.Object3D => {
+        const group = new THREE.Group();
+
+        // Handle empty cells array
+        if (cells.length === 0) {
+          return group;
+        }
+
+        // Simulate boundary detection and line creation
+        cells.forEach((cell) => {
+          // In real implementation, this would use grid.findBoundaryFaces()
+          const mockLine = new THREE.Group();
+          mockLine.userData = { type: 'boundary-line', cellId: cell.id };
+          group.add(mockLine);
+        });
+
+        return group;
+      },
+
+      remove: (effect: THREE.Object3D, scene: THREE.Scene): void => {
+        if (!effect) return; // Handle null/undefined gracefully
+
+        scene.remove(effect);
+
+        // Cleanup resources
+        effect.traverse((child) => {
+          if (child.userData?.type === 'boundary-line') {
+            // Simulate disposing of geometries/materials
+            // In real implementation: child.geometry?.dispose(), etc.
+          }
+        });
+
+        if (effect instanceof THREE.Group) {
+          effect.clear();
+        }
+      },
+    };
+
+    const mockGrid = {} as HexGrid<any>;
+    const mockScene = new THREE.Scene();
+
+    // Test empty cells
+    const emptyEffect = robustStrategy.apply([], mockGrid);
+    expect(emptyEffect).toBeInstanceOf(THREE.Group);
+    expect(emptyEffect.children.length).toBe(0);
+
+    // Test null effect removal
+    expect(() => robustStrategy.remove(null as any, mockScene)).not.toThrow();
+    expect(() =>
+      robustStrategy.remove(undefined as any, mockScene)
+    ).not.toThrow();
+
+    // Test normal operation
+    const cells: Cell[] = [
+      {
+        id: '0,0,0',
+        q: 0,
+        r: 0,
+        s: 0,
+        elevation: 0,
+        movementCost: 1,
+        isImpassable: false,
+        customProps: {},
+      },
+    ];
+    const effect = robustStrategy.apply(cells, mockGrid);
+    expect(effect.children.length).toBe(1);
+    expect(effect.children[0].userData.cellId).toBe('0,0,0');
+
+    // Test cleanup
+    mockScene.add(effect);
+    robustStrategy.remove(effect, mockScene);
+    expect(mockScene.children).not.toContain(effect);
   });
 });

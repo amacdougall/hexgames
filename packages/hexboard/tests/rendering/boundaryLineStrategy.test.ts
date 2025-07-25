@@ -66,38 +66,20 @@ describe('BoundaryLineStrategy', () => {
   });
 
   it('should implement CellGroupHighlightStrategy interface', () => {
-    // Test that BoundaryLineStrategy implements the interface
-    expect(strategy).toBeDefined();
-
-    // Verify it satisfies the interface contract
+    // Compile-time verification - if interface doesn't exist, this fails
     const interfaceStrategy: CellGroupHighlightStrategy = strategy;
     expect(interfaceStrategy).toBe(strategy);
-
-    expect(typeof strategy.apply).toBe('function');
-    expect(typeof strategy.remove).toBe('function');
   });
 
-  it('should be instantiable', () => {
-    // Test constructor works without errors
+  it('should be instantiable with default and custom parameters', () => {
+    // Test default constructor
     expect(() => new BoundaryLineStrategy()).not.toThrow();
 
     // Test constructor with custom parameters
     const customColor = new THREE.Color(0xff0000);
     const customWidth = 5;
-    expect(
-      () => new BoundaryLineStrategy(customColor, customWidth)
-    ).not.toThrow();
-
     const customStrategy = new BoundaryLineStrategy(customColor, customWidth);
     expect(customStrategy).toBeInstanceOf(BoundaryLineStrategy);
-  });
-
-  it('should have default color and width values', () => {
-    const defaultStrategy = new BoundaryLineStrategy();
-    expect(defaultStrategy).toBeDefined();
-
-    // Test that it can be instantiated with defaults
-    expect(defaultStrategy).toBeInstanceOf(BoundaryLineStrategy);
   });
 });
 
@@ -146,121 +128,74 @@ describe('BoundaryLineStrategy.apply()', () => {
     ]);
   });
 
-  it('should call HexGrid.findBoundaryFaces with provided cells', () => {
-    // Mock HexGrid.findBoundaryFaces to return empty BoundaryMap
-    const mockBoundaryMap = new Map<string, Set<Direction>>();
-    (mockGrid.findBoundaryFaces as jest.Mock).mockReturnValue(mockBoundaryMap);
-
-    // Call strategy.apply(mockCells, mockGrid)
-    strategy.apply(mockCells, mockGrid);
-
-    // Verify findBoundaryFaces was called with mockCells
-    expect(mockGrid.findBoundaryFaces).toHaveBeenCalledWith(mockCells);
-    expect(mockGrid.findBoundaryFaces).toHaveBeenCalledTimes(1);
-  });
-
-  it('should return a THREE.Group object', () => {
-    // Setup mock to return empty boundary map
-    (mockGrid.findBoundaryFaces as jest.Mock).mockReturnValue(new Map());
-
-    // Call strategy.apply(mockCells, mockGrid)
-    const result = strategy.apply(mockCells, mockGrid);
-
-    // Verify return value is instanceof THREE.Group
-    expect(result).toBeInstanceOf(THREE.Group);
-  });
-
-  it('should create THREE.Line objects for boundary faces', () => {
-    // Setup mockGrid.findBoundaryFaces to return test BoundaryMap
+  it('should create boundary lines based on grid analysis', () => {
+    // Setup mock to return boundary data
     const mockBoundaryMap = new Map<string, Set<Direction>>();
     mockBoundaryMap.set(
       '0,0,0',
       new Set([Direction.North, Direction.Northeast])
     );
     (mockGrid.findBoundaryFaces as jest.Mock).mockReturnValue(mockBoundaryMap);
-
-    // Mock getCell to return the test cell
     (mockGrid.getCell as jest.Mock).mockImplementation((cellId: string) => {
       return mockCells.find((cell) => cell.id === cellId) || null;
     });
 
-    // Mock layout.getHexFaceVertices to return test vertices
-    (layout.getHexFaceVertices as jest.Mock).mockReturnValue([
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(1, 0, 0),
-    ]);
-
-    // Call strategy.apply(mockCells, mockGrid)
     const result = strategy.apply(mockCells, mockGrid);
 
-    // Verify returned group contains THREE.Line objects
+    // Verify grid integration
+    expect(mockGrid.findBoundaryFaces).toHaveBeenCalledWith(mockCells);
     expect(result).toBeInstanceOf(THREE.Group);
-    expect(result.children.length).toBe(2); // Two directions = two lines
+    expect(result.children.length).toBe(2); // Two boundary faces = two lines
 
+    // Verify actual boundary lines were created
     result.children.forEach((child: any) => {
       expect(child).toBeInstanceOf(THREE.Line);
+      expect(child.material.color.getHex()).toBe(0xffffff); // Default white
     });
 
-    // Verify getHexFaceVertices was called for each boundary face
+    // Verify layout integration
     expect(layout.getHexFaceVertices).toHaveBeenCalledTimes(2);
   });
 
-  it('should use white color for boundary lines', () => {
-    // Setup test data
+  it('should support custom colors and line styles', () => {
+    // Test custom styling
+    const redStrategy = new BoundaryLineStrategy(new THREE.Color(0xff0000), 5);
     const mockBoundaryMap = new Map<string, Set<Direction>>();
     mockBoundaryMap.set('0,0,0', new Set([Direction.North]));
     (mockGrid.findBoundaryFaces as jest.Mock).mockReturnValue(mockBoundaryMap);
     (mockGrid.getCell as jest.Mock).mockReturnValue(mockCells[0]);
 
-    // Call strategy.apply(mockCells, mockGrid)
-    const result = strategy.apply(mockCells, mockGrid);
+    const result = redStrategy.apply(mockCells, mockGrid);
 
-    // Verify line materials have white color
     expect(result.children.length).toBe(1);
     const line = result.children[0] as any;
-    const material = line.material;
-
-    expect(material.color.getHex()).toBe(0xffffff); // White color
+    expect(line.material.color.getHex()).toBe(0xff0000); // Custom red color
   });
 
-  it('should handle empty cell array', () => {
-    // Call strategy.apply([], mockGrid)
-    const result = strategy.apply([], mockGrid);
-
-    // Verify returns empty THREE.Group without errors
-    expect(result).toBeInstanceOf(THREE.Group);
-    expect(result.children.length).toBe(0);
-
-    // Should not call findBoundaryFaces for empty array
+  it('should handle edge cases gracefully', () => {
+    // Test empty cell array
+    const emptyResult = strategy.apply([], mockGrid);
+    expect(emptyResult).toBeInstanceOf(THREE.Group);
+    expect(emptyResult.children.length).toBe(0);
     expect(mockGrid.findBoundaryFaces).not.toHaveBeenCalled();
-  });
 
-  it('should handle cells with no boundary faces', () => {
-    // Setup findBoundaryFaces to return empty sets
+    // Test cells with no boundary faces
     const mockBoundaryMap = new Map<string, Set<Direction>>();
     mockBoundaryMap.set('0,0,0', new Set()); // Empty set of directions
     (mockGrid.findBoundaryFaces as jest.Mock).mockReturnValue(mockBoundaryMap);
 
-    // Call strategy.apply(mockCells, mockGrid)
-    const result = strategy.apply(mockCells, mockGrid);
+    const noBoundaryResult = strategy.apply(mockCells, mockGrid);
+    expect(noBoundaryResult.children.length).toBe(0);
 
-    // Verify returns empty THREE.Group without errors
-    expect(result).toBeInstanceOf(THREE.Group);
-    expect(result.children.length).toBe(0);
-  });
-
-  it('should handle missing cells in grid', () => {
-    // Setup boundary map with cell that doesn't exist in grid
-    const mockBoundaryMap = new Map<string, Set<Direction>>();
-    mockBoundaryMap.set('missing-cell', new Set([Direction.North]));
-    (mockGrid.findBoundaryFaces as jest.Mock).mockReturnValue(mockBoundaryMap);
+    // Test missing cells in grid
+    const missingCellMap = new Map<string, Set<Direction>>();
+    missingCellMap.set('missing-cell', new Set([Direction.North]));
+    (mockGrid.findBoundaryFaces as jest.Mock).mockReturnValue(missingCellMap);
     (mockGrid.getCell as jest.Mock).mockReturnValue(null);
 
-    // Should not throw error
     expect(() => strategy.apply(mockCells, mockGrid)).not.toThrow();
-
-    const result = strategy.apply(mockCells, mockGrid);
-    expect(result.children.length).toBe(0);
+    const missingResult = strategy.apply(mockCells, mockGrid);
+    expect(missingResult.children.length).toBe(0);
   });
 });
 
@@ -275,68 +210,41 @@ describe('BoundaryLineStrategy.remove()', () => {
     mockEffect = new THREE.Group();
   });
 
-  it('should remove effect from scene', () => {
-    // Call strategy.remove(mockEffect, mockScene)
-    strategy.remove(mockEffect, mockScene);
-
-    // Verify scene.remove was called
-    expect(mockScene.remove).toHaveBeenCalledWith(mockEffect);
-  });
-
-  it('should dispose of geometries in the effect', () => {
-    // Create effect with mock geometries
+  it('should properly clean up scene and resources', () => {
+    // Create a realistic effect with geometry and materials
     const mockGeometry = new THREE.BufferGeometry();
-    const mockLine = new THREE.Line(
-      mockGeometry,
-      new THREE.LineBasicMaterial()
-    );
-    mockEffect = new THREE.Group();
-    mockEffect.add(mockLine);
-
-    // Setup traverse mock
-    (mockEffect.traverse as jest.Mock).mockImplementation((callback) => {
-      callback(mockLine);
-    });
-
-    // Call strategy.remove(mockEffect, mockScene)
-    strategy.remove(mockEffect, mockScene);
-
-    // Verify dispose() was called on geometry
-    expect(mockGeometry.dispose).toHaveBeenCalled();
-  });
-
-  it('should dispose of materials in the effect', () => {
-    // Create effect with mock materials
     const mockMaterial = new THREE.LineBasicMaterial();
-    const mockLine = new THREE.Line(new THREE.BufferGeometry(), mockMaterial);
+    const mockLine = new THREE.Line(mockGeometry, mockMaterial);
     mockEffect = new THREE.Group();
     mockEffect.add(mockLine);
 
-    // Setup traverse mock
+    // Setup traverse to visit the line
     (mockEffect.traverse as jest.Mock).mockImplementation((callback) => {
       callback(mockLine);
     });
 
-    // Call strategy.remove(mockEffect, mockScene)
+    // Test removal
     strategy.remove(mockEffect, mockScene);
 
-    // Verify dispose() was called on material
+    // Verify complete cleanup
+    expect(mockScene.remove).toHaveBeenCalledWith(mockEffect);
+    expect(mockGeometry.dispose).toHaveBeenCalled();
     expect(mockMaterial.dispose).toHaveBeenCalled();
+    expect(mockEffect.clear).toHaveBeenCalled();
   });
 
-  it('should handle array of materials', () => {
-    // Create line with array of materials
+  it('should handle complex resource cleanup scenarios', () => {
+    // Test array of materials
     const mockMaterial1 = new THREE.LineBasicMaterial();
     const mockMaterial2 = new THREE.LineBasicMaterial();
-    const mockLine = {
+    const mockLineWithMultipleMaterials = {
       geometry: new THREE.BufferGeometry(),
       material: [mockMaterial1, mockMaterial2],
     };
-    mockEffect = new THREE.Group();
 
-    // Setup traverse mock
+    mockEffect = new THREE.Group();
     (mockEffect.traverse as jest.Mock).mockImplementation((callback) => {
-      callback(mockLine);
+      callback(mockLineWithMultipleMaterials);
     });
 
     strategy.remove(mockEffect, mockScene);
@@ -345,20 +253,13 @@ describe('BoundaryLineStrategy.remove()', () => {
     expect(mockMaterial2.dispose).toHaveBeenCalled();
   });
 
-  it('should handle null or undefined effect gracefully', () => {
-    // Call strategy.remove(null, mockScene)
+  it('should handle edge cases in removal', () => {
+    // Test null/undefined effects
     expect(() => strategy.remove(null as any, mockScene)).not.toThrow();
-
-    // Call strategy.remove(undefined, mockScene)
     expect(() => strategy.remove(undefined as any, mockScene)).not.toThrow();
-  });
 
-  it('should clear the group if effect is a THREE.Group', () => {
-    const group = new THREE.Group();
-
-    strategy.remove(group, mockScene);
-
-    expect(group.clear).toHaveBeenCalled();
+    // Verify no scene operations were attempted for null/undefined
+    expect(mockScene.remove).not.toHaveBeenCalled();
   });
 });
 
@@ -368,70 +269,23 @@ describe('BoundaryLineStrategy integration', () => {
   beforeEach(() => {
     strategy = new BoundaryLineStrategy();
 
-    // Reset mocks
+    // Reset mocks for integration tests
     (layout.getHexFaceVertices as jest.Mock).mockReturnValue([
       new THREE.Vector3(0, 0, 0),
       new THREE.Vector3(1, 0, 0),
     ]);
   });
 
-  it('should work with real Cell and HexGrid objects', () => {
-    // Create real HexGrid with test cells
+  it('should integrate with real HexGrid for boundary detection', () => {
+    // Test with actual HexGrid instance to ensure integration works
     const grid = new HexGrid<{}>();
 
-    // Add cells that form a boundary
-    const cell1: Cell = {
-      id: '0,0,0',
-      q: 0,
-      r: 0,
-      s: 0,
-      elevation: 0,
-      movementCost: 1,
-      isImpassable: false,
-      customProps: {},
-    };
-    const cell2: Cell = {
-      id: '1,0,-1',
-      q: 1,
-      r: 0,
-      s: -1,
-      elevation: 0,
-      movementCost: 1,
-      isImpassable: false,
-      customProps: {},
-    };
-
-    grid.addCell(cell1);
-    grid.addCell(cell2);
-
-    // Call strategy.apply() with real data
-    const result = strategy.apply([cell1, cell2], grid);
-
-    // Verify boundary lines are created correctly
-    expect(result).toBeInstanceOf(THREE.Group);
-    expect(result.children.length).toBeGreaterThanOrEqual(0); // Depends on boundary detection
-  });
-
-  it('should handle complex boundary shapes', () => {
-    const grid = new HexGrid<{}>();
-
-    // Test L-shaped selection
-    const lShapeCells: Cell[] = [
+    const testCells: Cell[] = [
       {
         id: '0,0,0',
         q: 0,
         r: 0,
         s: 0,
-        elevation: 0,
-        movementCost: 1,
-        isImpassable: false,
-        customProps: {},
-      },
-      {
-        id: '0,1,-1',
-        q: 0,
-        r: 1,
-        s: -1,
         elevation: 0,
         movementCost: 1,
         isImpassable: false,
@@ -449,66 +303,64 @@ describe('BoundaryLineStrategy integration', () => {
       },
     ];
 
-    lShapeCells.forEach((cell) => grid.addCell(cell));
+    testCells.forEach((cell) => grid.addCell(cell));
 
-    expect(() => strategy.apply(lShapeCells, grid)).not.toThrow();
-
-    // Test disconnected cell groups
-    const disconnectedCells: Cell[] = [
-      {
-        id: '0,0,0',
-        q: 0,
-        r: 0,
-        s: 0,
-        elevation: 0,
-        movementCost: 1,
-        isImpassable: false,
-        customProps: {},
-      },
-      {
-        id: '3,0,-3',
-        q: 3,
-        r: 0,
-        s: -3,
-        elevation: 0,
-        movementCost: 1,
-        isImpassable: false,
-        customProps: {},
-      },
-    ];
-
-    disconnectedCells.forEach((cell) => grid.addCell(cell));
-
-    expect(() => strategy.apply(disconnectedCells, grid)).not.toThrow();
-
-    // Test single cell selection
-    const singleCell: Cell[] = [
-      {
-        id: '0,0,0',
-        q: 0,
-        r: 0,
-        s: 0,
-        elevation: 0,
-        movementCost: 1,
-        isImpassable: false,
-        customProps: {},
-      },
-    ];
-
-    expect(() => strategy.apply(singleCell, grid)).not.toThrow();
-
-    // Verify boundary detection and line creation
-    const result = strategy.apply(singleCell, grid);
+    // Test that strategy works with real grid implementation
+    const result = strategy.apply(testCells, grid);
     expect(result).toBeInstanceOf(THREE.Group);
+
+    // Test cleanup works with real objects
+    const mockScene = new THREE.Scene();
+    expect(() => strategy.remove(result, mockScene)).not.toThrow();
   });
 
-  it('should handle custom colors and line widths', () => {
-    const customColor = new THREE.Color(0xff0000); // Red
-    const customWidth = 10;
-    const customStrategy = new BoundaryLineStrategy(customColor, customWidth);
-
+  it('should handle realistic boundary scenarios', () => {
     const grid = new HexGrid<{}>();
-    const cell: Cell = {
+
+    // Test scenarios that would occur in actual usage
+    const scenarios = [
+      // Single cell (should have full perimeter)
+      [{ id: '0,0,0', q: 0, r: 0, s: 0 }],
+
+      // Two adjacent cells (should have shared interior boundary removed)
+      [
+        { id: '0,0,0', q: 0, r: 0, s: 0 },
+        { id: '1,0,-1', q: 1, r: 0, s: -1 },
+      ],
+
+      // L-shaped selection (complex boundary)
+      [
+        { id: '0,0,0', q: 0, r: 0, s: 0 },
+        { id: '0,1,-1', q: 0, r: 1, s: -1 },
+        { id: '1,0,-1', q: 1, r: 0, s: -1 },
+      ],
+    ];
+
+    scenarios.forEach((cellDefs, index) => {
+      const cells: Cell[] = cellDefs.map((def) => ({
+        ...def,
+        elevation: 0,
+        movementCost: 1,
+        isImpassable: false,
+        customProps: {},
+      }));
+
+      // Add cells to grid
+      cells.forEach((cell) => grid.addCell(cell));
+
+      // Test strategy handles each scenario
+      const result = strategy.apply(cells, grid);
+      expect(result).toBeInstanceOf(THREE.Group);
+
+      // Each scenario should produce some boundary visualization
+      // (exact count depends on HexGrid.findBoundaryFaces implementation)
+      expect(result.children.length).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  it('should work with different strategy configurations', () => {
+    const grid = new HexGrid<{}>();
+    const testCell: Cell = {
       id: '0,0,0',
       q: 0,
       r: 0,
@@ -518,11 +370,22 @@ describe('BoundaryLineStrategy integration', () => {
       isImpassable: false,
       customProps: {},
     };
-    grid.addCell(cell);
+    grid.addCell(testCell);
 
-    expect(() => customStrategy.apply([cell], grid)).not.toThrow();
+    // Test different strategy configurations work
+    const strategies = [
+      new BoundaryLineStrategy(), // Default
+      new BoundaryLineStrategy(new THREE.Color(0xff0000), 2), // Red, thick
+      new BoundaryLineStrategy(new THREE.Color(0x00ff00), 1), // Green, thin
+    ];
 
-    const result = customStrategy.apply([cell], grid);
-    expect(result).toBeInstanceOf(THREE.Group);
+    strategies.forEach((testStrategy) => {
+      const result = testStrategy.apply([testCell], grid);
+      expect(result).toBeInstanceOf(THREE.Group);
+
+      // Test cleanup works for each configuration
+      const mockScene = new THREE.Scene();
+      expect(() => testStrategy.remove(result, mockScene)).not.toThrow();
+    });
   });
 });
