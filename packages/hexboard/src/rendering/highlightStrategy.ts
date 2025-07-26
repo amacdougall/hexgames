@@ -2,9 +2,9 @@ import * as THREE from 'three';
 
 /**
  * Interface for strategies that apply visual highlights to 3D objects.
- * This allows applications to define custom highlighting behavior.
+ * This operates directly on THREE.Object3D models for simple highlighting effects.
  */
-export interface HighlightStrategy {
+export interface ModelHighlightStrategy {
   /**
    * Apply a highlight effect to the given 3D object.
    * @param object The THREE.Object3D to highlight
@@ -19,11 +19,11 @@ export interface HighlightStrategy {
 }
 
 /**
- * Default implementation of HighlightStrategy that applies a yellow emissive glow.
+ * Default implementation of ModelHighlightStrategy that applies a yellow emissive glow.
  * This strategy traverses the object hierarchy and modifies the emissive property
  * of all materials found, storing the original state for restoration.
  */
-export class DefaultHighlightStrategy implements HighlightStrategy {
+export class DefaultModelHighlightStrategy implements ModelHighlightStrategy {
   private originalStates = new WeakMap<THREE.Material, { emissive: number }>();
 
   /**
@@ -31,6 +31,8 @@ export class DefaultHighlightStrategy implements HighlightStrategy {
    * @param object The THREE.Object3D to highlight
    */
   apply(object: THREE.Object3D): void {
+    if (!object) return;
+
     object.traverse((child) => {
       // Check if the child has a material property (could be Mesh or similar)
       const meshLike = child as THREE.Object3D & { material?: unknown };
@@ -60,6 +62,8 @@ export class DefaultHighlightStrategy implements HighlightStrategy {
    * @param object The THREE.Object3D to remove highlighting from
    */
   remove(object: THREE.Object3D): void {
+    if (!object) return;
+
     object.traverse((child) => {
       // Check if the child has a material property (could be Mesh or similar)
       const meshLike = child as THREE.Object3D & { material?: unknown };
@@ -80,3 +84,7 @@ export class DefaultHighlightStrategy implements HighlightStrategy {
     });
   }
 }
+
+// Export aliases for backward compatibility during transition
+export { ModelHighlightStrategy as HighlightStrategy };
+export { DefaultModelHighlightStrategy as DefaultHighlightStrategy };

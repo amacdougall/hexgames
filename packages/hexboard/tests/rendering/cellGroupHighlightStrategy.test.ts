@@ -80,7 +80,7 @@ describe('CellGroupHighlightStrategy interface', () => {
     const mockScene = new THREE.Scene();
 
     // Test apply creates a visual effect
-    const effect = workingStrategy.apply(mockCells, mockScene);
+    const effect = workingStrategy.apply(mockCells, mockGrid);
     expect(effect).toBeInstanceOf(THREE.Object3D);
     expect(effect.children.length).toBe(1); // Should create one child per cell
 
