@@ -12,9 +12,11 @@ import {
   DefaultCellColorStrategy,
 } from './cellColorStrategy';
 import {
-  DefaultHighlightStrategy,
-  HighlightStrategy,
+  DefaultModelHighlightStrategy,
+  ModelHighlightStrategy,
 } from './highlightStrategy';
+import { CellGroupHighlightStrategy } from './cellGroupHighlightStrategy';
+import { BoundaryLineStrategy } from './boundaryLineStrategy';
 import { EntityRenderer } from './entityRenderer';
 
 export class BoardRenderer<
@@ -28,7 +30,9 @@ export class BoardRenderer<
   private groundPlane: THREE.Mesh | null = null;
   private hexMeshes: Map<string, THREE.Mesh> = new Map();
   private colorStrategy: CellColorStrategy<CustomProps>;
-  private highlightStrategy: HighlightStrategy;
+  private modelHighlightStrategy: ModelHighlightStrategy;
+  private cellGroupHighlightStrategy: CellGroupHighlightStrategy;
+  private activeGroupHighlights: Map<string, THREE.Object3D> = new Map();
   private entityRenderer?: EntityRenderer<CustomProps>;
 
   /**
@@ -36,17 +40,21 @@ export class BoardRenderer<
    *
    * @param hexGrid - The hex grid to render
    * @param colorStrategy - Optional color strategy for cell coloring. Defaults to DefaultCellColorStrategy
-   * @param highlightStrategy - Optional highlight strategy for visual effects. Defaults to DefaultHighlightStrategy
+   * @param modelHighlightStrategy - Optional model highlight strategy for visual effects. Defaults to DefaultModelHighlightStrategy
+   * @param cellGroupHighlightStrategy - Optional cell group highlight strategy. Defaults to BoundaryLineStrategy
    */
   constructor(
     hexGrid: HexGrid<CustomProps>,
     colorStrategy?: CellColorStrategy<CustomProps>,
-    highlightStrategy?: HighlightStrategy
+    modelHighlightStrategy?: ModelHighlightStrategy,
+    cellGroupHighlightStrategy?: CellGroupHighlightStrategy
   ) {
     this.hexGrid = hexGrid;
     this.colorStrategy = colorStrategy || new DefaultCellColorStrategy();
-    this.highlightStrategy =
-      highlightStrategy || new DefaultHighlightStrategy();
+    this.modelHighlightStrategy =
+      modelHighlightStrategy || new DefaultModelHighlightStrategy();
+    this.cellGroupHighlightStrategy =
+      cellGroupHighlightStrategy || new BoundaryLineStrategy();
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera();
     this.renderer = new THREE.WebGLRenderer();
@@ -280,21 +288,37 @@ export class BoardRenderer<
   }
 
   /**
-   * Sets the highlight strategy used for visual effects.
+   * Sets the model highlight strategy used for visual effects.
    *
-   * @param strategy - The new highlight strategy to use
+   * @param strategy - The new model highlight strategy to use
    */
-  setHighlightStrategy(strategy: HighlightStrategy): void {
-    this.highlightStrategy = strategy;
+  setModelHighlightStrategy(strategy: ModelHighlightStrategy): void {
+    this.modelHighlightStrategy = strategy;
   }
 
   /**
-   * Gets the current highlight strategy being used for visual effects.
+   * Gets the current model highlight strategy being used for visual effects.
    *
-   * @returns The current highlight strategy instance
+   * @returns The current model highlight strategy instance
    */
-  getHighlightStrategy(): HighlightStrategy {
-    return this.highlightStrategy;
+  getModelHighlightStrategy(): ModelHighlightStrategy {
+    return this.modelHighlightStrategy;
+  }
+
+  /**
+   * Gets the current cell group highlight strategy.
+   */
+  getCellGroupHighlightStrategy(): CellGroupHighlightStrategy {
+    return this.cellGroupHighlightStrategy;
+  }
+
+  /**
+   * Sets a new cell group highlight strategy.
+   */
+  setCellGroupHighlightStrategy(strategy: CellGroupHighlightStrategy): void {
+    // Clean up existing highlights with old strategy
+    this.removeAllHighlightGroups();
+    this.cellGroupHighlightStrategy = strategy;
   }
 
   /**
@@ -306,7 +330,7 @@ export class BoardRenderer<
     const key = this.createCoordinateKey(coordinates);
     const mesh = this.hexMeshes.get(key);
     if (mesh) {
-      this.highlightStrategy.apply(mesh);
+      this.modelHighlightStrategy.apply(mesh);
     }
   }
 
@@ -319,7 +343,7 @@ export class BoardRenderer<
     const key = this.createCoordinateKey(coordinates);
     const mesh = this.hexMeshes.get(key);
     if (mesh) {
-      this.highlightStrategy.remove(mesh);
+      this.modelHighlightStrategy.remove(mesh);
     }
   }
 
@@ -351,7 +375,7 @@ export class BoardRenderer<
    * @param entityModel - The THREE.Object3D representing the entity
    */
   highlightEntity(entityModel: THREE.Object3D): void {
-    this.highlightStrategy.apply(entityModel);
+    this.modelHighlightStrategy.apply(entityModel);
   }
 
   /**
@@ -360,7 +384,46 @@ export class BoardRenderer<
    * @param entityModel - The THREE.Object3D representing the entity
    */
   removeHighlightFromEntity(entityModel: THREE.Object3D): void {
-    this.highlightStrategy.remove(entityModel);
+    this.modelHighlightStrategy.remove(entityModel);
+  }
+
+  /**
+   * Creates a group highlight effect for the specified cells.
+   * @param groupId - Unique identifier for this highlight group
+   * @param cells - Array of cells to highlight as a group
+   */
+  addHighlightGroup(groupId: string, cells: Cell<CustomProps>[]): void {
+    // Remove existing group with same ID if it exists
+    this.removeHighlightGroup(groupId);
+
+    // Create new group highlight effect
+    const effect = this.cellGroupHighlightStrategy.apply(cells, this.hexGrid);
+
+    // Add to scene and track
+    this.scene.add(effect);
+    this.activeGroupHighlights.set(groupId, effect);
+  }
+
+  /**
+   * Removes a group highlight effect.
+   * @param groupId - Unique identifier of the highlight group to remove
+   */
+  removeHighlightGroup(groupId: string): void {
+    const effect = this.activeGroupHighlights.get(groupId);
+    if (effect) {
+      this.cellGroupHighlightStrategy.remove(effect, this.scene);
+      this.activeGroupHighlights.delete(groupId);
+    }
+  }
+
+  /**
+   * Removes all active group highlights.
+   */
+  removeAllHighlightGroups(): void {
+    this.activeGroupHighlights.forEach((effect, _groupId) => {
+      this.cellGroupHighlightStrategy.remove(effect, this.scene);
+    });
+    this.activeGroupHighlights.clear();
   }
 
   /**

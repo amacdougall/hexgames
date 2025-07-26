@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { Cell } from '../core/cell.js';
-import { HexGrid } from '../core/hexGrid.js';
+import { Cell } from '../core/cell';
+import { HexGrid } from '../core/hexGrid';
 
 /**
  * Strategy interface for creating visual effects based on a logical group of cells.
@@ -13,7 +13,10 @@ export interface CellGroupHighlightStrategy {
    * @param grid - HexGrid containing the cells, used for spatial calculations
    * @returns A THREE.Object3D representing the visual effect
    */
-  apply(cells: Cell[], grid: HexGrid<Record<string, unknown>>): THREE.Object3D;
+  apply<T extends Record<string, unknown>>(
+    cells: Cell<T>[],
+    grid: HexGrid<T>
+  ): THREE.Object3D;
 
   /**
    * Removes and properly disposes of a visual effect created by apply().

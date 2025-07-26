@@ -85,8 +85,8 @@ function roundHexCoordinates({ q, r, s }: HexCoordinates): HexCoordinates {
  * @param direction - The face direction (North, Northeast, etc.)
  * @returns Array of two Vector3 objects representing the face vertices
  */
-export function getHexFaceVertices(
-  cell: Cell,
+export function getHexFaceVertices<T extends Record<string, unknown>>(
+  cell: Cell<T>,
   direction: Direction
 ): [THREE.Vector3, THREE.Vector3] {
   // 1. Get the world-space center of the hex cell

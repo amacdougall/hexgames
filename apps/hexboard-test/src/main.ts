@@ -1,7 +1,7 @@
 // Test application main entry point
 // This will demonstrate hexboard library usage
 
-import { HexBoard, ModelRegistry, HexCoordinates } from 'hexboard';
+import { HexBoard, HexCoordinates, ModelRegistry } from 'hexboard';
 import { GameColorStrategy } from './gameColorStrategy.js';
 import { GameCellProps } from './types.js';
 import * as THREE from 'three';

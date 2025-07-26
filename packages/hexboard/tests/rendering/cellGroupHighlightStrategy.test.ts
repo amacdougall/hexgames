@@ -4,17 +4,30 @@
 jest.mock('three', () => ({
   Group: jest.fn().mockImplementation(() => ({
     children: [],
-    add: jest.fn(),
+    add: jest.fn(function (this: any) {
+      this.children.push(arguments[0]);
+    }),
     remove: jest.fn(),
     clear: jest.fn(),
+    traverse: jest.fn(function (this: any, callback: (child: any) => void) {
+      callback(this);
+      this.children.forEach(callback);
+    }),
   })),
   Object3D: jest.fn().mockImplementation(() => ({
     children: [],
   })),
   Scene: jest.fn().mockImplementation(() => ({
     children: [],
-    add: jest.fn(),
-    remove: jest.fn(),
+    add: jest.fn(function (this: any) {
+      this.children.push(arguments[0]);
+    }),
+    remove: jest.fn(function (this: any) {
+      const index = this.children.indexOf(arguments[0]);
+      if (index > -1) {
+        this.children.splice(index, 1);
+      }
+    }),
   })),
 }));
 
@@ -28,7 +41,10 @@ describe('CellGroupHighlightStrategy interface', () => {
     // This is primarily a compile-time test - if the interface doesn't exist,
     // this will fail to compile
     const mockStrategy: CellGroupHighlightStrategy = {
-      apply: (cells: Cell[], grid: HexGrid<any>): THREE.Object3D => {
+      apply: <T extends Record<string, unknown>>(
+        cells: Cell<T>[],
+        grid: HexGrid<T>
+      ): THREE.Object3D => {
         return new THREE.Group();
       },
       remove: (effect: THREE.Object3D, scene: THREE.Scene): void => {
@@ -45,7 +61,10 @@ describe('CellGroupHighlightStrategy interface', () => {
   it('should work with valid implementations', () => {
     // Test actual behavior rather than type structure
     const workingStrategy: CellGroupHighlightStrategy = {
-      apply: (cells: Cell[], grid: HexGrid<any>): THREE.Object3D => {
+      apply: <T extends Record<string, unknown>>(
+        cells: Cell<T>[],
+        grid: HexGrid<T>
+      ): THREE.Object3D => {
         const group = new THREE.Group();
         // Simulate creating some visual effect based on cells
         cells.forEach((cell) => {
@@ -57,8 +76,8 @@ describe('CellGroupHighlightStrategy interface', () => {
       remove: (effect: THREE.Object3D, scene: THREE.Scene): void => {
         scene.remove(effect);
         // Simulate cleanup
-        if (effect instanceof THREE.Group) {
-          effect.clear();
+        if (effect && typeof effect === 'object' && 'clear' in effect) {
+          (effect as any).clear();
         }
       },
     };
@@ -81,7 +100,8 @@ describe('CellGroupHighlightStrategy interface', () => {
 
     // Test apply creates a visual effect
     const effect = workingStrategy.apply(mockCells, mockGrid);
-    expect(effect).toBeInstanceOf(THREE.Object3D);
+    expect(effect).toBeDefined();
+    expect(effect.children).toBeDefined();
     expect(effect.children.length).toBe(1); // Should create one child per cell
 
     // Test remove cleans up properly
@@ -99,7 +119,10 @@ describe('CellGroupHighlightStrategy implementations', () => {
     class TestCellGroupHighlightStrategy implements CellGroupHighlightStrategy {
       private effectCount = 0;
 
-      apply(cells: Cell[], grid: HexGrid<any>): THREE.Object3D {
+      apply<T extends Record<string, unknown>>(
+        cells: Cell<T>[],
+        grid: HexGrid<T>
+      ): THREE.Object3D {
         const group = new THREE.Group();
         this.effectCount++;
 
@@ -118,8 +141,8 @@ describe('CellGroupHighlightStrategy implementations', () => {
         scene.remove(effect);
 
         // Simulate cleanup of resources
-        if (effect instanceof THREE.Group) {
-          effect.clear();
+        if (effect && typeof effect === 'object' && 'clear' in effect) {
+          (effect as any).clear();
         }
       }
 
@@ -178,7 +201,10 @@ describe('CellGroupHighlightStrategy implementations', () => {
 
   it('should handle edge cases in implementations', () => {
     const robustStrategy: CellGroupHighlightStrategy = {
-      apply: (cells: Cell[], grid: HexGrid<any>): THREE.Object3D => {
+      apply: <T extends Record<string, unknown>>(
+        cells: Cell<T>[],
+        grid: HexGrid<T>
+      ): THREE.Object3D => {
         const group = new THREE.Group();
 
         // Handle empty cells array
@@ -210,8 +236,8 @@ describe('CellGroupHighlightStrategy implementations', () => {
           }
         });
 
-        if (effect instanceof THREE.Group) {
-          effect.clear();
+        if (effect && typeof effect === 'object' && 'clear' in effect) {
+          (effect as any).clear();
         }
       },
     };
@@ -221,7 +247,8 @@ describe('CellGroupHighlightStrategy implementations', () => {
 
     // Test empty cells
     const emptyEffect = robustStrategy.apply([], mockGrid);
-    expect(emptyEffect).toBeInstanceOf(THREE.Group);
+    expect(emptyEffect).toBeDefined();
+    expect(emptyEffect.children).toBeDefined();
     expect(emptyEffect.children.length).toBe(0);
 
     // Test null effect removal

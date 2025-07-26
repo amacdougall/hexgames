@@ -1,7 +1,7 @@
 /// <reference lib="dom" />
 
 import { HexGrid } from '../../src/core/hexGrid';
-import { Direction, BoundaryMap } from '../../src/core/types';
+import { BoundaryMap, Direction } from '../../src/core/types';
 
 interface TestProps extends Record<string, unknown> {
   type?: string;

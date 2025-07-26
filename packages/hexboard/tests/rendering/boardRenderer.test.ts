@@ -43,6 +43,31 @@ jest.mock('three', () => ({
   Vector3: jest.fn().mockImplementation(() => ({
     set: jest.fn(),
   })),
+  Color: jest.fn().mockImplementation((hex) => ({
+    getHex: () => hex || 0xffffff,
+  })),
+  Group: jest.fn().mockImplementation(() => ({
+    children: [],
+    add: jest.fn(),
+    remove: jest.fn(),
+    clear: jest.fn(),
+    traverse: jest.fn(),
+  })),
+  Line: jest.fn().mockImplementation((geometry, material) => ({
+    geometry,
+    material,
+    children: [],
+    traverse: jest.fn(),
+  })),
+  BufferGeometry: jest.fn().mockImplementation(() => ({
+    setFromPoints: jest.fn().mockReturnThis(),
+    dispose: jest.fn(),
+  })),
+  LineBasicMaterial: jest.fn().mockImplementation((props) => ({
+    color: props?.color || { getHex: () => 0xffffff },
+    linewidth: props?.linewidth || 1,
+    dispose: jest.fn(),
+  })),
   PCFSoftShadowMap: 2,
 }));
 
@@ -63,7 +88,7 @@ import { EntityManager } from '../../src/core/entity';
 import { HexGrid } from '../../src/core/hexGrid';
 import { OrbitControls } from 'three-stdlib';
 import { CellColorStrategy } from '../../src/rendering/cellColorStrategy';
-import { HighlightStrategy } from '../../src/rendering/highlightStrategy';
+import { ModelHighlightStrategy } from '../../src/rendering/highlightStrategy';
 import {
   MockColorStrategy,
   MockCamera as _MockCamera,
@@ -82,8 +107,8 @@ class MockModelRegistry {
   createModelInstance = jest.fn();
 }
 
-// Mock HighlightStrategy for testing
-class MockHighlightStrategy implements HighlightStrategy {
+// Mock ModelHighlightStrategy for testing
+class MockModelHighlightStrategy implements ModelHighlightStrategy {
   apply = jest.fn();
   remove = jest.fn();
 }
@@ -138,19 +163,19 @@ describe('BoardRenderer', () => {
       }).not.toThrow();
     });
 
-    it('should accept optional highlight strategy', () => {
-      const mockHighlightStrategy = new MockHighlightStrategy();
+    it('should accept optional model highlight strategy', () => {
+      const mockModelHighlightStrategy = new MockModelHighlightStrategy();
 
       expect(() => {
-        new BoardRenderer(mockHexGrid, undefined, mockHighlightStrategy);
+        new BoardRenderer(mockHexGrid, undefined, mockModelHighlightStrategy);
       }).not.toThrow();
     });
 
-    it('should instantiate and use a DefaultHighlightStrategy if none is provided', () => {
+    it('should instantiate and use a DefaultModelHighlightStrategy if none is provided', () => {
       const boardRenderer = new BoardRenderer(mockHexGrid);
 
-      // This test verifies that BoardRenderer can handle no highlight strategy being provided
-      // The DefaultHighlightStrategy should be instantiated internally
+      // This test verifies that BoardRenderer can handle no model highlight strategy being provided
+      // The DefaultModelHighlightStrategy should be instantiated internally
       expect(boardRenderer).toBeDefined();
     });
 
@@ -231,32 +256,32 @@ describe('BoardRenderer', () => {
     });
   });
 
-  describe('HighlightStrategy integration', () => {
-    it('should use the provided HighlightStrategy to apply highlights', () => {
-      const mockHighlightStrategy = new MockHighlightStrategy();
+  describe('ModelHighlightStrategy integration', () => {
+    it('should use the provided ModelHighlightStrategy to apply highlights', () => {
+      const mockModelHighlightStrategy = new MockModelHighlightStrategy();
       boardRenderer = new BoardRenderer(
         mockHexGrid,
         undefined,
-        mockHighlightStrategy
+        mockModelHighlightStrategy
       );
 
       // When BoardRenderer needs to highlight an object, it should use the strategy
       // This will be tested through future integration with EntityManager
-      expect(mockHighlightStrategy.apply).toBeDefined();
-      expect(mockHighlightStrategy.remove).toBeDefined();
+      expect(mockModelHighlightStrategy.apply).toBeDefined();
+      expect(mockModelHighlightStrategy.remove).toBeDefined();
     });
 
-    it('should use the provided HighlightStrategy to remove highlights', () => {
-      const mockHighlightStrategy = new MockHighlightStrategy();
+    it('should use the provided ModelHighlightStrategy to remove highlights', () => {
+      const mockModelHighlightStrategy = new MockModelHighlightStrategy();
       boardRenderer = new BoardRenderer(
         mockHexGrid,
         undefined,
-        mockHighlightStrategy
+        mockModelHighlightStrategy
       );
 
       // When BoardRenderer needs to remove highlights, it should use the strategy
       // This will be tested through future integration with EntityManager
-      expect(mockHighlightStrategy.remove).toBeDefined();
+      expect(mockModelHighlightStrategy.remove).toBeDefined();
     });
   });
 

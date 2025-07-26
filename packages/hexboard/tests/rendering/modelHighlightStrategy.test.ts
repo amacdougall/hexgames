@@ -1,8 +1,8 @@
 /// <reference lib="dom" />
 
 import {
-  ModelHighlightStrategy,
   DefaultModelHighlightStrategy,
+  ModelHighlightStrategy,
 } from '../../src/rendering/highlightStrategy';
 
 describe('ModelHighlightStrategy', () => {
