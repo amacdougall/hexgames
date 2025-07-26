@@ -62,8 +62,8 @@ export { DefaultModelHighlightStrategy as DefaultHighlightStrategy };
 
 ```typescript
 import * as THREE from 'three';
-import { Cell } from '../core/cell.js';
-import { HexGrid } from '../core/hexGrid.js';
+import { Cell } from '../core/cell.ts';
+import { HexGrid } from '../core/hexGrid.ts';
 
 /**
  * Strategy interface for creating visual effects based on a logical group of cells.
@@ -95,11 +95,11 @@ export interface CellGroupHighlightStrategy {
 
 ```typescript
 import * as THREE from 'three';
-import { CellGroupHighlightStrategy } from './cellGroupHighlightStrategy.js';
-import { Cell } from '../core/cell.js';
-import { HexGrid } from '../core/hexGrid.js';
-import { getHexFaceVertices } from './layout.js';
-import { Direction } from '../core/types.js';
+import { CellGroupHighlightStrategy } from './cellGroupHighlightStrategy.ts';
+import { Cell } from '../core/cell.ts';
+import { HexGrid } from '../core/hexGrid.ts';
+import { getHexFaceVertices } from './layout.ts';
+import { Direction } from '../core/types.ts';
 
 /**
  * Default implementation of CellGroupHighlightStrategy that draws white boundary lines
@@ -190,12 +190,12 @@ export class BoundaryLineStrategy implements CellGroupHighlightStrategy {
 #### 4.1 Add Imports
 
 ```typescript
-import { CellGroupHighlightStrategy } from './cellGroupHighlightStrategy.js';
-import { BoundaryLineStrategy } from './boundaryLineStrategy.js';
+import { CellGroupHighlightStrategy } from './cellGroupHighlightStrategy.ts';
+import { BoundaryLineStrategy } from './boundaryLineStrategy.ts';
 import {
   ModelHighlightStrategy,
   DefaultModelHighlightStrategy,
-} from './highlightStrategy.js';
+} from './highlightStrategy.ts';
 ```
 
 #### 4.2 Update Constructor Parameters
@@ -319,20 +319,20 @@ setCellGroupHighlightStrategy(strategy: CellGroupHighlightStrategy): void {
 
 ```typescript
 // Add exports for new interfaces and classes
-export { CellGroupHighlightStrategy } from './rendering/cellGroupHighlightStrategy.js';
-export { BoundaryLineStrategy } from './rendering/boundaryLineStrategy.js';
+export { CellGroupHighlightStrategy } from './rendering/cellGroupHighlightStrategy.ts';
+export { BoundaryLineStrategy } from './rendering/boundaryLineStrategy.ts';
 
 // Update existing exports to use new names
 export {
   ModelHighlightStrategy,
   DefaultModelHighlightStrategy,
-} from './rendering/highlightStrategy.js';
+} from './rendering/highlightStrategy.ts';
 
 // Keep backward compatibility exports
 export {
   ModelHighlightStrategy as HighlightStrategy,
   DefaultModelHighlightStrategy as DefaultHighlightStrategy,
-} from './rendering/highlightStrategy.js';
+} from './rendering/highlightStrategy.ts';
 ```
 
 ### Step 6: Update Type Definitions
