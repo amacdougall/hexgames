@@ -20,7 +20,9 @@
       "Bash(rg:*)",
       "Bash(TZ=America/New_York date -Iseconds)",
       "Bash(npm run dev:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }
