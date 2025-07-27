@@ -18,7 +18,6 @@ implementation, not syntax or type errors in the test code itself.
 ## 2. Test Setup
 
 1.  **Create a new test file:**
-
     - Location: `packages/hexboard/tests/rendering/layout.test.ts`
 
 2.  **Add necessary imports:**

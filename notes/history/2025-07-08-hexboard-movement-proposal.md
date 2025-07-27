@@ -14,7 +14,6 @@ destinations and move to a selected hex.
 ## Objectives
 
 1. **Entity Movement Mode:**
-
    - Highlight the entity and its possible movement destinations.
    - Allow movement to a selected destination hex.
    - Update the logical `HexGrid` and re-render the entity model.
@@ -42,7 +41,6 @@ destinations and move to a selected hex.
 - **Initiating Movement:** Add a method
   `startMovement(   entityId: string,   availableDestinations: HexCoordinates[] ): void`
   to `EntityManager`. This method will:
-
   - Accept an entity's ID and an array of `HexCoordinates` as input.
   - Store the available destinations for the entity's movement session.
   - Set the entity's `isInMovementMode` property to `true`.
@@ -99,7 +97,6 @@ the future.
 
 - **Update `BoardRenderer`:** The `BoardRenderer` will accept an optional
   `HighlightStrategy` in its constructor.
-
   - If no strategy is provided, a default implementation (e.g., applying an
     emissive glow) will be used.
   - The `BoardRenderer` will be responsible for _when_ to apply the highlight

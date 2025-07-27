@@ -55,7 +55,6 @@ when providing additional behavior or data.
 ### Core Concepts & Data Structures
 
 1. **Coordinates**:
-
    - We'll use **Cubic coordinates** for the hexagonal grid, as they are
      well-suited for algorithms.
    - A helper module will provide functions for coordinate manipulation,
@@ -119,7 +118,6 @@ export interface Cell<CustomProps extends Record<string, any> = {}>
 ```
 
 3. **Tile**: The 3D visual representation of a `Cell`.
-
    - A `THREE.Mesh` (e.g., `THREE.CylinderGeometry` with 6 sides or
      `THREE.ExtrudeGeometry` from a hexagonal shape).
    - Its vertical height will be determined by the `Cell`'s `elevation`.
@@ -147,7 +145,6 @@ export interface Cell<CustomProps extends Record<string, any> = {}>
 ### Separation of Concerns: Logic vs. Rendering
 
 - **Logic Module (`HexGrid`)**:
-
   - Manages `Cell` data, grid structure, pathfinding, movement range
     calculations.
   - No direct three.js dependencies.
@@ -203,7 +200,6 @@ export interface Cell<CustomProps extends Record<string, any> = {}>
   ```
 
 - **Rendering Module (`BoardRenderer`)**:
-
   - Manages the three.js `Scene`, `Camera`, `WebGLRenderer`, lights.
   - Creates/updates `Tile` meshes based on `Cell` data from `HexGrid`.
   - Renders `Entity` models.
@@ -278,7 +274,6 @@ export interface Cell<CustomProps extends Record<string, any> = {}>
 ### Setup and Definition
 
 1. **Map Definition**:
-
    - **JSON** will be used for defining custom maps. It's human-readable and
      easily parsable.
 

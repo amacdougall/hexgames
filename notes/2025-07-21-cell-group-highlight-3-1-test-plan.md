@@ -315,7 +315,6 @@ test('should return only grid perimeter when all cells are selected', () => {
    `BoundaryMap` type are properly defined and imported.
 
 4. **Assertion Strategy:** Follow existing test patterns:
-
    - Use `expect().toBe()` for exact matches
    - Use `expect().toHaveLength()` for array/set sizes
    - Use `expect().toBeDefined()` and `expect().not.toBeNull()` for existence

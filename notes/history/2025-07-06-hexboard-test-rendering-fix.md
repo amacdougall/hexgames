@@ -30,12 +30,10 @@ we need to reintegrate it into the `HexBoard` class itself.
 ### Implementation Steps
 
 1.  DONE: **Locate `HexBoard.ts`**
-
     - Open the file at `packages/hexboard/src/hexBoard.ts`. This is where we
       will add the rendering logic.
 
 2.  DONE: **Add State and Control Methods**
-
     - Introduce a private boolean flag, `this.isRunning = false;`, to control
       the state of the render loop.
     - Create a public `start()` method. This method will set
@@ -44,7 +42,6 @@ we need to reintegrate it into the `HexBoard` class itself.
     - Create a public `stop()` method that sets `this.isRunning = false;`.
 
 3.  DONE: **Create the `animate` Method**
-
     - Implement a private `animate()` method.
     - Inside `animate()`, check if `this.isRunning` is `true`. If not, exit the
       function.
@@ -69,14 +66,12 @@ application to fix data-related rendering bugs.
 ### Implementation Steps
 
 1.  DONE: **Update `starter-valley.json`**
-
     - Open the map data file at `apps/hexboard-test/assets/starter-valley.json`.
     - Search and replace all instances of the key `"customProperties"` with
       `"customProps"`. This ensures our data source conforms to the new
       standard.
 
 2.  DONE: **Update Data Loading in `main.ts`**
-
     - Open `apps/hexboard-test/src/main.ts`.
     - In the `initializeApp` function, find the type definition for `mapData`.
     - Change `customProperties?: { terrainType?: string };` to

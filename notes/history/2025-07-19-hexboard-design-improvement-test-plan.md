@@ -37,17 +37,14 @@ destroyed correctly along with the `HexBoard`.
 **`describe('HexBoard Lifecycle')`**
 
 - **`it('should not have an EntityManager or EntityRenderer before init is called')`**
-
   - Assert that the internal `entityManager` and `entityRenderer` properties are
     undefined after the `HexBoard` constructor is called.
 
 - **`it('should create an EntityManager when init is called')`**
-
   - After calling `init()`, assert that the internal `entityManager` is an
     instance of `EntityManager`.
 
 - **`it('should create an EntityRenderer when init is called with a ModelRegistry')`**
-
   - Call `init()` with a mock `ModelRegistry`.
   - Assert that the internal `entityRenderer` is an instance of
     `EntityRenderer`.
@@ -56,7 +53,6 @@ destroyed correctly along with the `HexBoard`.
     `BoardRenderer`.
 
 - **`it('should NOT create an EntityRenderer when init is called without a ModelRegistry')`**
-
   - Call `init()` without a `ModelRegistry`.
   - Assert that the internal `entityRenderer` property remains undefined.
 
@@ -75,25 +71,20 @@ tests.
 **`describe('HexBoard Entity Management API')`**
 
 - **`describe('addEntity')`**
-
   - **`it('should call addEntity on the internal EntityManager with the correct definition')`**
   - **`it('should return the entity created by the EntityManager')`**
 
 - **`describe('removeEntity')`**
-
   - **`it('should call removeEntity on the internal EntityManager with the correct ID')`**
   - **`it('should return the result from the EntityManager call')`**
 
 - **`describe('moveEntity')`**
-
   - **`it('should call moveEntity on the internal EntityManager with the correct ID and cell')`**
 
 - **`describe('getEntityById')`**
-
   - **`it('should call getEntityById on the internal EntityManager and return the result')`**
 
 - **`describe('getEntitiesAt')`**
-
   - **`it('should call getEntitiesAt on the internal EntityManager and return the result')`**
 
 - **`describe('getAllEntities')`**
@@ -106,11 +97,9 @@ This suite tests the new methods related to the entity movement state machine.
 **`describe('HexBoard Entity Movement API')`**
 
 - **`describe('startEntityMovement')`**
-
   - **`it('should call startMovement on the internal EntityManager with the correct entity ID and hexes')`**
 
 - **`describe('cancelEntityMovement')`**
-
   - **`it('should call cancelMovement on the internal EntityManager with the correct entity ID')`**
 
 - **`describe('getEntityMovementDestinations')`**

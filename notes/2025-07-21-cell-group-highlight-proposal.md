@@ -105,7 +105,6 @@ use cases. The existing `HighlightStrategy` will be renamed and a new strategy
 for group-based effects will be added.
 
 - **`ModelHighlightStrategy` (Rename of `HighlightStrategy`)**
-
   - **Action:** The existing `HighlightStrategy` interface and its concrete
     implementation `DefaultHighlightStrategy` will be renamed to
     `ModelHighlightStrategy` and `DefaultModelHighlightStrategy` respectively.
@@ -115,7 +114,6 @@ for group-based effects will be added.
     hover or selection.
 
 - **`CellGroupHighlightStrategy` (New Interface)**
-
   - **Description:** Defines a contract for strategies that create new visual
     effects based on a logical group of cells.
   - **`apply(cells: Cell[], grid: HexGrid): THREE.Object3D`**: The core method.

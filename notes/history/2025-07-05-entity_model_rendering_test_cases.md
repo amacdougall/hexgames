@@ -107,7 +107,6 @@ mocking strategy described above.
 **Setup**: For these tests, you will mock the `three` library.
 
 - **`context('registerModel')`**
-
   - **`it('should store a pre-loaded THREE.Object3D asset')`**: Register a
     mocked `Object3D` with a key. Internally, check that the registry's private
     map now contains this key and asset.
@@ -135,7 +134,6 @@ mocking strategy described above.
 pass into the `EntityRenderer`'s constructor.
 
 - **`context('constructor')`**
-
   - **`it('should initialize correctly with dependencies')`**: Simply check that
     the constructor runs without errors and that the internal properties are
     assigned.
@@ -175,7 +173,6 @@ pass into the `EntityRenderer`'s constructor.
 **Setup**: Mock `EntityRenderer`, `EntityManager`, and `ModelRegistry`.
 
 - **`context('constructor')`**
-
   - **`it('should instantiate EntityRenderer with the correct dependencies')`**:
     When creating a `BoardRenderer`, assert that the `EntityRenderer`
     constructor was called and passed the `EntityManager`, `ModelRegistry`, and

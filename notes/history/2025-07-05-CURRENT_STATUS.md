@@ -18,7 +18,6 @@
   - Coordinate validation and conversion
   - Comprehensive utility methods
 - ✅ **Coordinate System**
-
   - HexCoordinates interface (q, r, s cubic coordinates)
   - Axial to cubic coordinate conversion
   - Coordinate validation functions
@@ -31,7 +30,6 @@
 ### 3. **3D Rendering Implementation**
 
 - ✅ **BoardRenderer Class** - Fully functional 3D renderer
-
   - Three.js scene initialization with camera, lighting, shadows
   - OrbitControls for interactive 3D navigation
   - Ground plane rendering
@@ -47,7 +45,6 @@
 ### 4. **Visual Features**
 
 - ✅ **3D Hex Cells** - Rendered as hexagonal cylinders
-
   - Height based on elevation property
   - Color coding:
     - Royal blue for impassable cells (water)
@@ -57,7 +54,6 @@
     - Sandy brown for low terrain (elevation ≤ 1)
 
 - ✅ **Interactive Controls**
-
   - Mouse orbit controls (rotate, zoom, pan)
   - Smooth damping and movement constraints
   - Full-screen responsive rendering

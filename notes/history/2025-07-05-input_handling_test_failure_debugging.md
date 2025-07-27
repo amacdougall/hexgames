@@ -10,7 +10,6 @@ confirmed by the absence of debug log output.
 ## Debugging Plan
 
 1.  **Analyze the Failing Test (`hexBoardInput.test.ts`):**
-
     - Examine how the `HexBoard` instance is created and configured for the
       test. The test correctly uses `await hexBoard.init(...)`.
     - Inspect the `simulateCanvasClick` helper function. Is it dispatching the
@@ -19,7 +18,6 @@ confirmed by the absence of debug log output.
     - Review the test assertions. What is the expected outcome of the click?
 
 2.  **Review `HexBoard` and `InputHandler` Integration (`hexBoard.ts`):**
-
     - The lifecycle of the `InputHandler` within `HexBoard` has been verified.
       `HexBoard.init()` correctly creates and initializes the `InputHandler`.
 
