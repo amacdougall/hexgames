@@ -46,6 +46,9 @@ cd packages/hexboard && npm run test:watch
 
 # Generate coverage report
 cd packages/hexboard && npm run test:coverage
+
+# Run specific test
+cd packages/hexboard && npm test -- -t "testName"
 ```
 
 ## Architecture Overview
