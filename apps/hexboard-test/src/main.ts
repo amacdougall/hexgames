@@ -6,6 +6,7 @@ import {
   HexCoordinates,
   ModelRegistry,
   BoundaryLineStrategy,
+  Cell,
 } from 'hexboard';
 import { GameColorStrategy } from './gameColorStrategy.js';
 import { GameCellProps } from './types.js';
@@ -64,9 +65,18 @@ function handleCellClick(coords: HexCoordinates): void {
         // Convert coordinates to cells for highlighting
         const reachableCells = reachableHexes
           .map((coords) => hexBoard.getCellAtCoords(coords))
-          .filter((cell) => cell !== null);
-        const groupId = `movement-${entity.id}-${Date.now()}`;
-        // TODO: look into type issue here
+          .filter((cell): cell is Cell<GameCellProps> => cell !== undefined);
+        const groupId = `movement-${entity.id}`;
+
+        // Remove existing highlight group for this entity if it exists
+        const existingGroupIndex = activeMovementGroupIds.findIndex(
+          (id) => id === groupId
+        );
+        if (existingGroupIndex !== -1) {
+          renderer.removeHighlightGroup(groupId);
+          activeMovementGroupIds.splice(existingGroupIndex, 1);
+        }
+
         renderer.addHighlightGroup(groupId, reachableCells);
         activeMovementGroupIds.push(groupId);
       }
