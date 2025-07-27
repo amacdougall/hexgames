@@ -1,6 +1,6 @@
 # Hexboard System Brief
 
-**Date:** 2025-07-22
+**Date:** 2025-07-27
 
 **Audience:** AI coding agents contributing to the `hexboard` library.
 
@@ -103,18 +103,28 @@ items).
 The rendering domain uses **Three.js** to create a 3D visualization of the state
 held in the Core domain.
 
-#### 2.1. Layout Conversion (`src/rendering/layout.ts`)
+#### 2.1. Layout and Geometry (`src/rendering/hexLayout.ts`, `src/rendering/hexGeometry.ts`, etc.)
 
-This module is the bridge between the logical grid and the 3D world.
+The logic for converting between the abstract grid and the 3D world, and for
+handling geometric calculations, has been split into several focused modules
+from the original `layout.ts`.
 
-- **`hexToWorld()`**: Converts `HexCoordinates` into a `THREE.Vector3` world
-  position.
-- **`worldToHex()`**: Converts a `THREE.Vector3` world position back into the
-  nearest `HexCoordinates`.
-
-This conversion is essential for placing objects in the 3D scene and for
-translating user input (e.g., a click in the 3D world) back into a logical grid
-coordinate. The current implementation assumes a "flat-top" hexagon orientation.
+- **`hexLayout.ts`**: This is the core bridge between the logical grid and the
+  3D world. It handles the fundamental conversions.
+  - **`hexToWorld()`**: Converts `HexCoordinates` into a `THREE.Vector3` world
+    position.
+  - **`worldToHex()`**: Converts a `THREE.Vector3` world position back into the
+    nearest `HexCoordinates`.
+- **`hexGeometry.ts`**: This module provides functions for extracting geometric
+  information about hex cells, such as the vertices for a specific face
+  (`getHexFaceVertices`) or all corners of a hex (`getHexCorners`).
+- **`boundaryPath.ts`**: This module is responsible for building continuous
+  paths from a set of boundary edges. This is used for creating visual effects
+  like outlines around a group of cells. It contains placeholder implementations
+  for future development.
+- **`vertexUtils.ts`**: This module contains generic utility functions for
+  manipulating arrays of `THREE.Vector3` vertices, such as applying elevation
+  (`applyElevationOffset`) or normal offsets (`applyNormalOffset`).
 
 #### 2.2. Board Renderer (`src/rendering/boardRenderer.ts`)
 
