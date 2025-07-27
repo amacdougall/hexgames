@@ -2,7 +2,9 @@
 
 **Date:** 2025-07-27  
 **Audience:** Technical leads implementing hexboard library enhancements  
-**Author:** Software Architect
+**Author:** Software Architect  
+**Prerequisites:** This proposal assumes completion of the layout module
+refactoring outlined in `2025-07-27-layout-refactor-plan.md`
 
 ## 1. Executive Summary
 
@@ -21,7 +23,8 @@ The existing `BoundaryLineStrategy` operates as follows:
 
 1. Uses `HexGrid.findBoundaryFaces()` to identify boundary faces as a
    `BoundaryMap`
-2. For each boundary face, calls `getHexFaceVertices()` to get edge endpoints
+2. For each boundary face, calls `getHexFaceVertices()` (from `hexGeometry.ts`)
+   to get edge endpoints
 3. Creates individual `THREE.Line` objects with `LineBasicMaterial`
 4. Groups all lines in a `THREE.Group` returned by `apply()`
 
@@ -57,33 +60,39 @@ paths that provide:
 
 ### Phase 1: Enhanced Utility Functions
 
-**Objective**: Add new layout utilities while maintaining backward
-compatibility.
+**Objective**: Enhance existing utility functions in refactored modules while
+maintaining backward compatibility.
 
 **TDD Requirements**: Write comprehensive tests before implementation.
 
 #### 4.1.1. Test Requirements
 
-Create `tests/rendering/enhancedLayout.test.ts`:
+**Note**: Following the layout module refactoring plan, tests will be added to
+existing test files:
 
-1. **`getHexFaceEdge()` tests**:
-   - Verify edge endpoints match `getHexFaceVertices()` output
+1. **`getHexFaceEdge()` tests** in `tests/rendering/hexGeometry.test.ts`:
+   - Verify edge endpoints match `getHexFaceVertices()` output (from
+     `hexGeometry.ts`)
    - Test all six directions with various cell positions
    - Validate elevation handling
 
-2. **`applyElevationOffset()` tests**:
+2. **`applyElevationOffset()` tests** in `tests/rendering/vertexUtils.test.ts`:
    - Verify Y-coordinate adjustment for vertex arrays
    - Test with positive, negative, and zero offsets
    - Ensure X and Z coordinates remain unchanged
 
-3. **`applyNormalOffset()` tests**:
+3. **`applyNormalOffset()` tests** in `tests/rendering/vertexUtils.test.ts`:
    - Mock grid neighbor detection
    - Verify outward normal calculation
    - Test offset application to vertices
 
 #### 4.1.2. Implementation Requirements
 
-Add to `src/rendering/layout.ts`:
+**Note**: Following the layout module refactoring plan, functions will be
+implemented in dedicated modules:
+
+**In `src/rendering/hexGeometry.ts`** (function already exists, enhance if
+needed):
 
 ```typescript
 /**
@@ -96,7 +105,12 @@ export function getHexFaceEdge<T extends Record<string, unknown>>(
   cell: Cell<T>,
   direction: Direction
 ): { start: THREE.Vector3; end: THREE.Vector3 };
+```
 
+**In `src/rendering/vertexUtils.ts`** (functions already exist, enhance if
+needed):
+
+```typescript
 /**
  * Applies elevation offset to an array of vertices.
  * @param vertices - Array of Vector3 objects to modify
@@ -125,7 +139,8 @@ export function applyNormalOffset<T extends Record<string, unknown>>(
 #### 4.1.3. Acceptance Criteria
 
 - All tests pass
-- Functions work with existing `getHexFaceVertices()` output
+- Functions work with existing `getHexFaceVertices()` output (from
+  `hexGeometry.ts`)
 - No breaking changes to existing API
 - Performance acceptable for typical game board sizes
 
@@ -135,7 +150,7 @@ export function applyNormalOffset<T extends Record<string, unknown>>(
 
 #### 4.2.1. Test Requirements
 
-Create `tests/rendering/pathBuilder.test.ts`:
+Create `tests/rendering/boundaryPath.test.ts`:
 
 1. **Edge connection tests**:
    - Single cell (closed loop)
@@ -151,7 +166,7 @@ Create `tests/rendering/pathBuilder.test.ts`:
 
 #### 4.2.2. Implementation Requirements
 
-Add to `src/rendering/layout.ts`:
+Add to `src/rendering/boundaryPath.ts`:
 
 ```typescript
 export interface BoundaryPath {
@@ -173,7 +188,8 @@ export function buildBoundaryPaths<T extends Record<string, unknown>>(
 
 #### 4.2.3. Algorithm Overview
 
-1. Convert each boundary face to edge segments using `getHexFaceEdge()`
+1. Convert each boundary face to edge segments using `getHexFaceEdge()` (from
+   `hexGeometry.ts`)
 2. Build connectivity map of edge endpoints
 3. Trace connected sequences to form continuous paths
 4. Detect closed loops vs open paths
@@ -206,9 +222,12 @@ Create `tests/rendering/enhancedBoundaryLineStrategy.test.ts`:
 
 #### 4.3.2. Implementation Requirements
 
-Replace `BoundaryLineStrategy` implementation:
+Replace `BoundaryLineStrategy` implementation with updated imports:
 
 ```typescript
+import { buildBoundaryPaths, BoundaryPath } from './boundaryPath';
+import { applyElevationOffset, applyNormalOffset } from './vertexUtils';
+
 export class BoundaryLineStrategy implements CellGroupHighlightStrategy {
   constructor(
     private lineColor: THREE.Color = new THREE.Color(0xffffff),
@@ -223,8 +242,8 @@ export class BoundaryLineStrategy implements CellGroupHighlightStrategy {
     grid: HexGrid<T>
   ): THREE.Object3D {
     // 1. Get boundary faces
-    // 2. Build continuous paths using buildBoundaryPaths()
-    // 3. Apply elevation and normal offsets
+    // 2. Build continuous paths using buildBoundaryPaths() (from boundaryPath.ts)
+    // 3. Apply elevation and normal offsets (from vertexUtils.ts)
     // 4. Create TubeGeometry for each path
     // 5. Return THREE.Group containing tube meshes
   }
@@ -289,12 +308,15 @@ No changes required to `BoardRenderer` interface, but thorough testing needed:
 
 ### 5.1. Technical Risks
 
+- **Refactoring dependency**: This proposal depends on successful completion of
+  layout module refactoring
 - **Performance impact**: TubeGeometry more vertex-heavy than LineBasicMaterial
 - **Path complexity**: Algorithm complexity for non-trivial selections
 - **Breaking changes**: Constructor parameter changes may affect existing users
 
 ### 5.2. Mitigation Strategies
 
+- Complete layout module refactoring before beginning boundary line improvements
 - Implement performance benchmarks in Phase 1
 - Provide fallback to original implementation if needed
 - Use semantic versioning for breaking changes
@@ -310,13 +332,16 @@ No changes required to `BoardRenderer` interface, but thorough testing needed:
 
 ## 7. Timeline Estimate
 
-- **Phase 1**: 2-3 days (utility functions)
+**Prerequisites**: Layout module refactoring (3 development days)
+
+- **Phase 1**: 1-2 days (enhance existing utility functions in refactored
+  modules)
 - **Phase 2**: 3-4 days (path building algorithm)
 - **Phase 3**: 3-4 days (strategy implementation)
 - **Phase 4**: 1-2 days (integration testing)
 - **Phase 5**: 1-2 days (application integration)
 
-**Total**: 10-15 development days
+**Total**: 9-14 development days (plus 3 days for prerequisite refactoring)
 
 ## 8. Future Enhancements
 
