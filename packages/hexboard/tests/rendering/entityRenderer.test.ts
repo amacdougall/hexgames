@@ -21,8 +21,8 @@ jest.mock('three', () => ({
   })),
 }));
 
-// Mock the layout utility
-jest.mock('../../src/rendering/layout');
+// Mock the hexLayout utility
+jest.mock('../../src/rendering/hexLayout');
 
 import * as THREE from 'three';
 import { EntityRenderer } from '../../src/rendering/entityRenderer';
@@ -30,7 +30,7 @@ import { Entity, EntityManager } from '../../src/core/entity';
 import { ModelRegistry } from '../../src/rendering/modelRegistry';
 import { Cell } from '../../src/core/cell';
 import { MockEntityManager, MockModelRegistry } from '../types/mocks';
-import { hexToWorld } from '../../src/rendering/layout';
+import { hexToWorld } from '../../src/rendering/hexLayout';
 
 // Cast hexToWorld to jest.Mock so we can control its behavior in tests
 const mockedHexToWorld = hexToWorld as jest.MockedFunction<typeof hexToWorld>;

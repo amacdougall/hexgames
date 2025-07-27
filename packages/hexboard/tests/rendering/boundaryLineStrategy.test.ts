@@ -44,8 +44,8 @@ jest.mock('three', () => ({
   Mesh: jest.fn(),
 }));
 
-// Mock the layout module
-jest.mock('../../src/rendering/layout', () => ({
+// Mock the hexGeometry module
+jest.mock('../../src/rendering/hexGeometry', () => ({
   getHexFaceVertices: jest.fn(),
 }));
 
@@ -55,7 +55,7 @@ import { CellGroupHighlightStrategy } from '../../src/rendering/cellGroupHighlig
 import { Cell } from '../../src/core/cell';
 import { HexGrid } from '../../src/core/hexGrid';
 import { Direction } from '../../src/core/types';
-import * as layout from '../../src/rendering/layout';
+import * as hexGeometry from '../../src/rendering/hexGeometry';
 
 describe('BoundaryLineStrategy', () => {
   let strategy: BoundaryLineStrategy;
@@ -122,7 +122,7 @@ describe('BoundaryLineStrategy.apply()', () => {
     ];
 
     // Mock layout function
-    (layout.getHexFaceVertices as jest.Mock).mockReturnValue([
+    (hexGeometry.getHexFaceVertices as jest.Mock).mockReturnValue([
       new THREE.Vector3(0, 0, 0),
       new THREE.Vector3(1, 0, 0),
     ]);
@@ -156,7 +156,7 @@ describe('BoundaryLineStrategy.apply()', () => {
     });
 
     // Verify layout integration
-    expect(layout.getHexFaceVertices).toHaveBeenCalledTimes(2);
+    expect(hexGeometry.getHexFaceVertices).toHaveBeenCalledTimes(2);
   });
 
   it('should support custom colors and line styles', () => {
@@ -274,7 +274,7 @@ describe('BoundaryLineStrategy integration', () => {
     strategy = new BoundaryLineStrategy();
 
     // Reset mocks for integration tests
-    (layout.getHexFaceVertices as jest.Mock).mockReturnValue([
+    (hexGeometry.getHexFaceVertices as jest.Mock).mockReturnValue([
       new THREE.Vector3(0, 0, 0),
       new THREE.Vector3(1, 0, 0),
     ]);

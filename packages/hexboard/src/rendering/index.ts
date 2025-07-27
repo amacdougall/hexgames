@@ -11,6 +11,6 @@ export {
   HighlightStrategy,
   DefaultHighlightStrategy,
 } from './highlightStrategy';
-export { hexToWorld } from './layout';
+export { hexToWorld } from './hexLayout';
 export { ModelRegistry } from './modelRegistry';
 export { EntityRenderer } from './entityRenderer';

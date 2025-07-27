@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { CellGroupHighlightStrategy } from './cellGroupHighlightStrategy';
 import { Cell } from '../core/cell';
 import { HexGrid } from '../core/hexGrid';
-import { getHexFaceVertices } from './layout';
+import { getHexFaceVertices } from './hexGeometry';
 // Direction is used via BoundaryMap in grid.findBoundaryFaces
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Direction } from '../core/types';

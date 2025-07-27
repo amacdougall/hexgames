@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { EntityManager } from '../core/entity';
 import { ModelRegistry } from './modelRegistry';
-import { hexToWorld } from './layout';
+import { hexToWorld } from './hexLayout';
 
 /**
  * Manages the 3D rendering of entities in the hexagonal grid.

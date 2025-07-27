@@ -6,7 +6,7 @@ import { OrbitControls } from 'three-stdlib';
 import { HexGrid } from '../core/hexGrid';
 import { HexCoordinates } from '../core/coordinates';
 import { Cell } from '../core/cell';
-import { hexToWorld } from './layout';
+import { hexToWorld } from './hexLayout';
 import {
   CellColorStrategy,
   DefaultCellColorStrategy,
