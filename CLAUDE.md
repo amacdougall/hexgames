@@ -8,6 +8,10 @@ instructions!
 
 We're using the flat-top orientation for hex cells.
 
+## Planning
+
+When writing proposals or plans, assume a TDD approach.
+
 ## Development Commands
 
 ### Build and Development
