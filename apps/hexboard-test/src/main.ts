@@ -1,7 +1,12 @@
 // Test application main entry point
 // This will demonstrate hexboard library usage
 
-import { HexBoard, HexCoordinates, ModelRegistry } from 'hexboard';
+import {
+  HexBoard,
+  HexCoordinates,
+  ModelRegistry,
+  BoundaryLineStrategy,
+} from 'hexboard';
 import { GameColorStrategy } from './gameColorStrategy.js';
 import { GameCellProps } from './types.js';
 import * as THREE from 'three';
@@ -11,6 +16,7 @@ console.log('Hexboard test application starting...');
 // Global state for movement mode
 let isMovementModeActive = false;
 let hexBoard: HexBoard<GameCellProps>;
+let activeMovementGroupIds: string[] = [];
 
 // Create a metallic dodecahedron geometry for the entity
 function createDodecahedronModel(): THREE.Object3D {
@@ -55,9 +61,14 @@ function handleCellClick(coords: HexCoordinates): void {
       // Highlight the entity and destination cells
       const renderer = hexBoard.getRenderer();
       if (renderer) {
-        // Note: EntityRenderer.getEntityModel is not exposed through HexBoard API
-        // This is intentional to maintain encapsulation
-        renderer.highlightHexCells(reachableHexes);
+        // Convert coordinates to cells for highlighting
+        const reachableCells = reachableHexes
+          .map((coords) => hexBoard.getCellAtCoords(coords))
+          .filter((cell) => cell !== null);
+        const groupId = `movement-${entity.id}-${Date.now()}`;
+        // TODO: look into type issue here
+        renderer.addHighlightGroup(groupId, reachableCells);
+        activeMovementGroupIds.push(groupId);
       }
 
       console.log(
@@ -93,7 +104,10 @@ function handleCellClick(coords: HexCoordinates): void {
 
       // Clear highlights
       if (renderer) {
-        renderer.removeHighlightFromHexCells(destinations);
+        activeMovementGroupIds.forEach((groupId) => {
+          renderer.removeHighlightGroup(groupId);
+        });
+        activeMovementGroupIds = [];
       }
 
       isMovementModeActive = false;
