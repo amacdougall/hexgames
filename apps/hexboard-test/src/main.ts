@@ -2,11 +2,11 @@
 // This will demonstrate hexboard library usage
 
 import {
+  BoundaryLineStrategy,
+  Cell,
   HexBoard,
   HexCoordinates,
   ModelRegistry,
-  BoundaryLineStrategy,
-  Cell,
 } from 'hexboard';
 import { GameColorStrategy } from './gameColorStrategy.js';
 import { GameCellProps } from './types.js';

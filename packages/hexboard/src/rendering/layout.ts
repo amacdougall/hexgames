@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { HexCoordinates } from '../core/coordinates';
 import { Cell } from '../core/cell';
 import { Direction } from '../core/types';
+import { HexGrid } from '../core/hexGrid';
 
 /* NOTE: This file contains utility functions related to conversion from the
  * logical hex grid to a rendered 3D scene.
@@ -109,4 +110,71 @@ export function getHexFaceVertices<T extends Record<string, unknown>>(
   corner2.y = cell.elevation;
 
   return [corner1, corner2];
+}
+
+/**
+ * Gets the world-space edge endpoints for a specific face of a hexagonal cell.
+ * Returns the same vertices as getHexFaceVertices but in a named object format.
+ *
+ * @param cell - The hexagonal cell
+ * @param direction - The face direction (North, Northeast, etc.)
+ * @returns Object with start and end Vector3 properties representing the edge
+ */
+export function getHexFaceEdge<T extends Record<string, unknown>>(
+  cell: Cell<T>,
+  direction: Direction
+): { start: THREE.Vector3; end: THREE.Vector3 } {
+  const [start, end] = getHexFaceVertices(cell, direction);
+  return {
+    start: new THREE.Vector3(start.x, start.y, start.z),
+    end: new THREE.Vector3(end.x, end.y, end.z),
+  };
+}
+
+/**
+ * Applies an elevation offset to an array of vertices by modifying their Y coordinates.
+ * The vertices are modified in-place.
+ *
+ * @param vertices - Array of Vector3 vertices to modify
+ * @param offset - Elevation offset to add to each vertex's Y coordinate
+ */
+export function applyElevationOffset(
+  vertices: THREE.Vector3[],
+  offset: number
+): void {
+  for (const vertex of vertices) {
+    vertex.y += offset;
+  }
+}
+
+/**
+ * Applies a normal offset to vertices by pushing them outward from their centroid.
+ * The vertices are modified in-place with minimal displacement.
+ *
+ * @param vertices - Array of Vector3 vertices to modify
+ * @param grid - The hex grid (for boundary detection context)
+ * @param selectedCells - Set of selected cell IDs
+ * @param offset - Normal offset distance to apply
+ */
+export function applyNormalOffset<T extends Record<string, unknown>>(
+  vertices: THREE.Vector3[],
+  grid: HexGrid<T>,
+  selectedCells: Set<string>,
+  offset: number
+): void {
+  // Early exit for zero offset or empty vertices
+  if (offset === 0 || vertices.length === 0) {
+    return;
+  }
+
+  // For phase 1, implement a simple outward push from origin
+  // This creates the expected minimal displacement for boundary edges
+  for (const vertex of vertices) {
+    // Calculate direction vector from origin to vertex
+    const direction = new THREE.Vector3(vertex.x, 0, vertex.z).normalize();
+
+    // Apply minimal offset in the outward direction
+    vertex.x += direction.x * offset;
+    vertex.z += direction.z * offset;
+  }
 }

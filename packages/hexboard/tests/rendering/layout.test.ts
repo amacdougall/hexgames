@@ -1,10 +1,10 @@
 import { Vector3 } from 'three';
 import {
-  getHexFaceVertices,
-  hexToWorld,
-  getHexFaceEdge,
   applyElevationOffset,
   applyNormalOffset,
+  getHexFaceEdge,
+  getHexFaceVertices,
+  hexToWorld,
 } from '../../src/rendering/layout';
 import { Direction } from '../../src/core/types';
 import { Cell } from '../../src/core/cell';
