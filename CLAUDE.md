@@ -4,6 +4,10 @@ This file provides guidance to AI coding assistants when working with code in
 this repository. If you are an AI coding assisant, please follow these
 instructions!
 
+## Hex Geometry
+
+We're using the flat-top orientation for hex cells.
+
 ## Development Commands
 
 ### Build and Development
