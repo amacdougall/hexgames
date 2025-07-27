@@ -146,15 +146,38 @@ This defines the strategy for how cells are colored.
 - **`ElevationColorStrategy`**: A simpler strategy that only considers
   elevation.
 
-#### 2.4. Highlight Strategies (`src/rendering/highlightStrategy.ts`)
+#### 2.4. Highlight Strategies
 
-This defines the strategy system for visual effects and highlighting.
+The system provides two distinct types of highlighting strategies for different
+use cases:
 
-- **`HighlightStrategy`**: An interface defining `apply()` and `remove()`
+**Model Highlighting (`src/rendering/highlightStrategy.ts`)**
+
+For simple visual effects applied directly to THREE.Object3D models:
+
+- **`ModelHighlightStrategy`**: Interface defining `apply()` and `remove()`
   methods for adding and removing visual effects from THREE.Object3D objects.
-- **`DefaultHighlightStrategy`**: The default implementation that adds a bright
-  yellow emissive glow to highlighted objects and restores original materials
-  when highlighting is removed.
+- **`DefaultModelHighlightStrategy`**: Default implementation that applies a
+  bright yellow emissive glow to highlighted objects and restores original
+  materials when highlighting is removed.
+
+**Cell Group Highlighting (`src/rendering/cellGroupHighlightStrategy.ts`)**
+
+For complex visual effects that analyze groups of cells to create new geometry:
+
+- **`CellGroupHighlightStrategy`**: Interface for strategies that create new
+  visual effects based on logical groups of cells. The `apply()` method receives
+  Cell data and HexGrid context to generate THREE.Object3D effects.
+- **`BoundaryLineStrategy`** (`src/rendering/boundaryLineStrategy.ts`): Default
+  implementation that draws white boundary lines around the exterior edges of
+  cell group selections. Uses `HexGrid.findBoundaryFaces()` to detect which hex
+  faces lie on the boundary of a selection and creates line geometry to outline
+  the group.
+
+The `BoardRenderer` is initialized with both strategy types and provides methods
+to get/set each strategy independently. This dual-strategy system enables both
+simple model highlighting (for individual objects) and sophisticated group-based
+effects (for cell boundaries, area highlights, etc.).
 
 #### 2.5. Entity Rendering (`src/rendering/entityRenderer.ts` and `src/rendering/modelRegistry.ts`)
 
